@@ -5,20 +5,31 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
     <title>Login</title>
 </head>
 
-<body>
-    <h1>Login Page</h1>
-
-    <form method="POST" action="">
-        {{ form.hidden_tag() }}
-        {{ form.username }}
-        {{ form.password }}
-        {{ form.submit }}
-    </form>
-
-    <a href="{{ url_for('register') }}">Don't have an account? Sign Up</a>
+<body class="login">
+    <div class="content login">
+        <form method="POST" action="" class="login-details">
+            <div class="logo-wrapper">
+                <img class="logo-image" src="{{ url_for('static', filename='logo.jpg') }}" alt="Dayartne Holdings Logo">
+            </div>
+            {{ form.hidden_tag() }}
+            <div class="form-sections">
+                <h4 class="input-head">User Id</h4>
+                {{ form.username(class="login-input") }}
+            </div>
+            <br>
+            <div class="form-sections">
+                <h4 class="input-head">Password</h4>
+                {{ form.password(class="login-input") }}
+            </div>
+            <div class="form-sections submit">
+                {{ form.submit(class="login-btn") }}
+            </div>
+        </form>
+    </div>
 </body>
 
 </html>

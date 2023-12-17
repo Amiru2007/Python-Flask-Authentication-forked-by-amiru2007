@@ -5,14 +5,15 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
     <title>Home</title>
 </head>
 
 <body>
-    <h1>Login Authentication System in Flask.</h1>
-    <a href="{{ url_for('login') }}">Login Page</a><br>
-    <a href="{{ url_for('register') }}">Register Page</a><br>
-
+        <div class="container">
+            <h1>Login Authentication System in Flask.</h1>
+            <a href="{{ url_for('login') }}"><button type="button">Login Page</button></a><br>
+        </div>
 </body>
 
 </html>

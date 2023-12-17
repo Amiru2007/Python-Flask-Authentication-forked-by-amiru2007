@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
+    <title>Vistor Form</title>
+</head>
+
+<body class="visitorPage">
+    <div class="content visitor">
+        <form method="POST" action="{{ url_for('visitor_add') }}" class="visitorForm">
+            <div class="visitordetails">
+                <div class="names">
+                    <div class="lastname">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName">
+                    </div>
+                    <div class="firstname">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName">
+                    </div>
+                </div>
+                <div class="names">
+                    <div class="company">
+                        <label for="companyName">Company Name</label>
+                        <input type="text" id="companyName" name="companyName">
+                    </div>
+                    <div class="id">
+                        <label for="VisitorId">Visitor Id</label>
+                        <input type="text" id="VisitorId" name="VisitorId">
+                    </div>
+                </div>
+            </div>
+            <div class="visitdetails">
+                <div class="left">
+                    <h4>Visitor Details</h4>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="arrivingDate">Arriving Date</label>
+                            <input type="text" id="arrivingDate" name="arrivingDate">
+                        </div>
+                        <div class="enterDetail">
+                            <label for="arrivingTime">Arriving Time</label>
+                            <input type="text" id="arrivingTime" name="arrivingTime">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="departingDate">Departing Date</label>
+                            <input type="text" id="departingDate" name="departingDate">
+                        </div>
+                        <div class="enterDetail">
+                            <label for="departingTime">Departing Time</label>
+                            <input type="text" id="departingTime" name="departingTime">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="vehicleNo">Vehicle No.</label>
+                            <input type="text" id="vehicleNo" name="vehicleNo">
+                        </div>
+                        <div class="enterDetail">
+                            <label for="visitorNo">Visitor No.</label>
+                            <input type="text" id="visitorNo" name="visitorNo">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="phoneNumber">Phone Number</label>
+                            <input type="text" id="phoneNumber" name="phoneNumber">
+                        </div>
+                        <div class="enterDetail">
+                            <label for="emailAddress">E-mail Address</label>
+                            <input type="text" id="emailAddress" name="emailAddress">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="requester">Requester</label>
+                            <input type="text" id="requester" name="requester">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="apointmentNo">Apointment No</label>
+                            <input type="text" id="apointmentNo" name="apointmentNo">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="remarks">Remarks</label>
+                            <input type="text" id="remarks" name="remarks">
+                        </div>
+                    </div>
+                    <div class="container single">
+                        <div class="enterDetail">
+                            <label for="history">History</label>
+                            <input type="text" id="history" name="history">
+                        </div>
+                    </div>
+                    <div class="container buttons">
+                        <div class="enterDetail">
+                            <label for="statusbtn">Visitor Status</label>
+                            <input type="button" id="statusbtn" value="Active" name="statusbtn">
+                            <input type="button" class="btn-status" id="arrived" value="Arrived">
+                            <input type="button" class="btn-status" id="departed" value="Departed">
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="visitor-photo">
+                        <div class="photo-wrapper">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/434px-Unknown_person.jpg" alt="visitor photo">
+                        </div>
+                        <div class="photo-controls">
+                            <input type="button" class="btn-live" id="live" value="Live">
+                            <input type="button" class="btn-import" id="import" value="Import">
+                        </div>
+                    </div>
+                    <div class="photo-wrapper">
+                        <img src="/static/logo2.jpg" alt="visitor photo">
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="approveOrReject">
+                    <input type="button" class="btn-approve" id="approve" value="Approve">
+                    <input type="button" class="btn-reject" id="reject" value="Reject">
+                </div>
+                <div class="saveOrCancel">
+                    <input type="button" class="btn-help" id="help" value="Help?">
+                    <input type="submit" class="btn-save" id="save" value="Save">
+                    <input type="button" class="btn-cancel" id="cancel" value="Calcel">
+                </div>
+            </div>
+        </form>
+    </div>
+</body>
+</html>
