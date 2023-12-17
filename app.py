@@ -12,7 +12,6 @@ bcrypt = Bcrypt(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'thisisasecretkey'
 
-
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -27,25 +26,86 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
 
+# Define the Visitor model
 class Visitor(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    last_name = db.Column(db.String(50))
-    first_name = db.Column(db.String(50))
-    company_name = db.Column(db.String(50))
-    visitor_id = db.Column(db.String(20))
-    arriving_date = db.Column(db.String(20))
-    arriving_time = db.Column(db.String(20))
-    departing_date = db.Column(db.String(20))
-    departing_time = db.Column(db.String(20))
-    vehicle_no = db.Column(db.String(20))
-    visitor_no = db.Column(db.String(20))
-    phone_number = db.Column(db.String(20))
-    email_address = db.Column(db.String(50))
+    lastName = db.Column(db.String(50), nullable=False)
+    firstName = db.Column(db.String(50), nullable=False)
+    companyName = db.Column(db.String(100))
+    visitorId = db.Column(db.String(20))
+    arrivingDate = db.Column(db.String(20))
+    arrivingTime = db.Column(db.String(20))
+    departingDate = db.Column(db.String(20))
+    departingTime = db.Column(db.String(20))
+    vehicleNo = db.Column(db.String(20))
+    visitorNo = db.Column(db.String(20))
+    phoneNumber = db.Column(db.String(20))
+    emailAddress = db.Column(db.String(120))
     requester = db.Column(db.String(50))
-    appointment_no = db.Column(db.String(20))
-    remarks = db.Column(db.String(100))
-    history = db.Column(db.String(100))
+    apointmentNo = db.Column(db.String(20))
+    remarks = db.Column(db.String(255))
+    history = db.Column(db.String(255))
     status = db.Column(db.String(20))
+
+# Route for the form
+@app.route('/newvisitor', methods=['GET', 'POST'])
+def new_visitor():
+    if request.method == 'POST':
+        # Get form data using request.form.get to avoid BadRequestKeyError
+        last_name = request.form.get('lastName', '')
+        first_name = request.form.get('firstName', '')
+        company_name = request.form.get('companyName', '')
+        visitor_id = request.form.get('VisitorId', '')
+        arriving_date = request.form.get('arrivingDate', '')
+        arriving_time = request.form.get('arrivingTime', '')
+        departing_date = request.form.get('departingDate', '')
+        departing_time = request.form.get('departingTime', '')
+        vehicle_no = request.form.get('vehicleNo', '')
+        visitor_no = request.form.get('visitorNo', '')
+        phone_number = request.form.get('phoneNumber', '')
+        email_address = request.form.get('emailAddress', '')
+        requester = request.form.get('requester', '')
+        appointment_no = request.form.get('apointmentNo', '')
+        remarks = request.form.get('remarks', '')
+        history = request.form.get('history', '')
+        status = request.form.get('statusbtn', '')  # Assuming status is captured from the button
+
+        # Create a new Visitor object
+        new_visitor = Visitor(
+            lastName=last_name,
+            firstName=first_name,
+            companyName=company_name,
+            visitorId=visitor_id,
+            arrivingDate=arriving_date,
+            arrivingTime=arriving_time,
+            departingDate=departing_date,
+            departingTime=departing_time,
+            vehicleNo=vehicle_no,
+            visitorNo=visitor_no,
+            phoneNumber=phone_number,
+            emailAddress=email_address,
+            requester=requester,
+            apointmentNo=appointment_no,
+            remarks=remarks,
+            history=history,
+            status=status
+        )
+
+        # Add the new visitor to the database
+        try:
+            db.session.add(new_visitor)
+            db.session.commit()
+        except Exception as e:
+            print(f"Error committing to database: {e}")
+
+        return redirect(url_for('dashboard'))
+
+    return render_template('newvisitor.html')
+
+@app.route('/visitor_list')
+def visitor_list():
+    visitors = Visitor.query.all()
+    return render_template('visitor_list.html', visitors=visitors)
 
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
@@ -117,59 +177,9 @@ def register():
 
     return render_template('register.html', form=form)
 
-@app.route('/newVisitor')
-def newVisitor():
-    return render_template('newvisitor.html')
-
-@app.route('/visitor_add', methods=['POST'])
-def visitor_add():
-    if request.method == 'POST':
-        # Retrieve data from the form
-        last_name = request.form.get('lastName')
-        first_name = request.form.get('firstName')
-        company_name = request.form.get('companyName')
-        visitor_id = request.form.get('VisitorId')
-        arriving_date = request.form.get('arrivingDate')
-        arriving_time = request.form.get('arrivingTime')
-        departing_date = request.form.get('departingDate')
-        departing_time = request.form.get('departingTime')
-        vehicle_no = request.form.get('vehicleNo')
-        visitor_no = request.form.get('visitorNo')
-        phone_number = request.form.get('phoneNumber')
-        email_address = request.form.get('emailAddress')
-        requester = request.form.get('requester')
-        appointment_no = request.form.get('apointmentNo')
-        remarks = request.form.get('remarks')
-        history = request.form.get('history')
-        status = request.form.get('statusbtn', 'Active')  # Default to 'Active' if not provided
-
-        # Create a new Visitor object
-        new_visitor = Visitor(
-            last_name=last_name,
-            first_name=first_name,
-            company_name=company_name,
-            visitor_id=visitor_id,
-            arriving_date=arriving_date,
-            arriving_time=arriving_time,
-            departing_date=departing_date,
-            departing_time=departing_time,
-            vehicle_no=vehicle_no,
-            visitor_no=visitor_no,
-            phone_number=phone_number,
-            email_address=email_address,
-            requester=requester,
-            appointment_no=appointment_no,
-            remarks=remarks,
-            history=history,
-            status=status
-        )
-
-        # Add the new visitor to the database and commit the changes
-        db.session.add(new_visitor)
-        db.session.commit()
-
-        return redirect(url_for('index'))
-
+# @app.route('/newVisitor')
+# def newVisitor():
+#     return render_template('newvisitor.html')
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -10,7 +10,8 @@ input[type="button"] {
   cursor: pointer;
 }
 
-body.login {
+body.login,
+body.register {
     display: flex;
     align-items: center;
     justify-content: center;
