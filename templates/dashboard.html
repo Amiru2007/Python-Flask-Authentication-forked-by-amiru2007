@@ -25,40 +25,69 @@
             </ul>
         </div>
     </nav>
-    <div class="tools">
-        <div class="grid-container">
-            <div class="grid-item">
-                <span><i class="ph ph-plus-circle"></i></span>
-                <h3>New Visitor</h3>
-                <a href="{{ url_for('new_visitor') }}"><button type="button">Create</button></a>
-            </div>
-            <div class="grid-item">
-                <span><i class="ph ph-arrow-circle-right"></i></span>
-                <h3>Arrive Visitor</h3>
-                <button type="button">Report</button>
-            </div>
-            <div class="grid-item">
-                <span><i class="ph ph-check-circle"></i></span>
-                <h3>Depart Visitor</h3>
-                <button type="button">Report</button>
-            </div>
-            <div class="grid-item">
-                <span><i class="ph ph-user-circle-plus"></i></span>
-                <h3>Create User</h3>
-                <a href="{{ url_for('register') }}"><button type="button">Create</button></a>
-            </div>
-            <div class="grid-item">
-                <span><i class="ph ph-user-circle-minus"></i></span>
-                <h3>Delete User</h3>
-                <button type="button">Delete</button>
-            </div>
-            <div class="grid-item">
-                <span><i class="ph ph-scroll"></i></span>
-                <h3>Reports</h3>
-                <button type="button">Save</button>
+    <div class="toolsAndPreview">
+        <div class="tools">
+            <div class="grid-container">
+                <div class="grid-item">
+                    <span><i class="ph ph-plus-circle"></i></span>
+                    <h3>New Visitor</h3>
+                    <a href="{{ url_for('new_visitor') }}"><button type="button">Create</button></a>
+                </div>
+                <div class="grid-item">
+                    <span><i class="ph ph-arrow-circle-right"></i></span>
+                    <h3>Arrive Visitor</h3>
+                    <button type="button">Report</button>
+                </div>
+                <div class="grid-item">
+                    <span><i class="ph ph-check-circle"></i></span>
+                    <h3>Depart Visitor</h3>
+                    <button type="button">Report</button>
+                </div>
+                <div class="grid-item">
+                    <span><i class="ph ph-paper-plane-tilt"></i></span>
+                    <h3>Approve Visitor</h3>
+                    <button type="button" id="showApproveList" onclick="openPopup()"><i class="ph ph-arrow-right"></i></button>
+                </div>
+                <div class="grid-item">
+                    <span><i class="ph ph-user-circle-plus"></i></span>
+                    <h3>Create User</h3>
+                    <a href="{{ url_for('register') }}"><button type="button">Create</button></a>
+                </div>
+                <div class="grid-item">
+                    <span><i class="ph ph-user-circle-minus"></i></span>
+                    <h3>Delete User</h3>
+                    <button type="button">Delete</button>
+                </div>
+                <div class="grid-item">
+                    <span><i class="ph ph-scroll"></i></span>
+                    <h3>Reports</h3>
+                    <button type="button">Save</button>
+                </div>
             </div>
         </div>
+        <div class="overlay" id="overlay" onclick="closePopup()"></div>
+        <div class="popup" id="popup">
+            <div class="popupHeader">
+                <h2>Approve Visitor List</h2>
+                <button onclick="closePopup()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for visitor in visitors %}
+                    <li><a href="{{ url_for('new_visitor', visitor_id=visitor.visitorNo) }}">{{ visitor.visitorNo }}</a></li>
+                {% endfor %}
+            </ul>                          
+        </div>
     </div>
-</body>
+    <script>
+        function openPopup() {
+            document.getElementById('overlay').classList.add('visible');
+            document.getElementById('popup').classList.add('visible');
+        }
 
+        function closePopup() {
+            document.getElementById('overlay').classList.remove('visible');
+            document.getElementById('popup').classList.remove('visible');
+        }
+    </script>    
+</body>
 </html>

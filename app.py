@@ -2,7 +2,7 @@ from flask import Flask, render_template, url_for, redirect, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField
+from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
 
@@ -25,6 +25,8 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
+    # email = db.Column(db.String(80), nullable=False)
+    # level = db.Column()
 
 # Define the Visitor model
 class Visitor(db.Model):
@@ -48,8 +50,10 @@ class Visitor(db.Model):
     status = db.Column(db.String(20))
 
 # Route for the form
-@app.route('/newvisitor', methods=['GET', 'POST'])
-def new_visitor():
+@app.route('/newvisitor/<string:visitor_id>', methods=['GET', 'POST'])
+def new_visitor(visitor_id):
+    visitor = Visitor.query.filter_by(visitorNo=visitor_id).first()
+
     if request.method == 'POST':
         # Get form data using request.form.get to avoid BadRequestKeyError
         last_name = request.form.get('lastName', '')
@@ -100,7 +104,7 @@ def new_visitor():
 
         return redirect(url_for('dashboard'))
 
-    return render_template('newvisitor.html')
+    return render_template('newvisitor.html', visitor=visitor)
 
 @app.route('/visitor_list')
 def visitor_list():
@@ -113,6 +117,11 @@ class RegisterForm(FlaskForm):
 
     password = PasswordField(validators=[
                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
+
+    email = EmailField(validators=[
+                             InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "E-mail"})
+
+    level = SelectField('Level', choices=[('beginner', 'Beginner'), ('intermediate', 'Intermediate'), ('advanced', 'Advanced')])
 
     submit = SubmitField('Register')
 
@@ -150,12 +159,12 @@ def login():
                 return redirect(url_for('dashboard'))
     return render_template('login.html', form=form)
 
-
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    return render_template('dashboard.html')
-
+    visitors = Visitor.query.all()
+    visitor_ids = [visitor.visitorId for visitor in visitors]
+    return render_template('dashboard.html', visitors=visitors, visitor_ids=visitor_ids)
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required

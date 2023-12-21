@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}" />
     <title>Register</title>
 </head>
 
@@ -25,11 +25,20 @@
                 <h4 class="input-head">Password</h4>
                 {{ form.password(class="login-input") }}
             </div>
+            <!-- <br>
+            <div class="form-sections">
+                <h4 class="input-head">E-mail</h4>
+                {{ form.email(class="login-input") }}
+            </div>
+            <br>
+            <div class="form-sections">
+                <h4 class="input-head">User Level</h4>
+                {{ form.level(class="login-input") }}
+            </div> -->
             <div class="form-sections submit">
                 {{ form.submit(class="login-btn") }}
             </div>
         </form>
     </div>
 </body>
-
 </html>

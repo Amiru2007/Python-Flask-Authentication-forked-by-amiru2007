@@ -11,16 +11,16 @@
 
 <body class="visitorPage">
     <div class="content visitor">
-        <form method="POST" action="{{ url_for('new_visitor') }}" class="visitorForm">
+        <form method="POST" action="{{ url_for('new_visitor', visitor_id=visitor.visitorNo) }}" class="visitorForm">
             <div class="visitordetails">
                 <div class="names">
                     <div class="lastname">
                         <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" name="lastName">
+                        <input type="text" id="lastName" name="lastName" value="{{ visitor.lastName }}">
                     </div>
                     <div class="firstname">
                         <label for="firstName">First Name</label>
-                        <input type="text" id="firstName" name="firstName">
+                        <input type="text" id="firstName" name="firstName" value="{{ visitor.firstName }}">
                     </div>
                 </div>
                 <div class="names">
@@ -30,17 +30,17 @@
                     </div>
                     <div class="id">
                         <label for="VisitorId">Visitor Id</label>
-                        <input type="text" id="VisitorId" name="VisitorId">
+                        <input type="text" id="VisitorId" name="VisitorId" value="{{ visitor.VisitorId }}">
                     </div>
                 </div>
             </div>
             <div class="visitdetails">
                 <div class="left">
-                    <h4>Visitor Details</h4>
+                    <h4>Visit Details</h4>
                     <div class="container">
                         <div class="enterDetail">
                             <label for="arrivingDate">Arriving Date</label>
-                            <input type="text" id="arrivingDate" name="arrivingDate">
+                            <input type="date" id="arrivingDate" name="arrivingDate">
                         </div>
                         <div class="enterDetail">
                             <label for="arrivingTime">Arriving Time</label>
@@ -50,7 +50,7 @@
                     <div class="container">
                         <div class="enterDetail">
                             <label for="departingDate">Departing Date</label>
-                            <input type="text" id="departingDate" name="departingDate">
+                            <input type="date" id="departingDate" name="departingDate">
                         </div>
                         <div class="enterDetail">
                             <label for="departingTime">Departing Time</label>

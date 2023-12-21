@@ -5,6 +5,11 @@
     <title>Document</title>
 </head>
 <body>
-    srtghbtrbstrbsrtgh<br>aergbaer
+    <ul>
+        {% for visitor in visitors %}
+            <!-- Access the 'visitorId' attribute of each visitor -->
+            <li>{{ visitor.visitorId }}</li>
+        {% endfor %}
+    </ul>
 </body>
 </html>
