@@ -181,6 +181,7 @@ nav .pages .links .link a:hover {
     color: #006bce;
     border: 1px solid #eeefe9;
     border-radius: 10px;
+    overflow: hidden;
 }
 
 .tools .grid-container .grid-item span {

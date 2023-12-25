@@ -50,9 +50,9 @@ class Visitor(db.Model):
     status = db.Column(db.String(20))
 
 # Route for the form
-@app.route('/newvisitor/<string:visitor_id>', methods=['GET', 'POST'])
-def new_visitor(visitor_id):
-    visitor = Visitor.query.filter_by(visitorNo=visitor_id).first()
+@app.route('/newvisitor', methods=['GET', 'POST'])
+def new_visitor():
+    # visitor = Visitor.query.filter_by(visitorNo=visitor_id).first()
 
     if request.method == 'POST':
         # Get form data using request.form.get to avoid BadRequestKeyError
@@ -104,7 +104,7 @@ def new_visitor(visitor_id):
 
         return redirect(url_for('dashboard'))
 
-    return render_template('newvisitor.html', visitor=visitor)
+    return render_template('newvisitor.html')
 
 @app.route('/visitor_list')
 def visitor_list():

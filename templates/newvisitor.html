@@ -11,16 +11,16 @@
 
 <body class="visitorPage">
     <div class="content visitor">
-        <form method="POST" action="{{ url_for('new_visitor', visitor_id=visitor.visitorNo) }}" class="visitorForm">
+        <form method="POST" action="{{ url_for('new_visitor') }}" class="visitorForm">
             <div class="visitordetails">
                 <div class="names">
                     <div class="lastname">
                         <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" name="lastName" value="{{ visitor.lastName }}">
+                        <input type="text" id="lastName" name="lastName" >
                     </div>
                     <div class="firstname">
                         <label for="firstName">First Name</label>
-                        <input type="text" id="firstName" name="firstName" value="{{ visitor.firstName }}">
+                        <input type="text" id="firstName" name="firstName" >
                     </div>
                 </div>
                 <div class="names">
@@ -30,7 +30,7 @@
                     </div>
                     <div class="id">
                         <label for="VisitorId">Visitor Id</label>
-                        <input type="text" id="VisitorId" name="VisitorId" value="{{ visitor.VisitorId }}">
+                        <input type="text" id="VisitorId" name="VisitorId" >
                     </div>
                 </div>
             </div>
