@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request, jsonify
+from flask import Flask, render_template, url_for, redirect, request, jsonify, flash
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
@@ -27,8 +27,8 @@ class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
-    # email = db.Column(db.String(80), nullable=False)
-    # level = db.Column(db.String(80), nullable=False)
+    email = db.Column(db.String(80), nullable=False)
+    level = db.Column(db.String(80), nullable=False)
 
 # Define the Visitor model
 class Visitor(db.Model):
@@ -126,7 +126,7 @@ class RegisterForm(FlaskForm):
     email = EmailField(validators=[
                              InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "E-mail"})
 
-    level = SelectField('Level', choices=[('beginner', 'Beginner'), ('intermediate', 'Intermediate'), ('advanced', 'Advanced')])
+    level = SelectField('Level', choices=[('Admin', 'Admin'), ('Approver', 'Approver'), ('Requester', 'Requester'), ('Gate', 'Gate')])
 
     submit = SubmitField('Register')
 
@@ -198,9 +198,24 @@ def register():
 
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data)
-        new_user = User(username=form.username.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
+
+        # Check if the provided level is one of the allowed values
+        allowed_levels = ['Admin', 'Approver', 'Requester', 'Gate']
+        if form.level.data not in allowed_levels:
+            flash('Invalid user level', 'error')
+            return redirect(url_for('register'))
+
+        new_user = User(
+            username=form.username.data,
+            password=hashed_password,
+            email=form.email.data,
+            level=form.level.data
+        )
+
+        with app.app_context():
+            db.session.add(new_user)
+            db.session.commit()
+        flash('Account created successfully', 'success')
         return redirect(url_for('login'))
 
     return render_template('register.html', form=form)

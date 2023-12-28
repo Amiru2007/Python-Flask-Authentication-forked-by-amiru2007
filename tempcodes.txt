@@ -18,3 +18,29 @@ CREATE TABLE visitor (
     status TEXT,
     profilePhoto BLOB
 );
+
+
+DROP TABLE IF EXISTS user;
+
+CREATE TABLE user (
+    id INTEGER,
+    username TEXT UNIQUE NOT NULL PRIMARY KEY,
+    password TEXT NOT NULL,
+	name TEXT,
+	telephoneNo TEXT
+    email TEXT,
+    level TEXT CHECK(level IN ('Admin', 'Approver', 'Requester', 'Gate'))
+);
+
+<!-- <div class="form-sections">
+    <h4 class="input-head">Name</h4>
+    {{ form.name(class="login-input") }}
+</div>
+<br>
+<div class="form-sections">
+    <h4 class="input-head">Telephone Number</h4>
+    {{ form.telephoneNo(class="login-input") }}
+</div> -->
+
+
+            {{ form.hidden_tag() }}
