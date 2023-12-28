@@ -223,7 +223,7 @@ nav .pages .links .link a:hover {
     width: 100%;
     height: 100%;
     opacity: 0;
-    background-color: rgba(0, 0, 0, 0.5);
+    background-color: rgba(0, 0, 0, 0.226);
     transition: opacity 0.3s ease-in-out;
 }
 
@@ -232,7 +232,7 @@ nav .pages .links .link a:hover {
     position: fixed;
     bottom: 0;
     right: 0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.014);
     z-index: 1;
     width: 300px;
     height: 500px;
@@ -263,13 +263,23 @@ nav .pages .links .link a:hover {
     list-style-type: none;
 }
 
-.toApprove li {
+.toApprove li form {
     flex: 1;
     margin: 5px 0;
     padding: 10px;
     height: 30px;
     background-color: #ffffff;
     border: 1px solid #eeefe9;
+    border-radius: 10px;
+}
+.toApprove li form button {
+    flex: 1;
+    font-size: 14px;
+    height: 100%;
+    width: 100%;
+    text-align: left;
+    background-color: transparent;
+    border: none;
     border-radius: 10px;
 }
 
@@ -460,6 +470,12 @@ nav .pages .links .link a:hover {
     display: flex;
     align-items: center;
     justify-content: flex-start;
+}
+
+.footer .approveOrReject .accessed {
+    background-color: #0078d4;
+    color: white;
+    margin-top: auto;
 }
 
 .footer .saveOrCancel {

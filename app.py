@@ -1,13 +1,15 @@
-from flask import Flask, render_template, url_for, redirect, request
+from flask import Flask, render_template, url_for, redirect, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
+from flask_migrate import Migrate
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
+migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'thisisasecretkey'
@@ -26,11 +28,11 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
     # email = db.Column(db.String(80), nullable=False)
-    # level = db.Column()
+    # level = db.Column(db.String(80), nullable=False)
 
 # Define the Visitor model
 class Visitor(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
+    id = db.Column(db.Integer)
     lastName = db.Column(db.String(50), nullable=False)
     firstName = db.Column(db.String(50), nullable=False)
     companyName = db.Column(db.String(100))
@@ -40,7 +42,7 @@ class Visitor(db.Model):
     departingDate = db.Column(db.String(20))
     departingTime = db.Column(db.String(20))
     vehicleNo = db.Column(db.String(20))
-    visitorNo = db.Column(db.String(20))
+    visitorNo = db.Column(db.String(20), primary_key=True)
     phoneNumber = db.Column(db.String(20))
     emailAddress = db.Column(db.String(120))
     requester = db.Column(db.String(50))
@@ -48,6 +50,7 @@ class Visitor(db.Model):
     remarks = db.Column(db.String(255))
     history = db.Column(db.String(255))
     status = db.Column(db.String(20))
+    # profilePhoto = db.Column(db.LargeBinary, name='profile_photo_upload')
 
 # Route for the form
 @app.route('/newvisitor', methods=['GET', 'POST'])
@@ -72,7 +75,8 @@ def new_visitor():
         appointment_no = request.form.get('apointmentNo', '')
         remarks = request.form.get('remarks', '')
         history = request.form.get('history', '')
-        status = request.form.get('statusbtn', '')  # Assuming status is captured from the button
+        status = request.form.get('statusbtn', '')
+        # profilePhoto = request.form.get('profilePhoto', '')  # Assuming status is captured from the button
 
         # Create a new Visitor object
         new_visitor = Visitor(
@@ -92,7 +96,8 @@ def new_visitor():
             apointmentNo=appointment_no,
             remarks=remarks,
             history=history,
-            status=status
+            status=status,
+            # profilePhoto=profilePhoto
         )
 
         # Add the new visitor to the database
@@ -162,9 +167,23 @@ def login():
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    visitors = Visitor.query.all()
-    visitor_ids = [visitor.visitorId for visitor in visitors]
-    return render_template('dashboard.html', visitors=visitors, visitor_ids=visitor_ids)
+    # visitors = Visitor.query.all()
+    # visitor_ids = [visitor.visitorId for visitor in visitors]
+    try:
+        # Query to retrieve all values in the visitorNo column
+        visitor_numbers = Visitor.query.with_entities(Visitor.visitorNo).all()
+
+        # Dummy data - replace this with your actual data retrieval logic
+        visitor_numbers_list = [1, 2, 3, 4, 5]
+
+        # Convert the result to a list
+        visitor_numbers_list = [number.visitorNo for number in visitor_numbers]
+
+    except Exception as e:
+        return jsonify({'error': str(e)})
+    
+    return render_template('dashboard.html', visitor_numbers=visitor_numbers_list) #, visitors=visitors, visitor_ids=visitor_ids
+
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
@@ -186,9 +205,64 @@ def register():
 
     return render_template('register.html', form=form)
 
-# @app.route('/newVisitor')
-# def newVisitor():
-#     return render_template('newvisitor.html')
+@app.route('/get_visitor', methods=['POST'])
+def get_visitor():
+    visitor_no = request.form.get('visitor_no')
+    visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
+
+    if visitor:
+        return render_template('filledForm.html', visitor=visitor)
+    else:
+        return jsonify({'error': 'Visitor not found'}), 404
+    
+# @app.route('/filledForm', methods=['GET', 'POST'])
+# def filledForm():
+#     # Assuming you want the second record ordered by id
+#     # getVisitor = 
+#     global global_visitorNo
+#     visitor_no_to_search = global_visitorNo
+#     getVisitor = Visitor.query.filter_by(visitorNo=visitor_no_to_search).first()
+#     if getVisitor:
+#         lastName      = getVisitor.lastName
+#         firstName     = getVisitor.firstName
+#         companyName   = getVisitor.companyName
+#         visitorId     = getVisitor.visitorId
+#         arrivingDate  = getVisitor.arrivingDate
+#         arrivingTime  = getVisitor.arrivingTime
+#         departingDate = getVisitor.departingDate
+#         departingTime = getVisitor.departingTime
+#         vehicleNo     = getVisitor.vehicleNo
+#         visitorNo     = getVisitor.visitorNo
+#         phoneNumber   = getVisitor.phoneNumber
+#         emailAddress  = getVisitor.emailAddress
+#         requester     = getVisitor.requester
+#         apointmentNo  = getVisitor.apointmentNo
+#         remarks       = getVisitor.remarks
+#         history       = getVisitor.history
+#         status        = getVisitor.status
+#     else:
+#         lastName = ""
+
+#     return render_template('filledForm.html',
+#                            lastName=lastName,
+#                            firstName=firstName,
+#                            companyName=companyName,
+#                            visitorId=visitorId,
+#                            arrivingDate=arrivingDate,
+#                            arrivingTime=arrivingTime,
+#                            departingDate=departingDate,
+#                            departingTime=departingTime,
+#                            vehicleNo=vehicleNo,
+#                            visitorNo=visitorNo,
+#                            phoneNumber=phoneNumber,
+#                            emailAddress=emailAddress,
+#                            requester=requester,
+#                            apointmentNo=apointmentNo,
+#                            remarks=remarks,
+#                            history=history,
+#                            status=status)
 
 if __name__ == "__main__":
     app.run(debug=True)
+
+db.create_all()

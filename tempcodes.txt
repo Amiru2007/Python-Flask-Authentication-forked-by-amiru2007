@@ -1,0 +1,20 @@
+CREATE TABLE visitor (
+    id INTEGER,
+    lastName TEXT,
+    firstName TEXT,
+    companyName TEXT,
+    visitorId TEXT,
+    arrivingDate TEXT,
+    arrivingTime TEXT,
+    departingDate TEXT,
+    departingTime TEXT,
+    vehicleNo TEXT,
+    visitorNo TEXT PRIMARY KEY,
+    phoneNumber TEXT,
+    requester TEXT,
+    apointmentNo TEXT,
+    remarks TEXT,
+    history TEXT,
+    status TEXT,
+    profilePhoto BLOB
+);

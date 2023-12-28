@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
     <title>Dashboard</title>
 </head>
 
@@ -64,7 +65,6 @@
                     <button type="button">Save</button>
                 </div>
             </div>
-            <a href="{{ url_for('fill_form', visitor_id='specific_visitor_id') }}">Load Form</a>
         </div>
         <div class="overlay" id="overlay" onclick="closePopup()"></div>
         <div class="popup" id="popup">
@@ -73,10 +73,15 @@
                 <button onclick="closePopup()"><i class="ph ph-x"></i></button>
             </div>
             <ul class="toApprove">
-                {% for visitor in visitors %}
-                    <li><a href="{{ url_for('new_visitor', visitor_id=visitor.visitorNo) }}">{{ visitor.visitorNo }}</a></li>
+                {% for visitor in visitor_numbers %}
+                    <li>
+                        <form method="post" action="{{ url_for('get_visitor') }}">
+                            <input type="hidden" name="visitor_no" value="{{ visitor }}">
+                            <button type="submit">{{ visitor }}</button>
+                        </form>
+                    </li>
                 {% endfor %}
-            </ul>                          
+            </ul>
         </div>
     </div>
     <script>

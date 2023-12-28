@@ -10,27 +10,27 @@
 
 <body class="visitorPage">
     <div class="content visitor">
-        <form method="POST" action="{{ url_for('new_visitor') }}" class="visitorForm">
+        <form method="POST" action="{{ url_for('get_visitor', visitor_no=visitor.visitorNo) }}" class="visitorForm">
             
             <div class="visitordetails">
                 <div class="names">
                     <div class="lastname">
                         <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" name="lastName">
+                        <input type="text" id="lastName" name="lastName" value="{{ visitor.lastName }}" readonly>
                     </div>
                     <div class="firstname">
                         <label for="firstName">First Name</label>
-                        <input type="text" id="firstName" name="firstName">
+                        <input type="text" id="firstName" name="firstName" value="{{ visitor.firstName }}" readonly>
                     </div>
                 </div>
                 <div class="names">
                     <div class="company">
                         <label for="companyName">Company Name</label>
-                        <input type="text" id="companyName" name="companyName">
+                        <input type="text" id="companyName" name="companyName" value="{{ visitor.companyName }}" readonly>
                     </div>
                     <div class="id">
                         <label for="VisitorId">Visitor Id</label>
-                        <input type="text" id="VisitorId" name="VisitorId">
+                        <input type="text" id="VisitorId" name="VisitorId" value="{{ visitor.visitorId }}" readonly>
                     </div>
                 </div>
             </div>
@@ -40,73 +40,73 @@
                     <div class="container">
                         <div class="enterDetail">
                             <label for="arrivingDate">Arriving Date</label>
-                            <input type="date" id="arrivingDate" name="arrivingDate">
+                            <input type="tect" id="arrivingDate" name="arrivingDate" value="{{ visitor.arrivingDate }}" readonly>
                         </div>
                         <div class="enterDetail">
                             <label for="arrivingTime">Arriving Time</label>
-                            <input type="time" id="arrivingTime" name="arrivingTime">
+                            <input type="text" id="arrivingTime" name="arrivingTime" value="{{ visitor.arrivingTime }}" readonly>
                         </div>
                     </div>
                     <div class="container">
                         <div class="enterDetail">
                             <label for="departingDate">Departing Date</label>
-                            <input type="date" id="departingDate" name="departingDate">
+                            <input type="tect" id="departingDate" name="departingDate" value="{{ visitor.departingDate }}" readonly>
                         </div>
                         <div class="enterDetail">
                             <label for="departingTime">Departing Time</label>
-                            <input type="time" id="departingTime" name="departingTime">
+                            <input type="text" id="departingTime" name="departingTime" value="{{ visitor.departingTime }}" readonly>
                         </div>
                     </div>
                     <div class="container">
                         <div class="enterDetail">
                             <label for="vehicleNo">Vehicle No.</label>
-                            <input type="text" id="vehicleNo" name="vehicleNo">
+                            <input type="text" id="vehicleNo" name="vehicleNo" value="{{ visitor.vehicleNo }}" readonly>
                         </div>
                         <div class="enterDetail">
                             <label for="visitorNo">Visitor No.</label>
-                            <input type="text" id="visitorNo" name="visitorNo">
+                            <input type="text" id="visitorNo" name="visitorNo" value="{{ visitor.visitorNo }}" readonly>
                         </div>
                     </div>
                     <div class="container">
                         <div class="enterDetail">
                             <label for="phoneNumber">Phone Number</label>
-                            <input type="text" id="phoneNumber" name="phoneNumber">
+                            <input type="text" id="phoneNumber" name="phoneNumber" value="{{ visitor.phoneNumber }}" readonly>
                         </div>
                         <div class="enterDetail">
                             <label for="emailAddress">E-mail Address</label>
-                            <input type="text" id="emailAddress" name="emailAddress">
+                            <input type="text" id="emailAddress" name="emailAddress" value="{{ visitor.emailAddress }}" readonly>
                         </div>
                     </div>
                     <div class="container">
                         <div class="enterDetail">
                             <label for="requester">Requester</label>
-                            <input type="text" id="requester" name="requester">
+                            <input type="text" id="requester" name="requester" value="{{ visitor.requester }}" readonly>
                         </div>
                     </div>
                     <div class="container">
                         <div class="enterDetail">
                             <label for="apointmentNo">Apointment No</label>
-                            <input type="text" id="apointmentNo" name="apointmentNo">
+                            <input type="text" id="apointmentNo" name="apointmentNo" value="{{ visitor.apointmentNo }}" readonly>
                         </div>
                     </div>
                     <div class="container">
                         <div class="enterDetail">
                             <label for="remarks">Remarks</label>
-                            <input type="text" id="remarks" name="remarks">
+                            <input type="text" id="remarks" name="remarks" value="{{ visitor.remarks }}" readonly>
                         </div>
                     </div>
                     <div class="container single">
                         <div class="enterDetail">
                             <label for="history">History</label>
-                            <input type="text" id="history" name="history">
+                            <input type="text" id="history" name="history" value="{{ visitor.history }}" readonly>
                         </div>
                     </div>
                     <div class="container buttons">
                         <div class="enterDetail">
                             <label for="statusbtn">Visitor Status</label>
-                            <input type="button" id="statusbtn" value="Active" name="statusbtn">
-                            <input type="button" class="btn-status" id="arrived" value="Arrived">
-                            <input type="button" class="btn-status" id="departed" value="Departed">
+                            <input type="button" id="statusbtn" value="Active" name="statusbtn" value="{{ visitor.status }}" readonly>
+                            <input type="button" class="btn-status" id="arrived" value="Arrived" style="cursor: no-drop;" disabled>
+                            <input type="button" class="btn-status" id="departed" value="Departed" style="cursor: no-drop;" disabled>
                         </div>
                     </div>
                 </div>
@@ -117,7 +117,7 @@
                         </div>
                         <div class="photo-controls">
                             <input type="button" class="btn-live" id="live" value="Live">
-                            <input type="file" class="btn-import" id="profilePhoto" value="Import" name="profilePhoto">
+                            <input type="button" class="btn-import" id="import" value="Import">
                         </div>
                     </div>
                     <div class="photo-wrapper">
@@ -127,16 +127,39 @@
             </div>
             <div class="footer">
                 <div class="approveOrReject">
-                    <input type="button" class="btn-approve" id="approve" value="Approve" style="cursor: no-drop;" disabled>
-                    <input type="button" class="btn-reject" id="reject" value="Reject" style="cursor: no-drop;" disabled>
+                    <input type="button" class="btn-approve accessed" id="approve" value="Approve" onclick="openOutlook()">
+                    <input type="button" class="btn-reject" id="reject" value="Reject">
                 </div>
                 <div class="saveOrCancel">
                     <input type="button" class="btn-help" id="help" value="Help?">
-                    <input type="submit" class="btn-save" id="save" value="Save">
+                    <input type="submit" class="btn-save" id="save" value="Save" style="cursor: no-drop;" disabled>
                     <input type="button" class="btn-cancel" id="cancel" value="Cancel">
                 </div>
             </div>
+            <!-- <ul class="toApprove">
+                {% for visitor in visitors %}
+                    <li><a href="#">{{ visitor.visitor_Id }}</a></li>
+                {% endfor %}
+            </ul> -->
         </form>
     </div>
+    <script>
+        function openOutlook() {
+                var subject = "Visitor Approval - {{ visitor.visitorNo }}";
+                var body = "Last Name: {{ visitor.lastName }}\n" +
+                    "First Name: {{ visitor.firstName }}\n" +
+                    "Company Name: {{ visitor.companyName }}\n" +
+                    "Visitor ID: {{ visitor.visitorId }}\n" +
+                    "Arriving Date: {{ visitor.arrivingDate }}\n" +
+                    "Arriving Time: {{ visitor.arrivingTime }}"
+                    // Add other fields as needed
+
+                var outlookLink = "https://outlook.office.com/mail/compose?subject=" + encodeURIComponent(subject) +
+                    "&body=" + encodeURIComponent(body);
+
+                // Open Outlook website in a new tab or window
+                window.open(outlookLink, '_blank');
+            }
+    </script>
 </body>
 </html>
