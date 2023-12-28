@@ -1,8 +1,8 @@
-from flask import Flask, render_template, url_for, redirect, request, jsonify, flash
+from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField, TelField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
@@ -28,6 +28,8 @@ class User(db.Model, UserMixin):
     username = db.Column(db.String(20), nullable=False, unique=True)
     password = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(80), nullable=False)
+    name = db.Column(db.String(80), nullable=False)
+    telephoneNo = db.Column(db.String(80), nullable=False)
     level = db.Column(db.String(80), nullable=False)
 
 # Define the Visitor model
@@ -126,6 +128,12 @@ class RegisterForm(FlaskForm):
     email = EmailField(validators=[
                              InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "E-mail"})
 
+    name = StringField(validators=[
+                             InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "Name"})
+
+    telephoneNo = TelField(validators=[
+                             InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "Telephone Number"})
+
     level = SelectField('Level', choices=[('Admin', 'Admin'), ('Approver', 'Approver'), ('Requester', 'Requester'), ('Gate', 'Gate')])
 
     submit = SubmitField('Register')
@@ -185,10 +193,10 @@ def dashboard():
     return render_template('dashboard.html', visitor_numbers=visitor_numbers_list) #, visitors=visitors, visitor_ids=visitor_ids
 
 
-@app.route('/logout', methods=['GET', 'POST'])
-@login_required
+@app.route('/logout')
 def logout():
-    logout_user()
+    # Clear the session when the user logs out
+    session.pop('user', None)
     return redirect(url_for('login'))
 
 
