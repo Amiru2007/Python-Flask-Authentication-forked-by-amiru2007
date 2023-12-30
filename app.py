@@ -54,8 +54,11 @@ class Visitor(db.Model):
     history = db.Column(db.String(255))
     status = db.Column(db.String(20))
     requestTime = db.Column(db.String(20))
+    approver = db.Column(db.String(50))
     approvedTime = db.Column(db.String(20))
+    arrivalOfficer = db.Column(db.String(50))
     arrivedTime = db.Column(db.String(20))
+    departureOfficer = db.Column(db.String(50))
     departedTime = db.Column(db.String(20))
     # profilePhoto = db.Column(db.LargeBinary, name='profile_photo_upload')
 
@@ -212,15 +215,24 @@ def login():
 def dashboard():
     try:
         # Query to retrieve visitorNos where the status is 'Pending'
-        visitor_numbers = Visitor.query.filter_by(status='Pending').with_entities(Visitor.visitorNo).all()
+        pending_visitor_numbers = Visitor.query.filter_by(status='Pending').with_entities(Visitor.visitorNo).all()
+        # Query to retrieve visitorNos where the status is 'Approved'
+        approved_visitor_numbers = Visitor.query.filter_by(status='Approved').with_entities(Visitor.visitorNo).all()
+        # Query to retrieve visitorNos where the status is 'Arrived'
+        arrived_visitor_numbers = Visitor.query.filter_by(status='Arrived').with_entities(Visitor.visitorNo).all()
 
         # Convert the result to a list
-        visitor_numbers_list = [number.visitorNo for number in visitor_numbers]
+        pending_visitor_numbers_list = [number.visitorNo for number in pending_visitor_numbers]
+        approved_visitor_numbers_list = [number.visitorNo for number in approved_visitor_numbers]
+        arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
 
     except Exception as e:
         return jsonify({'error': str(e)})
     
-    return render_template('dashboard.html', visitor_numbers=visitor_numbers_list)
+    return render_template('dashboard.html',
+                           pending_visitor_numbers=pending_visitor_numbers_list,
+                           approved_visitor_numbers=approved_visitor_numbers_list,
+                           arrived_visitor_numbers=arrived_visitor_numbers_list)
 
 @ app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -252,14 +264,48 @@ def register():
 
 @app.route('/arrive_visitor', methods=['POST'])
 def arrive_visitor():
-    visitor_no = request.form.get('visitorNo')
+    visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
 
     if visitor:
-        return render_template('arriveVisitor.html', visitor=visitor)
-    else:
-        return jsonify({'error': 'Visitofdyukfyukr not found'}), 404
+        # Access the value of the clicked button from the form data
+        clicked_button_value = request.form.get('changeStatus')
 
+        # Your logic based on the clicked button value
+        if clicked_button_value == 'Arrived':
+            visitor.status = 'Arrived'
+            visitor.arrivalOfficer=current_user.username
+            visitor.arrivedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+
+        return render_template('arriveVisitor.html', visitor=visitor)
+    
+    else:
+        return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
+
+@app.route('/depart_visitor', methods=['POST'])
+def depart_visitor():
+    visitor_no = request.form.get('visitor_no')
+    visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
+
+    if visitor:
+        # Access the value of the clicked button from the form data
+        clicked_button_value = request.form.get('changeStatus')
+
+        # Your logic based on the clicked button value
+        if clicked_button_value == 'Departed':
+            visitor.status = 'Departed'
+            visitor.departureOfficer=current_user.username
+            visitor.departedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+
+        return render_template('departVisitor.html', visitor=visitor)
+    
+    else:
+        return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
+    
 # @app.route('/arrive_visitor', methods=['GET', 'POST'])
 # def arrive_visitor():
 #     visitor_no = request.form.get('visitor_no')
@@ -282,12 +328,14 @@ def get_visitor():
         # Your logic based on the clicked button value
         if clicked_button_value == 'Approve':
             visitor.status = 'Approved'
+            visitor.approver=current_user.username
             visitor.approvedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             db.session.commit()
             return redirect(url_for('dashboard'))
         
         elif clicked_button_value == 'Reject':
             visitor.status = 'Rejected'
+            visitor.approver=current_user.username
             visitor.approvedTime= datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             db.session.commit()
             return redirect(url_for('dashboard'))
@@ -297,34 +345,34 @@ def get_visitor():
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
 
-@app.route('/approve_reject_visitor', methods=['POST'])
-@login_required
-def approve_reject_visitor():
-    visitor_no = request.form.get('visitor_no')
-    action = request.form.get('action')  # 'approve' or 'reject'
+# @app.route('/approve_reject_visitor', methods=['POST'])
+# @login_required
+# def approve_reject_visitor():
+#     visitor_no = request.form.get('visitor_no')
+#     action = request.form.get('action')  # 'approve' or 'reject'
 
-    # Retrieve the visitor based on the visitor_no
-    visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
+#     # Retrieve the visitor based on the visitor_no
+#     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
 
-    if visitor:
-        # Update the status based on the action
-        if action == 'approve':
-            visitor.status = 'Approved'
-            visitor.approvedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            flash(f'Visitor {visitor_no} has been approved!', 'success')
-        elif action == 'reject':
-            visitor.status = 'Rejected'
-            flash(f'Visitor {visitor_no} has been rejected!', 'danger')
+#     if visitor:
+#         # Update the status based on the action
+#         if action == 'approve':
+#             visitor.status = 'Approved'
+#             visitor.approvedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#             flash(f'Visitor {visitor_no} has been approved!', 'success')
+#         elif action == 'reject':
+#             visitor.status = 'Rejected'
+#             flash(f'Visitor {visitor_no} has been rejected!', 'danger')
 
-        # Commit the changes to the database
-        try:
-            db.session.commit()
-        except Exception as e:
-            flash(f'Error updating status: {str(e)}', 'danger')
+#         # Commit the changes to the database
+#         try:
+#             db.session.commit()
+#         except Exception as e:
+#             flash(f'Error updating status: {str(e)}', 'danger')
 
-        return redirect(url_for('dashboard'))
+#         return redirect(url_for('dashboard'))
 
-    return jsonify({'error': 'Visitor not found'}), 404
+#     return jsonify({'error': 'Visitor not found'}), 404
 # @app.route('/filledForm', methods=['GET', 'POST'])
 # def filledForm():
 #     # Assuming you want the second record ordered by id

@@ -378,7 +378,7 @@ body.dashboard {
 }
 
 #statusbtn {
-    width: 60px;
+    width: fit-content;
     background-color: #0078d4;
     color: white;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

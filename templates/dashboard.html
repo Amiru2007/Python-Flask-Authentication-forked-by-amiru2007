@@ -28,7 +28,7 @@
                 {% endif %}
 
                 <!-- Arrive Visitor -->
-                {% if current_user.level in ['Gate'] %}
+                {% if current_user.level == 'Gate' %}
                     <div class="grid-item">
                         <span><i class="ph ph-arrow-circle-right"></i></span>
                         <h3>Arrive Visitor</h3>
@@ -41,7 +41,7 @@
                     <div class="grid-item">
                         <span><i class="ph ph-check-circle"></i></span>
                         <h3>Depart Visitor</h3>
-                        <button type="button">Report</button>
+                        <button type="button" id="showArrivedList" onclick="openArrivedList()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
 
@@ -82,14 +82,31 @@
                 {% endif %}
             </div>
         </div>
-        <div class="overlay" id="overlay" onclick="closeShowApprovedList()"></div>
+        <div class="overlay" id="pendingApprovaloverlay" onclick="closeShowApprovedList()"></div>
         <div class="popup" id="pendingApproval">
             <div class="popupHeader">
-                <h2>Pending Approval Visitor List</h2>
+                <h3>Approved Visitor List</h3>
                 <button onclick="closeShowApprovedList()"><i class="ph ph-x"></i></button>
             </div>
             <ul class="toApprove">
-                {% for visitor in visitor_numbers %}
+                {% for visitor in approved_visitor_numbers %}
+                    <li>
+                        <form method="post" action="{{ url_for('arrive_visitor') }}">
+                            <input type="hidden" name="visitor_no" value="{{ visitor }}">
+                            <button type="submit">{{ visitor }}</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="ApprovedVisitorsoverlay" onclick="closeToApproveList()"></div>
+        <div class="popup" id="ApprovedVisitors">
+            <div class="popupHeader">
+                <h3>Pending Approval Visitor List</h3>
+                <button onclick="closeToApproveList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for visitor in pending_visitor_numbers %}
                     <li>
                         <form method="post" action="{{ url_for('get_visitor') }}">
                             <input type="hidden" name="visitor_no" value="{{ visitor }}">
@@ -99,16 +116,16 @@
                 {% endfor %}
             </ul>
         </div>
-        <div class="overlay" id="overlay" onclick="closeToApproveList()"></div>
-        <div class="popup" id="pendingApproval">
+        <div class="overlay" id="arrivedOverlay" onclick="closeArrivedList()"></div>
+        <div class="popup" id="arrivedVisitors">
             <div class="popupHeader">
-                <h3>Pending Approval Visitor List</h3>
-                <button onclick="closeToApproveList()"><i class="ph ph-x"></i></button>
+                <h3>Arrived Visitor List</h3>
+                <button onclick="closeArrivedList()"><i class="ph ph-x"></i></button>
             </div>
             <ul class="toApprove">
-                {% for visitor in visitor_numbers %}
+                {% for visitor in arrived_visitor_numbers %}
                     <li>
-                        <form method="post" action="{{ url_for('arrive_visitor') }}">
+                        <form method="post" action="{{ url_for('depart_visitor') }}">
                             <input type="hidden" name="visitor_no" value="{{ visitor }}">
                             <button type="submit">{{ visitor }}</button>
                         </form>
@@ -119,23 +136,33 @@
     </div>
     <script>
         function openShowApprovedList() {
-            document.getElementById('overlay').classList.add('visible');
+            document.getElementById('pendingApprovaloverlay').classList.add('visible');
             document.getElementById('pendingApproval').classList.add('visible');
         }
 
         function closeShowApprovedList() {
-            document.getElementById('overlay').classList.remove('visible');
+            document.getElementById('pendingApprovaloverlay').classList.remove('visible');
             document.getElementById('pendingApproval').classList.remove('visible');
         }
 
         function openToApproveList() {
-            document.getElementById('overlay').classList.add('visible');
-            document.getElementById('pendingApproval').classList.add('visible');
+            document.getElementById('ApprovedVisitorsoverlay').classList.add('visible');
+            document.getElementById('ApprovedVisitors').classList.add('visible');
         }
 
         function closeToApproveList() {
-            document.getElementById('overlay').classList.remove('visible');
-            document.getElementById('pendingApproval').classList.remove('visible');
+            document.getElementById('ApprovedVisitorsoverlay').classList.remove('visible');
+            document.getElementById('ApprovedVisitors').classList.remove('visible');
+        }
+
+        function openArrivedList() {
+            document.getElementById('ApprovedVisitorsoverlay').classList.add('visible');
+            document.getElementById('arrivedVisitors').classList.add('visible');
+        }
+
+        function closeArrivedList() {
+            document.getElementById('ApprovedVisitorsoverlay').classList.remove('visible');
+            document.getElementById('arrivedVisitors').classList.remove('visible');
         }
     </script>    
 </body>

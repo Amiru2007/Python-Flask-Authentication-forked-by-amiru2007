@@ -10,7 +10,7 @@
 
 <body class="visitorPage">
     <div class="content visitor">
-        <form method="POST" action="{{ url_for('get_visitor', visitor_no=visitor.visitorNo) }}" class="visitorForm">
+        <form method="POST" action="{{ url_for('depart_visitor', visitor_no=visitor.visitorNo) }}" class="visitorForm">
             
             <div class="visitordetails">
                 <div class="names">
@@ -104,9 +104,10 @@
                     <div class="container buttons">
                         <div class="enterDetail">
                             <label for="statusbtn">Visitor Status</label>
-                            <input type="button" id="statusbtn" name="statusbtn" style="cursor: no-drop; background: #aabbee;" value="{{ visitor.status }}" readonly>
+                            <input type="button" id="statusbtn" name="statusbtn" value="{{ visitor.status }}" readonly>
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
                             <input type="button" class="btn-status" id="arrived" value="Arrived" disabled>
-                            <input type="button" class="btn-status" id="departed" value="Departed" disabled>
+                            <input type="submit" class="btn-status" name="changeStatus" id="departed" value="Departed">
                         </div>
                     </div>
                 </div>
@@ -127,14 +128,13 @@
             </div>
             <div class="footer">
                 <div class="approveOrReject">
-                    <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
-                    <a href="{{ url_for('dashboard') }}"><button type="submit" class="btn-approve accessed" name="changeStatus" value="Approve">Approve</button></a>
-                    <a href="{{ url_for('dashboard') }}"><button type="submit" class="btn-reject" name="changeStatus" value="Reject">Reject</button></a>
+                    <input type="button" class="btn-approve accessed" id="approve" value="Approve" style="cursor: no-drop; background: #aabbee;" disabled>
+                    <input type="button" class="btn-reject" id="reject" value="Reject" disabled>
                 </div>
                 <div class="saveOrCancel">
                     <input type="button" class="btn-help" id="help" value="Help?">
-                    <input type="button" class="btn-save" id="save" value="Save"disabled>
-                    <a href="{{ url_for('dashboard') }}"><input type="button" class="btn-cancel" id="cancel" value="Cancel"></a>
+                    <input type="button" class="btn-save" id="save" value="Save" disabled>
+                    <input type="button" class="btn-cancel" id="cancel" value="Cancel">
                 </div>
             </div>
             <!-- <ul class="toApprove">
@@ -145,22 +145,6 @@
         </form>
     </div>
     <script>
-        // function openOutlook() {
-        //         var subject = "Visitor Approval - {{ visitor.visitorNo }}";
-        //         var body = "Last Name: {{ visitor.lastName }}\n" +
-        //             "First Name: {{ visitor.firstName }}\n" +
-        //             "Company Name: {{ visitor.companyName }}\n" +
-        //             "Visitor ID: {{ visitor.visitorId }}\n" +
-        //             "Arriving Date: {{ visitor.arrivingDate }}\n" +
-        //             "Arriving Time: {{ visitor.arrivingTime }}"
-        //             // Add other fields as needed
-
-        //         var outlookLink = "https://outlook.office.com/mail/compose?subject=" + encodeURIComponent(subject) +
-        //             "&body=" + encodeURIComponent(body);
-
-        //         // Open Outlook website in a new tab or window
-        //         window.open(outlookLink, '_blank');
-        //     }
     </script>
 </body>
 </html>

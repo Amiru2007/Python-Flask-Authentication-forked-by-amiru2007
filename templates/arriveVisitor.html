@@ -104,9 +104,10 @@
                     <div class="container buttons">
                         <div class="enterDetail">
                             <label for="statusbtn">Visitor Status</label>
-                            <input type="button" id="statusbtn" value="Active" name="statusbtn" value="{{ visitor.status }}" readonly>
-                            <input type="button" class="btn-status" id="arrived" value="Arrived" style="cursor: no-drop;" disabled>
-                            <input type="button" class="btn-status" id="departed" value="Departed" style="cursor: no-drop;" disabled>
+                            <input type="button" id="statusbtn" name="statusbtn" value="{{ visitor.status }}" readonly>
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                            <input type="submit" class="btn-status" name="changeStatus" id="arrived" value="Arrived">
+                            <input type="button" class="btn-status" id="departed" value="Departed" disabled>
                         </div>
                     </div>
                 </div>
@@ -127,12 +128,12 @@
             </div>
             <div class="footer">
                 <div class="approveOrReject">
-                    <input type="submit" class="btn-approve accessed" id="approve" value="Approve">
-                    <input type="button" class="btn-reject" id="reject" value="Reject">
+                    <input type="button" class="btn-approve accessed" id="approve" value="Approve" style="cursor: no-drop; background: #aabbee;" disabled>
+                    <input type="button" class="btn-reject" id="reject" value="Reject" disabled>
                 </div>
                 <div class="saveOrCancel">
                     <input type="button" class="btn-help" id="help" value="Help?">
-                    <input type="button" class="btn-save" id="save" value="Save" style="cursor: no-drop;" disabled>
+                    <input type="button" class="btn-save" id="save" value="Save" disabled>
                     <input type="button" class="btn-cancel" id="cancel" value="Cancel">
                 </div>
             </div>

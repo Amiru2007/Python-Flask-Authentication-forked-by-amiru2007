@@ -75,7 +75,7 @@ CREATE TABLE user (
 DROP TABLE IF EXISTS visitor;
 
 CREATE TABLE visitor (
-    id INTEGER UNIQUE NOT NULL,
+    id INTEGER UNIQUE,
     lastName TEXT,
     firstName TEXT,
     companyName TEXT,
@@ -94,8 +94,11 @@ CREATE TABLE visitor (
     history TEXT,
     status TEXT,
 	requestTime TEXT,
+	approver TEXT,
     approvedTime TEXT,
+	arrivalOfficer TEXT,
     arrivedTime TEXT,
+	departureOfficer TEXT,
     departedTime TEXT,
     profilePhoto BLOB
 );
