@@ -99,3 +99,11 @@ CREATE TABLE visitor (
     departedTime TEXT,
     profilePhoto BLOB
 );
+
+
+                    <input type="submit"name="btn-approve" value="Approve">
+                    <input type="submit" name="btn-reject" value="Reject">
+
+                    
+                    <input type="submit" class="btn-approve accessed" id="approve" name="changeStatus" value="Approve">
+                    <input type="submit" class="btn-reject" id="reject" name="changeStatus" value="Reject">

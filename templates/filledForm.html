@@ -104,7 +104,7 @@
                     <div class="container buttons">
                         <div class="enterDetail">
                             <label for="statusbtn">Visitor Status</label>
-                            <input type="text" id="statusbtn" name="statusbtn" style="cursor: no-drop; background: #aabbdd;" value="{{ visitor.status }}" readonly>
+                            <input type="button" id="statusbtn" name="statusbtn" style="cursor: no-drop; background: #aabbdd;" value="{{ visitor.status }}" readonly>
                             <input type="button" class="btn-status" id="arrived" value="Arrived" disabled>
                             <input type="button" class="btn-status" id="departed" value="Departed" disabled>
                         </div>
@@ -127,8 +127,9 @@
             </div>
             <div class="footer">
                 <div class="approveOrReject">
-                    <input type="submit" class="btn-approve accessed" id="approve" value="Approve">
-                    <input type="button" class="btn-reject" id="reject" value="Reject">
+                    <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                    <a href="{{ url_for('dashboard') }}"><button type="submit" class="btn-approve accessed" name="changeStatus" value="Approve">Approve</button></a>
+                    <a href="{{ url_for('dashboard') }}"><button type="submit" class="btn-reject" name="changeStatus" value="Reject">Reject</button></a>
                 </div>
                 <div class="saveOrCancel">
                     <input type="button" class="btn-help" id="help" value="Help?">
