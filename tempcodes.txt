@@ -12,7 +12,7 @@ CREATE TABLE visitor (
     visitorNo TEXT PRIMARY KEY,
     phoneNumber TEXT,
     requester TEXT,
-    apointmentNo TEXT,
+    noOfVisitors TEXT,
     remarks TEXT,
     history TEXT,
     status TEXT,
@@ -44,3 +44,58 @@ CREATE TABLE user (
 
 
             {{ form.hidden_tag() }}
+
+
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="requester">Requester</label>
+                            <input type="text" id="requester" name="requester">
+                        </div>
+                    </div>
+
+                    
+        // function openOutlook() {
+        //         var subject = "Visitor Approval - {{ visitor.visitorNo }}";
+        //         var body = "Last Name: {{ visitor.lastName }}\n" +
+        //             "First Name: {{ visitor.firstName }}\n" +
+        //             "Company Name: {{ visitor.companyName }}\n" +
+        //             "Visitor ID: {{ visitor.visitorId }}\n" +
+        //             "Arriving Date: {{ visitor.arrivingDate }}\n" +
+        //             "Arriving Time: {{ visitor.arrivingTime }}"
+        //             // Add other fields as needed
+
+        //         var outlookLink = "https://outlook.office.com/mail/compose?subject=" + encodeURIComponent(subject) +
+        //             "&body=" + encodeURIComponent(body);
+
+        //         // Open Outlook website in a new tab or window
+        //         window.open(outlookLink, '_blank');
+        //     }
+
+
+DROP TABLE IF EXISTS visitor;
+
+CREATE TABLE visitor (
+    id INTEGER UNIQUE NOT NULL,
+    lastName TEXT,
+    firstName TEXT,
+    companyName TEXT,
+    visitorId TEXT,
+    arrivingDate TEXT,
+    arrivingTime TEXT,
+    departingDate TEXT,
+    departingTime TEXT,
+    vehicleNo TEXT,
+    visitorNo TEXT PRIMARY KEY,
+    phoneNumber TEXT,
+	emailAddress TEXT,
+    requester TEXT,
+    noOfVisitors TEXT,
+    remarks TEXT,
+    history TEXT,
+    status TEXT,
+	requestTime TEXT,
+    approvedTime TEXT,
+    arrivedTime TEXT,
+    departedTime TEXT,
+    profilePhoto BLOB
+);

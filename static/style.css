@@ -10,6 +10,10 @@ input[type="button"] {
   cursor: pointer;
 }
 
+input:disabled {
+    cursor: no-drop;
+}
+
 body.login,
 body.register {
     display: flex;
@@ -61,7 +65,7 @@ body.dashboard {
 }
 
 .register .section {
-    width:300px;
+    width:350px;
 }
 
 .form-sections {

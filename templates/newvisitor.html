@@ -64,7 +64,7 @@
                         </div>
                         <div class="enterDetail">
                             <label for="visitorNo">Visitor No.</label>
-                            <input type="text" id="visitorNo" name="visitorNo">
+                            <input type="text" id="visitorNo" name="visitorNo" value="{{ visitorNo }}" readonly>
                         </div>
                     </div>
                     <div class="container">
@@ -80,13 +80,13 @@
                     <div class="container">
                         <div class="enterDetail">
                             <label for="requester">Requester</label>
-                            <input type="text" id="requester" name="requester">
+                            <input type="text" id="requester" name="requester" value="{{ requester }}" readonly>
                         </div>
                     </div>
                     <div class="container">
                         <div class="enterDetail">
-                            <label for="apointmentNo">Apointment No</label>
-                            <input type="text" id="apointmentNo" name="apointmentNo">
+                            <label for="noOfVisitors">No. of visitors</label>
+                            <input type="text" id="noOfVisitors" name="noOfVisitors">
                         </div>
                     </div>
                     <div class="container">
@@ -104,9 +104,9 @@
                     <div class="container buttons">
                         <div class="enterDetail">
                             <label for="statusbtn">Visitor Status</label>
-                            <input type="button" id="statusbtn" value="Active" name="statusbtn">
-                            <input type="button" class="btn-status" id="arrived" value="Arrived">
-                            <input type="button" class="btn-status" id="departed" value="Departed">
+                            <input type="text" id="statusbtn" value="Pending" name="statusbtn" readonly>
+                            <input type="button" class="btn-status" id="arrived" value="Arrived" disabled>
+                            <input type="button" class="btn-status" id="departed" value="Departed" disabled>
                         </div>
                     </div>
                 </div>
@@ -127,13 +127,13 @@
             </div>
             <div class="footer">
                 <div class="approveOrReject">
-                    <input type="button" class="btn-approve" id="approve" value="Approve" style="cursor: no-drop;" disabled>
-                    <input type="button" class="btn-reject" id="reject" value="Reject" style="cursor: no-drop;" disabled>
+                    <input type="button" class="btn-approve" id="approve" value="Approve" disabled>
+                    <input type="button" class="btn-reject" id="reject" value="Reject" disabled>
                 </div>
                 <div class="saveOrCancel">
                     <input type="button" class="btn-help" id="help" value="Help?">
                     <input type="submit" class="btn-save" id="save" value="Save">
-                    <input type="button" class="btn-cancel" id="cancel" value="Cancel">
+                    <a href="{{ url_for('dashboard') }}"><input type="button" class="btn-cancel" id="cancel" value="Cancel"></a>
                 </div>
             </div>
         </form>

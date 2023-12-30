@@ -16,34 +16,39 @@
                 <img class="logo-image" src="{{ url_for('static', filename='logo.jpg') }}" alt="Dayartne Holdings Logo">
             </div>
             {{ form.hidden_tag() }}
-            <div class="form-sections">
-                <h4 class="input-head">User Id</h4>
-                {{ form.username(class="login-input") }}
-            </div>
-            <br>
-            <div class="form-sections">
-                <h4 class="input-head">Password</h4>
-                {{ form.password(class="login-input") }}
-            </div>
-            <br>
-            <div class="form-sections">
-                <h4 class="input-head">E-mail</h4>
-                {{ form.email(class="login-input") }}
-            </div>
-            <br>
-            <div class="form-sections">
-                <h4 class="input-head">Name</h4>
-                {{ form.name(class="login-input") }}
-            </div>
-            <br>
-            <div class="form-sections">
-                <h4 class="input-head">Telephone Number</h4>
-                {{ form.telephoneNo(class="login-input") }}
-            </div>
-            <br>
-            <div class="form-sections">
-                <h4 class="input-head">User Level</h4>
-                {{ form.level(class="login-input") }}
+            <div class="twosections">
+                <div class="section">
+                    <div class="form-sections">
+                        <h4 class="input-head">User Id</h4>
+                        {{ form.username(class="login-input") }}
+                    </div>
+                    <br>
+                    <div class="form-sections">
+                        <h4 class="input-head">Password</h4>
+                        {{ form.password(class="login-input") }}
+                    </div>
+                    <br>
+                    <div class="form-sections">
+                        <h4 class="input-head">E-mail</h4>
+                        {{ form.email(class="login-input") }}
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="form-sections">
+                        <h4 class="input-head">Name</h4>
+                        {{ form.name(class="login-input") }}
+                    </div>
+                    <br>
+                    <div class="form-sections">
+                        <h4 class="input-head">Telephone Number</h4>
+                        {{ form.telephoneNo(class="login-input") }}
+                    </div>
+                    <br>
+                    <div class="form-sections">
+                        <h4 class="input-head">User Level</h4>
+                        {{ form.level(class="login-input") }}
+                    </div>
+                </div>
             </div>
             <div class="form-sections submit">
                 {{ form.submit(class="login-btn") }}

@@ -32,7 +32,7 @@
                     <div class="grid-item">
                         <span><i class="ph ph-arrow-circle-right"></i></span>
                         <h3>Arrive Visitor</h3>
-                        <button type="button">Report</button>
+                        <button type="button" id="showApprovedList" onclick="openShowApprovedList()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
 
@@ -50,7 +50,7 @@
                     <div class="grid-item">
                         <span><i class="ph ph-paper-plane-tilt"></i></span>
                         <h3>Approve Visitor</h3>
-                        <button type="button" id="showApproveList" onclick="openPopup()"><i class="ph ph-arrow-right"></i></button>
+                        <button type="button" id="showToApproveList" onclick="openToApproveList()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
 
@@ -82,12 +82,11 @@
                 {% endif %}
             </div>
         </div>
-        <a href="{{ url_for('logout') }}"><button type="button">Logout</button></a><br>
-        <div class="overlay" id="overlay" onclick="closePopup()"></div>
-        <div class="popup" id="popup">
+        <div class="overlay" id="overlay" onclick="closeShowApprovedList()"></div>
+        <div class="popup" id="pendingApproval">
             <div class="popupHeader">
-                <h2>Approve Visitor List</h2>
-                <button onclick="closePopup()"><i class="ph ph-x"></i></button>
+                <h2>Pending Approval Visitor List</h2>
+                <button onclick="closeShowApprovedList()"><i class="ph ph-x"></i></button>
             </div>
             <ul class="toApprove">
                 {% for visitor in visitor_numbers %}
@@ -100,16 +99,43 @@
                 {% endfor %}
             </ul>
         </div>
+        <div class="overlay" id="overlay" onclick="closeToApproveList()"></div>
+        <div class="popup" id="pendingApproval">
+            <div class="popupHeader">
+                <h3>Pending Approval Visitor List</h3>
+                <button onclick="closeToApproveList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for visitor in visitor_numbers %}
+                    <li>
+                        <form method="post" action="{{ url_for('arrive_visitor') }}">
+                            <input type="hidden" name="visitor_no" value="{{ visitor }}">
+                            <button type="submit">{{ visitor }}</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
     </div>
     <script>
-        function openPopup() {
+        function openShowApprovedList() {
             document.getElementById('overlay').classList.add('visible');
-            document.getElementById('popup').classList.add('visible');
+            document.getElementById('pendingApproval').classList.add('visible');
         }
 
-        function closePopup() {
+        function closeShowApprovedList() {
             document.getElementById('overlay').classList.remove('visible');
-            document.getElementById('popup').classList.remove('visible');
+            document.getElementById('pendingApproval').classList.remove('visible');
+        }
+
+        function openToApproveList() {
+            document.getElementById('overlay').classList.add('visible');
+            document.getElementById('pendingApproval').classList.add('visible');
+        }
+
+        function closeToApproveList() {
+            document.getElementById('overlay').classList.remove('visible');
+            document.getElementById('pendingApproval').classList.remove('visible');
         }
     </script>    
 </body>

@@ -6,6 +6,7 @@ from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectF
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
+from datetime import datetime
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
@@ -48,16 +49,29 @@ class Visitor(db.Model):
     phoneNumber = db.Column(db.String(20))
     emailAddress = db.Column(db.String(120))
     requester = db.Column(db.String(50))
-    apointmentNo = db.Column(db.String(20))
+    noOfVisitors = db.Column(db.Integer)
     remarks = db.Column(db.String(255))
     history = db.Column(db.String(255))
     status = db.Column(db.String(20))
+    requestTime = db.Column(db.String(20))
+    approvedTime = db.Column(db.String(20))
+    arrivedTime = db.Column(db.String(20))
+    departedTime = db.Column(db.String(20))
     # profilePhoto = db.Column(db.LargeBinary, name='profile_photo_upload')
+
+class Approved(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    visitorNo = db.Column(db.String(20), unique=True, nullable=False)
+    requester = db.Column(db.String(50))
+    approveOrReject = db.Column(db.String(100))
+    approver = db.Column(db.String(50))
 
 # Route for the form
 @app.route('/newvisitor', methods=['GET', 'POST'])
 def new_visitor():
     # visitor = Visitor.query.filter_by(visitorNo=visitor_id).first()
+
+    visitor_code = generate_visitorCode()
 
     if request.method == 'POST':
         # Get form data using request.form.get to avoid BadRequestKeyError
@@ -74,10 +88,11 @@ def new_visitor():
         phone_number = request.form.get('phoneNumber', '')
         email_address = request.form.get('emailAddress', '')
         requester = request.form.get('requester', '')
-        appointment_no = request.form.get('apointmentNo', '')
+        noOfVisitors = request.form.get('noOfVisitors', '')
         remarks = request.form.get('remarks', '')
         history = request.form.get('history', '')
         status = request.form.get('statusbtn', '')
+        request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         # profilePhoto = request.form.get('profilePhoto', '')  # Assuming status is captured from the button
 
         # Create a new Visitor object
@@ -95,10 +110,11 @@ def new_visitor():
             phoneNumber=phone_number,
             emailAddress=email_address,
             requester=requester,
-            apointmentNo=appointment_no,
+            noOfVisitors=noOfVisitors,
             remarks=remarks,
             history=history,
             status=status,
+            requestTime=request_time,
             # profilePhoto=profilePhoto
         )
 
@@ -107,16 +123,35 @@ def new_visitor():
             db.session.add(new_visitor)
             db.session.commit()
         except Exception as e:
-            print(f"Error committing to database: {e}")
+            return f"Error committing to database: {e}"
 
         return redirect(url_for('dashboard'))
 
-    return render_template('newvisitor.html')
+    return render_template('newvisitor.html',
+                           requester=current_user.username,
+                           visitorNo=visitor_code)
 
-@app.route('/visitor_list')
-def visitor_list():
-    visitors = Visitor.query.all()
-    return render_template('visitor_list.html', visitors=visitors)
+def generate_visitorCode():
+    # Get the latest code from the database for the current date
+    today = datetime.now().strftime('%Y%m%d')
+    latest_visitor = Visitor.query.filter(Visitor.visitorNo.like(f'{today}%')).order_by(Visitor.visitorNo.desc()).first()
+
+    if latest_visitor:
+        # Increment the counter for the current date
+        current_counter = int(latest_visitor.visitorNo[-4:])
+        new_counter = str(current_counter + 1).zfill(4)
+    else:
+        # If it's a new day, start with '0001'
+        new_counter = '0001'
+
+    # Combine the date and counter to create the new code
+    new_code = f'{today}{new_counter}'
+    return new_code
+
+# @app.route('/visitor_list')
+# def visitor_list():
+#     visitors = Visitor.query.all()
+#     return render_template('visitor_list.html', visitors=visitors)
 
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
@@ -192,14 +227,6 @@ def dashboard():
     
     return render_template('dashboard.html', visitor_numbers=visitor_numbers_list) #, visitors=visitors, visitor_ids=visitor_ids
 
-
-@app.route('/logout')
-def logout():
-    # Clear the session when the user logs out
-    session.pop('user', None)
-    return redirect(url_for('login'))
-
-
 @ app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
@@ -228,10 +255,32 @@ def register():
 
     return render_template('register.html', form=form)
 
+@app.route('/arrive_visitor', methods=['POST'])
+def arrive_visitor():
+    visitor_no = request.form.get('visitor_no')
+    visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
+
+    if visitor:
+        return render_template('arriveVisitor.html', visitor=visitor)
+    else:
+        return jsonify({'error': 'Visitofdyukfyukr not found'}), 404
+
+# @app.route('/arrive_visitor', methods=['GET', 'POST'])
+# def arrive_visitor():
+#     visitor_no = request.form.get('visitor_no')
+#     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
+
+#     if visitor:
+#         return render_template('filledForm.html', visitor=visitor)
+#     else:
+#         return jsonify({'error': 'Visitor not found'}), 404
+        
 @app.route('/get_visitor', methods=['POST'])
 def get_visitor():
     visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
+
+    # change_status = 
 
     if visitor:
         return render_template('filledForm.html', visitor=visitor)
@@ -259,7 +308,7 @@ def get_visitor():
 #         phoneNumber   = getVisitor.phoneNumber
 #         emailAddress  = getVisitor.emailAddress
 #         requester     = getVisitor.requester
-#         apointmentNo  = getVisitor.apointmentNo
+#         noOfVisitors  = getVisitor.noOfVisitors
 #         remarks       = getVisitor.remarks
 #         history       = getVisitor.history
 #         status        = getVisitor.status
@@ -280,7 +329,7 @@ def get_visitor():
 #                            phoneNumber=phoneNumber,
 #                            emailAddress=emailAddress,
 #                            requester=requester,
-#                            apointmentNo=apointmentNo,
+#                            noOfVisitors=noOfVisitors,
 #                            remarks=remarks,
 #                            history=history,
 #                            status=status)
