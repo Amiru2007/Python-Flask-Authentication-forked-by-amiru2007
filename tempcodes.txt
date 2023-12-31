@@ -110,3 +110,129 @@ CREATE TABLE visitor (
                     
                     <input type="submit" class="btn-approve accessed" id="approve" name="changeStatus" value="Approve">
                     <input type="submit" class="btn-reject" id="reject" name="changeStatus" value="Reject">
+
+                    
+# @app.route('/approve_reject_visitor', methods=['POST'])
+# @login_required
+# def approve_reject_visitor():
+#     visitor_no = request.form.get('visitor_no')
+#     action = request.form.get('action')  # 'approve' or 'reject'
+
+#     # Retrieve the visitor based on the visitor_no
+#     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
+
+#     if visitor:
+#         # Update the status based on the action
+#         if action == 'approve':
+#             visitor.status = 'Approved'
+#             visitor.approvedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+#             flash(f'Visitor {visitor_no} has been approved!', 'success')
+#         elif action == 'reject':
+#             visitor.status = 'Rejected'
+#             flash(f'Visitor {visitor_no} has been rejected!', 'danger')
+
+#         # Commit the changes to the database
+#         try:
+#             db.session.commit()
+#         except Exception as e:
+#             flash(f'Error updating status: {str(e)}', 'danger')
+
+#         return redirect(url_for('dashboard'))
+
+#     return jsonify({'error': 'Visitor not found'}), 404
+# @app.route('/filledForm', methods=['GET', 'POST'])
+# def filledForm():
+#     # Assuming you want the second record ordered by id
+#     # getVisitor = 
+#     global global_visitorNo
+#     visitor_no_to_search = global_visitorNo
+#     getVisitor = Visitor.query.filter_by(visitorNo=visitor_no_to_search).first()
+#     if getVisitor:
+#         lastName      = getVisitor.lastName
+#         firstName     = getVisitor.firstName
+#         companyName   = getVisitor.companyName
+#         visitorId     = getVisitor.visitorId
+#         arrivingDate  = getVisitor.arrivingDate
+#         arrivingTime  = getVisitor.arrivingTime
+#         departingDate = getVisitor.departingDate
+#         departingTime = getVisitor.departingTime
+#         vehicleNo     = getVisitor.vehicleNo
+#         visitorNo     = getVisitor.visitorNo
+#         phoneNumber   = getVisitor.phoneNumber
+#         emailAddress  = getVisitor.emailAddress
+#         requester     = getVisitor.requester
+#         noOfVisitors  = getVisitor.noOfVisitors
+#         remarks       = getVisitor.remarks
+#         history       = getVisitor.history
+#         status        = getVisitor.status
+#     else:
+#         lastName = ""
+
+#     return render_template('filledForm.html',
+#                            lastName=lastName,
+#                            firstName=firstName,
+#                            companyName=companyName,
+#                            visitorId=visitorId,
+#                            arrivingDate=arrivingDate,
+#                            arrivingTime=arrivingTime,
+#                            departingDate=departingDate,
+#                            departingTime=departingTime,
+#                            vehicleNo=vehicleNo,
+#                            visitorNo=visitorNo,
+#                            phoneNumber=phoneNumber,
+#                            emailAddress=emailAddress,
+#                            requester=requester,
+#                            noOfVisitors=noOfVisitors,
+#                            remarks=remarks,
+#                            history=history,
+#                            status=status)
+
+
+                <!-- <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', user_id=user.id) }}';"> -->
+
+                
+    <!-- <div class="content login">
+        <form method="POST" action="" class="login-details">
+            <div class="logo-wrapper">
+                <img class="logo-image" src="{{ url_for('static', filename='logo.jpg') }}" alt="Dayartne Holdings Logo">
+            </div>
+            {{ form.hidden_tag() }}
+            <div class="twosections">
+                <div class="section">
+                    <div class="form-sections">
+                        <h4 class="input-head">User Id</h4>
+                        <input type="text" id="history" name="history" value="{{ user.username }}">
+                    </div>
+                    <br>
+                    <div class="form-sections">
+                        <h4 class="input-head">Password</h4>
+                        <input type="text" id="history" name="history" value="{{ user.password }}">
+                    </div>
+                    <br>
+                    <div class="form-sections">
+                        <h4 class="input-head">E-mail</h4>
+                        <input type="text" id="history" name="history" value="{{ user.email }}">
+                    </div>
+                </div>
+                <div class="section">
+                    <div class="form-sections">
+                        <h4 class="input-head">Name</h4>
+                        <input type="text" id="history" name="history" value="{{ user.name }}">
+                    </div>
+                    <br>
+                    <div class="form-sections">
+                        <h4 class="input-head">Telephone Number</h4>
+                        <input type="text" id="history" name="history" value="{{ user.telephoneNo }}">
+                    </div>
+                    <br>
+                    <div class="form-sections">
+                        <h4 class="input-head">User Level</h4>
+                        <input type="text" id="history" name="history" value="{{ user.level }}">
+                    </div>
+                </div>
+            </div>
+            <div class="form-sections submit">
+                <input type="submit" class="login-btn" value="Update">
+            </div>
+        </form>
+    </div> -->

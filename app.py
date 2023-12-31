@@ -3,7 +3,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField, TelField
-from wtforms.validators import InputRequired, Length, ValidationError
+from wtforms.validators import InputRequired, Length, ValidationError, EqualTo
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from datetime import datetime
@@ -62,12 +62,11 @@ class Visitor(db.Model):
     departedTime = db.Column(db.String(20))
     # profilePhoto = db.Column(db.LargeBinary, name='profile_photo_upload')
 
-class Approved(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    visitorNo = db.Column(db.String(20), unique=True, nullable=False)
-    requester = db.Column(db.String(50))
-    approveOrReject = db.Column(db.String(100))
-    approver = db.Column(db.String(50))
+class ChangePasswordForm(FlaskForm):
+    old_password = PasswordField('Old Password', validators=[InputRequired(), Length(min=8, max=20)])
+    new_password = PasswordField('New Password', validators=[InputRequired(), Length(min=8, max=20)])
+    confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), EqualTo('new_password', message='Passwords must match')])
+    submit = SubmitField('Change Password')
 
 # Route for the form
 @app.route('/newvisitor', methods=['GET', 'POST'])
@@ -194,12 +193,12 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
-@app.route('/')
-def home():
-    return render_template('home.html')
+# @app.route('/')
+# def home():
+#     return render_template('home.html')
 
 
-@app.route('/login', methods=['GET', 'POST'])
+@app.route('/', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
@@ -251,6 +250,8 @@ def register():
             username=form.username.data,
             password=hashed_password,
             email=form.email.data,
+            name=form.name.data,
+            telephoneNo=form.telephoneNo.data,
             level=form.level.data
         )
 
@@ -345,80 +346,102 @@ def get_visitor():
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
 
-# @app.route('/approve_reject_visitor', methods=['POST'])
-# @login_required
-# def approve_reject_visitor():
-#     visitor_no = request.form.get('visitor_no')
-#     action = request.form.get('action')  # 'approve' or 'reject'
+@app.route('/logout', methods=['GET', 'POST'])
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('login'))
 
-#     # Retrieve the visitor based on the visitor_no
-#     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    if request.method == 'POST':
+        new_password = request.form.get('new_password')
+        confirm_password = request.form.get('confirm_password')
 
-#     if visitor:
-#         # Update the status based on the action
-#         if action == 'approve':
-#             visitor.status = 'Approved'
-#             visitor.approvedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-#             flash(f'Visitor {visitor_no} has been approved!', 'success')
-#         elif action == 'reject':
-#             visitor.status = 'Rejected'
-#             flash(f'Visitor {visitor_no} has been rejected!', 'danger')
+        # Verify new password and confirmation
+        if new_password != confirm_password:
+            flash('New password and confirmation do not match', 'error')
+            return redirect(url_for('change_password'))
 
-#         # Commit the changes to the database
-#         try:
-#             db.session.commit()
-#         except Exception as e:
-#             flash(f'Error updating status: {str(e)}', 'danger')
+        # Update the user's password
+        current_user.set_password(new_password)
+        db.session.commit()
 
-#         return redirect(url_for('dashboard'))
+        flash('Password changed successfully', 'success')
+        return redirect(url_for('index'))  # Change this to the appropriate route after password change
 
-#     return jsonify({'error': 'Visitor not found'}), 404
-# @app.route('/filledForm', methods=['GET', 'POST'])
-# def filledForm():
-#     # Assuming you want the second record ordered by id
-#     # getVisitor = 
-#     global global_visitorNo
-#     visitor_no_to_search = global_visitorNo
-#     getVisitor = Visitor.query.filter_by(visitorNo=visitor_no_to_search).first()
-#     if getVisitor:
-#         lastName      = getVisitor.lastName
-#         firstName     = getVisitor.firstName
-#         companyName   = getVisitor.companyName
-#         visitorId     = getVisitor.visitorId
-#         arrivingDate  = getVisitor.arrivingDate
-#         arrivingTime  = getVisitor.arrivingTime
-#         departingDate = getVisitor.departingDate
-#         departingTime = getVisitor.departingTime
-#         vehicleNo     = getVisitor.vehicleNo
-#         visitorNo     = getVisitor.visitorNo
-#         phoneNumber   = getVisitor.phoneNumber
-#         emailAddress  = getVisitor.emailAddress
-#         requester     = getVisitor.requester
-#         noOfVisitors  = getVisitor.noOfVisitors
-#         remarks       = getVisitor.remarks
-#         history       = getVisitor.history
-#         status        = getVisitor.status
-#     else:
-#         lastName = ""
+    return render_template('changePassword.html')
 
-#     return render_template('filledForm.html',
-#                            lastName=lastName,
-#                            firstName=firstName,
-#                            companyName=companyName,
-#                            visitorId=visitorId,
-#                            arrivingDate=arrivingDate,
-#                            arrivingTime=arrivingTime,
-#                            departingDate=departingDate,
-#                            departingTime=departingTime,
-#                            vehicleNo=vehicleNo,
-#                            visitorNo=visitorNo,
-#                            phoneNumber=phoneNumber,
-#                            emailAddress=emailAddress,
-#                            requester=requester,
-#                            noOfVisitors=noOfVisitors,
-#                            remarks=remarks,
-#                            history=history,
-#                            status=status)
+@app.route('/all_users', methods=['GET', 'POST'])
+def all_users():
+    if request.method == 'POST':
+        if 'delete_selected' in request.form:
+            selected_ids = request.form.getlist('user_checkbox')
+            # Assuming you have a method to delete users by their IDs from the database
+            User.query.filter(User.id.in_(selected_ids)).delete(synchronize_session=False)
+            db.session.commit()
+
+            # Return a JSON response to update the table dynamically
+            return redirect(url_for('all_users'))
+
+        search_query = request.form.get('search_query')
+        users = get_filtered_users(search_query)
+    else:
+        users = User.query.all()
+
+    return render_template('allUsers.html', users=users)
+
+def get_filtered_users(search_query):
+    # Assuming you have a method to filter users based on a search query
+    return User.query.filter(
+        (User.username.like(f'%{search_query}%')) |
+        (User.email.like(f'%{search_query}%')) |
+        (User.name.like(f'%{search_query}%')) |
+        (User.telephoneNo.like(f'%{search_query}%')) |
+        (User.level.like(f'%{search_query}%'))
+    ).all()
+
+@app.route('/get_user_by_username/<username>', methods=['GET'])
+def get_user_by_username(username):
+    user = User.query.filter_by(username=username).first()
+
+    if user:
+        return render_template('editUser.html', user=user)
+    else:
+        return "User not found", 404
+
+@app.route('/update_user', methods=['POST'])
+def update_user():
+    if request.method == 'POST':
+        # Get the form data
+        username = request.form.get('username')
+        password = request.form.get('password')
+        email = request.form.get('email')
+        name = request.form.get('name')
+        telephoneNo = request.form.get('telephoneNo')
+        level = request.form.get('level')
+
+        # Find the user by username
+        user = User.query.filter_by(username=username).first()
+
+        if user:
+            # Update the user record
+            user.password = password
+            user.email = email
+            user.name = name
+            user.telephoneNo = telephoneNo
+            user.level = level
+
+            # Commit the changes to the database
+            db.session.commit()
+
+            # Redirect to a success page or any other appropriate action
+            return redirect(url_for('dashboard'))
+        else:
+            return "User not found", 404
+
+    return "Invalid request", 400
 
 if __name__ == "__main__":
     app.run(debug=True)

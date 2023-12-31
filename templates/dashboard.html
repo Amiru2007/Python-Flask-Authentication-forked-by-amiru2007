@@ -44,7 +44,7 @@
                         <button type="button" id="showArrivedList" onclick="openArrivedList()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
-
+                
                 <!-- Approve Visitor -->
                 {% if current_user.level == 'Admin' or current_user.level == 'Approver' %}
                     <div class="grid-item">
@@ -63,12 +63,20 @@
                     </div>
                 {% endif %}
 
+                {% if current_user.level == 'Admin' %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-password"></i></span>
+                        <h3>Change Password</h3>
+                        <a href="{{ url_for('change_password') }}"><button type="button">Change</button></a>
+                    </div>
+                {% endif %}
+
                 <!-- Delete User -->
                 {% if current_user.level == 'Admin' %}
                     <div class="grid-item">
                         <span><i class="ph ph-user-circle-minus"></i></span>
-                        <h3>Delete User</h3>
-                        <button type="button">Delete</button>
+                        <h3>User Management</h3>
+                        <a href="{{ url_for('all_users') }}"><button type="button">Manage</button></a>
                     </div>
                 {% endif %}
 
@@ -134,6 +142,9 @@
             </ul>
         </div>
     </div>
+        <div class="dashboard-footer">
+            <a href="{{url_for('logout')}}"><button type="button">logout</button></a>
+        </div>
     <script>
         function openShowApprovedList() {
             document.getElementById('pendingApprovaloverlay').classList.add('visible');

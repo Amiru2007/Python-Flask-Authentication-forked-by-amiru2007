@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <title>All Users</title>
+</head>
+<body bgcolor="#f9f9f6">
+    <div class="user-list">
+            <form action="{{ url_for('all_users') }}" method="post">
+    
+                <!-- Add a new button for deleting selected rows -->
+                <!-- <button type="submit" name="delete_selected">Delete Selected</button> -->
+            </form>
+        <form action="{{ url_for('all_users') }}" method="post">
+            <div class="mainTableHeader">
+                <h1>All Users</h1>
+                <div class="operatingTools">
+                    <div class="searchContainer">
+                        <input type="text" id="searchInput" name="search_query" placeholder="Search...">
+                        <button type="submit"><i class="ph-bold ph-magnifying-glass"></i></button>
+                    </div>
+                    <button type="submit" class="deleteUser" name="delete_selected">
+                        <span><i class="ph-bold ph-trash"></i></span> Delete User
+                    </button>
+                </div>
+            </div>
+            <table>
+                <tr>
+                    <th><input type="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th> <!-- Add an empty header for checkboxes -->
+                    <th>#</th>
+                    <!-- <th>ID</th> -->
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Name</th>
+                    <th>Telephone No</th>
+                    <th>Level</th>
+                </tr>
+                <!-- {% set row_number = 1 %} -->
+                {% for user in users %}
+                <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';">
+                    <td><input type="checkbox" name="user_checkbox" value="{{ user.id }}"></td>
+                    <td>{{ loop.index }}</td>  <!-- Display the row number -->
+                    <!-- <td>{{ user.id }}</td> -->
+                    <td>{{ user.username }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.name }}</td>
+                    <td>{{ user.telephoneNo }}</td>
+                    <td>{{ user.level }}</td>
+                </tr>
+                <!-- {% set row_number = row_number + 1 %} -->
+                {% endfor %}
+            </table>
+        </form>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('form').addEventListener('submit', function(event) {
+                event.preventDefault();
+                fetch(this.action, {
+                    method: this.method,
+                    body: new FormData(this),
+                })
+                .then(response => response.text())
+                .then(html => {
+                    document.querySelector('.user-list').innerHTML = html;
+                });
+            });
+
+            const searchInput = document.getElementById('searchInput');
+            const tableCells = document.querySelectorAll('.user-list td');
+            
+            searchInput.addEventListener('input', function() {
+                const searchText = this.value.trim().toLowerCase();
+
+                tableCells.forEach(cell => {
+                    const textContent = cell.textContent.trim().toLowerCase();
+                    const highlightedText = textContent.replace(new RegExp(searchText, 'gi'), match => `<span class="highlight">${match}</span>`);
+                    cell.innerHTML = highlightedText;
+                });
+            });
+        });
+
+        function toggleCheckboxes(masterCheckbox) {
+            const checkboxes = document.querySelectorAll('tbody input[name="user_checkbox"]');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = masterCheckbox.checked;
+            });
+        }
+    </script>    
+</body>
+</html>
