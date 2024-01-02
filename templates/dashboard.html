@@ -54,15 +54,6 @@
                     </div>
                 {% endif %}
 
-                <!-- Create User -->
-                {% if current_user.level == 'Admin' %}
-                    <div class="grid-item">
-                        <span><i class="ph ph-user-circle-plus"></i></span>
-                        <h3>Create User</h3>
-                        <a href="{{ url_for('register') }}"><button type="button">Create</button></a>
-                    </div>
-                {% endif %}
-
                 {% if current_user.level == 'Admin' %}
                     <div class="grid-item">
                         <span><i class="ph ph-password"></i></span>
@@ -74,7 +65,7 @@
                 <!-- Delete User -->
                 {% if current_user.level == 'Admin' %}
                     <div class="grid-item">
-                        <span><i class="ph ph-user-circle-minus"></i></span>
+                        <span><i class="ph ph-user"></i></i></span>
                         <h3>User Management</h3>
                         <a href="{{ url_for('all_users') }}"><button type="button">Manage</button></a>
                     </div>
@@ -142,9 +133,9 @@
             </ul>
         </div>
     </div>
-        <div class="dashboard-footer">
-            <a href="{{url_for('logout')}}"><button type="button">logout</button></a>
-        </div>
+    <div class="dashboard-footer">
+        <a href="{{url_for('logout')}}"><button type="button">logout</button></a>
+    </div>
     <script>
         function openShowApprovedList() {
             document.getElementById('pendingApprovaloverlay').classList.add('visible');

@@ -70,6 +70,7 @@ class ChangePasswordForm(FlaskForm):
 
 # Route for the form
 @app.route('/newvisitor', methods=['GET', 'POST'])
+@login_required
 def new_visitor():
     # visitor = Visitor.query.filter_by(visitorNo=visitor_id).first()
 
@@ -234,6 +235,7 @@ def dashboard():
                            arrived_visitor_numbers=arrived_visitor_numbers_list)
 
 @ app.route('/register', methods=['GET', 'POST'])
+@login_required
 def register():
     form = RegisterForm()
 
@@ -259,11 +261,12 @@ def register():
             db.session.add(new_user)
             db.session.commit()
         flash('Account created successfully', 'success')
-        return redirect(url_for('login'))
+        return redirect(url_for('dashboard'))
 
     return render_template('register.html', form=form)
 
 @app.route('/arrive_visitor', methods=['POST'])
+@login_required
 def arrive_visitor():
     visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
@@ -286,6 +289,7 @@ def arrive_visitor():
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
 
 @app.route('/depart_visitor', methods=['POST'])
+@login_required
 def depart_visitor():
     visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
@@ -318,6 +322,7 @@ def depart_visitor():
 #         return jsonify({'error': 'Visitor not found'}), 404
         
 @app.route('/get_visitor', methods=['POST'])
+@login_required
 def get_visitor():
     visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
@@ -374,6 +379,7 @@ def change_password():
     return render_template('changePassword.html')
 
 @app.route('/all_users', methods=['GET', 'POST'])
+@login_required
 def all_users():
     if request.method == 'POST':
         if 'delete_selected' in request.form:
@@ -403,6 +409,7 @@ def get_filtered_users(search_query):
     ).all()
 
 @app.route('/get_user_by_username/<username>', methods=['GET'])
+@login_required
 def get_user_by_username(username):
     user = User.query.filter_by(username=username).first()
 
@@ -412,11 +419,12 @@ def get_user_by_username(username):
         return "User not found", 404
 
 @app.route('/update_user', methods=['POST'])
+@login_required
 def update_user():
     if request.method == 'POST':
         # Get the form data
         username = request.form.get('username')
-        password = request.form.get('password')
+        # password = request.form.get('password')
         email = request.form.get('email')
         name = request.form.get('name')
         telephoneNo = request.form.get('telephoneNo')
@@ -427,7 +435,7 @@ def update_user():
 
         if user:
             # Update the user record
-            user.password = password
+            # user.password = password
             user.email = email
             user.name = name
             user.telephoneNo = telephoneNo

@@ -7,7 +7,7 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <title>All Users</title>
 </head>
-<body bgcolor="#f9f9f6">
+<body bgcolor="#f3f3f3">
     <div class="user-list">
             <form action="{{ url_for('all_users') }}" method="post">
     
@@ -25,34 +25,41 @@
                     <button type="submit" class="deleteUser" name="delete_selected">
                         <span><i class="ph-bold ph-trash"></i></span> Delete User
                     </button>
+                    <a href="{{ url_for('register') }}">
+                        <button type="button" class="createUser">
+                            <span><i class="ph-bold ph-plus-circle"></i> Create</span>
+                        </button>
+                    </a>
                 </div>
             </div>
-            <table>
-                <tr>
-                    <th><input type="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th> <!-- Add an empty header for checkboxes -->
-                    <th>#</th>
-                    <!-- <th>ID</th> -->
-                    <th>Username</th>
-                    <th>Email</th>
-                    <th>Name</th>
-                    <th>Telephone No</th>
-                    <th>Level</th>
-                </tr>
-                <!-- {% set row_number = 1 %} -->
-                {% for user in users %}
-                <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';">
-                    <td><input type="checkbox" name="user_checkbox" value="{{ user.id }}"></td>
-                    <td>{{ loop.index }}</td>  <!-- Display the row number -->
-                    <!-- <td>{{ user.id }}</td> -->
-                    <td>{{ user.username }}</td>
-                    <td>{{ user.email }}</td>
-                    <td>{{ user.name }}</td>
-                    <td>{{ user.telephoneNo }}</td>
-                    <td>{{ user.level }}</td>
-                </tr>
-                <!-- {% set row_number = row_number + 1 %} -->
-                {% endfor %}
-            </table>
+            <div class="table-container">
+                <table>
+                    <tr>
+                        <th><input type="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th> <!-- Add an empty header for checkboxes -->
+                        <th style="text-align: center;">#</th>
+                        <!-- <th>ID</th> -->
+                        <th>Username</th>
+                        <th>Email</th>
+                        <th>Name</th>
+                        <th>Telephone No</th>
+                        <th>Level</th>
+                    </tr>
+                    <!-- {% set row_number = 1 %} -->
+                    {% for user in users %}
+                    <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';">
+                        <td><input type="checkbox" name="user_checkbox" value="{{ user.id }}"></td>
+                        <td style="text-align: center;">{{ loop.index }}</td>  <!-- Display the row number -->
+                        <!-- <td>{{ user.id }}</td> -->
+                        <td>{{ user.username }}</td>
+                        <td>{{ user.email }}</td>
+                        <td>{{ user.name }}</td>
+                        <td>{{ user.telephoneNo }}</td>
+                        <td>{{ user.level }}</td>
+                    </tr>
+                    <!-- {% set row_number = row_number + 1 %} -->
+                    {% endfor %}
+                </table>
+            </div>
         </form>
     </div>
     <script>
