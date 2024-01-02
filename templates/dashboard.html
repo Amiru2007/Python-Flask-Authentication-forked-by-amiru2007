@@ -76,7 +76,7 @@
                     <div class="grid-item">
                         <span><i class="ph ph-scroll"></i></span>
                         <h3>Reports</h3>
-                        <button type="button">Save</button>
+                        <button type="button" id="showReportButtons" onclick="openReports()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
             </div>
@@ -132,10 +132,56 @@
                 {% endfor %}
             </ul>
         </div>
+        <div class="overlay" id="reportOverlay" onclick="closeReports()"></div>
+        <div class="popup" id="reportButtons">
+            <div class="popupHeader">
+                <h3>Export Reports</h3>
+                <button onclick="closeReports()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="reportButtonsContainer">
+                <form action="/export_excel_user" method="POST" class="excelExportBtns">
+                    <span><i class="ph ph-user-list"></i></span>
+                    <h5>User Report</h5>
+                    <button type="submit">Export</button>
+                </form>
+                <div class="excelExportBtns" onclick="openVisitorReport()">
+                    <span><i class="ph ph-user-square"></i></span>
+                    <h5>Visitor Reports</h5>
+                    <button type="button">Create</button>
+                </div>
+            </div>
+        </div>
+        <div class="overlay" id="visitorReportOverlay" onclick="closeVisitorReport()"></div>
+        <div class="popup" id="visitorReportButtons">
+            <div class="popupHeader">
+                <h3>Set Duration</h3>
+                <button onclick="closeVisitorReport()"><i class="ph ph-x"></i></button>
+            </div>
+            <form action="/export_excel_user" method="POST" class="excelExportVisitorBtns">
+                <div class="startDate excelTimeDuration">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" name="startDate">
+                </div>
+                <div class="endDate excelTimeDuration">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" name="endDate">
+                </div>
+                <input type="submit" class="exportVisitorExcel" id="exportVisitorExcel" value="Export">
+            </form>
+        </div>
     </div>
     <div class="dashboard-footer">
         <a href="{{url_for('logout')}}"><button type="button">logout</button></a>
     </div>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+        <input type="file" name="image">
+        <input type="submit" value="Upload">
+    </form>
+
+    <!-- Display the selected image -->
+    {% if selected_image %}
+        <img src="{{ selected_image }}" alt="Selected Image">
+    {% endif %}
     <script>
         function openShowApprovedList() {
             document.getElementById('pendingApprovaloverlay').classList.add('visible');
@@ -165,6 +211,28 @@
         function closeArrivedList() {
             document.getElementById('ApprovedVisitorsoverlay').classList.remove('visible');
             document.getElementById('arrivedVisitors').classList.remove('visible');
+        }
+
+        function openReports() {
+            document.getElementById('reportOverlay').classList.add('visible');
+            document.getElementById('reportButtons').classList.add('visible');
+        }
+
+        function closeReports() {
+            document.getElementById('reportOverlay').classList.remove('visible');
+            document.getElementById('reportButtons').classList.remove('visible');
+        }
+
+        function openVisitorReport() {
+            document.getElementById('reportOverlay').classList.remove('visible');
+            document.getElementById('reportButtons').classList.remove('visible');
+            document.getElementById('visitorReportOverlay').classList.add('visible');
+            document.getElementById('visitorReportButtons').classList.add('visible');
+        }
+
+        function closeVisitorReport() {
+            document.getElementById('visitorReportOverlay').classList.remove('visible');
+            document.getElementById('visitorReportButtons').classList.remove('visible');
         }
     </script>    
 </body>

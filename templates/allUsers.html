@@ -16,7 +16,14 @@
             </form>
         <form action="{{ url_for('all_users') }}" method="post">
             <div class="mainTableHeader">
-                <h1>All Users</h1>
+                <div class="leftControls">
+                    <a href="{{ url_for('dashboard') }}">
+                        <button type="button" class="goBack">
+                            <span><i class="ph-bold ph-arrow-left"></i></span>
+                        </button>
+                    </a>
+                    <h1>All Users</h1>
+                </div>
                 <div class="operatingTools">
                     <div class="searchContainer">
                         <input type="text" id="searchInput" name="search_query" placeholder="Search...">
@@ -32,33 +39,39 @@
                     </a>
                 </div>
             </div>
-            <div class="table-container">
-                <table>
-                    <tr>
-                        <th><input type="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th> <!-- Add an empty header for checkboxes -->
-                        <th style="text-align: center;">#</th>
-                        <!-- <th>ID</th> -->
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Name</th>
-                        <th>Telephone No</th>
-                        <th>Level</th>
-                    </tr>
-                    <!-- {% set row_number = 1 %} -->
-                    {% for user in users %}
-                    <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';">
-                        <td><input type="checkbox" name="user_checkbox" value="{{ user.id }}"></td>
-                        <td style="text-align: center;">{{ loop.index }}</td>  <!-- Display the row number -->
-                        <!-- <td>{{ user.id }}</td> -->
-                        <td>{{ user.username }}</td>
-                        <td>{{ user.email }}</td>
-                        <td>{{ user.name }}</td>
-                        <td>{{ user.telephoneNo }}</td>
-                        <td>{{ user.level }}</td>
-                    </tr>
-                    <!-- {% set row_number = row_number + 1 %} -->
-                    {% endfor %}
-                </table>
+            <div class="outerContainer">
+                <div class="table-container">
+                    <table>
+                        <thead class="tableHeadRow"> 
+                            <tr>
+                                <th><input type="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th> <!-- Add an empty header for checkboxes -->
+                                <th style="text-align: center;">#</th>
+                                <!-- <th>ID</th> -->
+                                <th>Username</th>
+                                <th>Email</th>
+                                <th>Name</th>
+                                <th>Telephone No</th>
+                                <th>Level</th>
+                            </tr>
+                        </thead> 
+                        <!-- {% set row_number = 1 %} -->
+                        <tbody>
+                            {% for user in users %}
+                            <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';">
+                                <td style="border-radius: 10px;"><input type="checkbox" name="user_checkbox" value="{{ user.id }}"></td>
+                                <td style="text-align: center;">{{ loop.index }}</td>  <!-- Display the row number -->
+                                <!-- <td>{{ user.id }}</td> -->
+                                <td>{{ user.username }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.name }}</td>
+                                <td>{{ user.telephoneNo }}</td>
+                                <td style="border-radius: 10px;">{{ user.level }}</td>
+                            </tr>
+                            <!-- {% set row_number = row_number + 1 %} -->
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </form>
     </div>

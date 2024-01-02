@@ -1,0 +1,16 @@
+<!-- templates/profile.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Profile</title>
+</head>
+<body>
+    <h1>User Profile</h1>
+    {% if user %}
+        <p>Username: {{ user.username }}</p>
+        {% if user.image %}
+            <img src="{{ url_for('static', filename='uploads/' + user.image) }}" alt="User Image">
+        {% endif %}
+    {% endif %}
+</body>
+</html>

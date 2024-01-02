@@ -260,7 +260,7 @@ body.register {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.014);
     z-index: 1;
     width: 300px;
-    height: 500px;
+    height: fit-content;
     background: #f9f9f9;
     border-radius: 10px;
     margin: 8px;
@@ -286,6 +286,76 @@ body.register {
 
 .toApprove {
     list-style-type: none;
+}
+
+#reportButtons {
+    width: 250px;
+    height: 200px;
+}
+
+.popup .excelExportBtns {
+    flex: 1;
+    margin: 5px 0;
+    padding: 10px;
+    height: 30px;
+    background-color: #ffffff;
+    border: 1px solid #eeefe9;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.popup .excelExportBtns span {
+    padding: 5px 5px 0 2px;
+    font-size: 25px;
+    color: #0078d4;
+}
+
+.popup .excelExportBtns h5 {
+    padding: 0 5px;
+    flex: 1;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.popup .excelExportBtns button {
+    width: fit-content;
+    height: auto;
+    background: #f7f7f7;
+    border: 1px solid #cecece;
+    font-size: 12px;
+    border-radius: 3px;
+    padding: 2px 5px;
+}
+
+.popup .excelExportVisitorBtns {
+    display: block;
+}
+
+.popup .excelExportVisitorBtns .excelTimeDuration {
+    width: 100%;
+    height: 46px;
+    margin: 5px 0;
+    background: #ffffff;
+    border: 1px solid #eeefe9;
+    font-size: 12px;
+    border-radius: 3px;
+    padding: 2px 5px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.popup .excelExportVisitorBtns .excelTimeDuration input {
+    width: 150px;
+    padding: 4px 6px;
+    border: 1px solid #c8c8c8;
+    border-radius: 3px;
+    background-color: #ffffff;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 .toApprove li form {
@@ -420,6 +490,7 @@ body.register {
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, box-shadow 0.3s;
     margin-top: auto;
+    text-align: center;
 }
 
 .btn-status {
@@ -549,17 +620,33 @@ body.register {
     margin: 30px 0;
 }
 
+.user-list .outerContainer {
+    width: 100%;
+
+}
+
 .user-list .table-container {
-    width: calc(100% - 42px);
-    height: fit-content;
-    padding: 10px 20px 20px 20px;
+    width: calc(100%);
+    height: 450px;
     border: 1px solid #b5b5b3;
     border-radius: 10px;
+    overflow: scroll;
+    overflow-y: auto; 
+    overflow-x: auto;
+    table-layout: fixed; 
 }
 
 .user-list table {
-    width: 100%;
+    width: calc(100% - 40px);
     border-collapse: collapse;
+    margin: 0 20px 20px 20px;
+}
+
+.user-list tbody {
+    overflow: scroll;
+    height: 300px;
+    overflow-y: auto; 
+    scroll-behavior: smooth;
 }
 
 .user-list tr {
@@ -575,6 +662,14 @@ body.register {
     margin-bottom: 50px;
 } */
 
+.user-list thead th {
+    background-color: #f3f3f3;
+    outline: 1px solid #f3f3f3;
+    color: #000000;
+    position: sticky;
+    top: 0;
+}
+
 .user-list th, .user-list td {
     /* border: 1px solid #d47878; */
     border-top: hidden;
@@ -585,13 +680,6 @@ body.register {
     overflow: hidden;
     margin-bottom: 10px;
     white-space: nowrap;
-}
-
-.user-list th {
-    background-color: transparent;
-    color: rgb(0, 0, 0);
-    font-weight: 600;
-    height: 40px;
 }
 
 .user-list tr:nth-child(even) {
@@ -610,6 +698,41 @@ body.register {
     display: flex;
     align-items: center;
     justify-content: space-between;
+}
+
+.user-list .mainTableHeader .leftControls {
+    width: fit-content;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.user-list .mainTableHeader .leftControls .goBack {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    transition: 0.2s;
+    cursor: pointer;
+}
+
+.user-list .mainTableHeader .leftControls .goBack:hover {
+    width: 30px;
+    height: 30px;
+    border: none;
+    border-radius: 5px;
+    background: #00000025;
+}
+
+.user-list .mainTableHeader .leftControls .goBack span {
+    font-size: 20px;
+    text-decoration: none;
+    padding: 5px 0;
+}
+
+.user-list .mainTableHeader .leftControls h1 {
+    padding: 0 10px;
 }
 
 .user-list .mainTableHeader .operatingTools {
@@ -697,16 +820,35 @@ body.register {
 
 /* Initially hide the checkbox */
 .user-list input[type="checkbox"] {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    cursor: pointer;
     opacity: 0;
-}
+  }
+
+  /* .user-list input[type="checkbox"]:checked::before {
+    content: '\2713';
+    display: block;
+    color: white;
+    font-size: 14px;
+    text-align: center;
+    line-height: 18px;
+  } */
 
 /* Show the checkbox when hovering over the table row */
 .user-list tr:hover input[type="checkbox"] {
     opacity: 1;
+    border: 1px solid #81817f;
 }
 
 .user-list tr input[type="checkbox"]:checked {
     opacity: 1;
+    background-color: #0078d4;
+    border: 1px solid #0078d4;
 }
 
 .user-list input[type="checkbox"] {

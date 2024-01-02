@@ -1,12 +1,18 @@
-from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session
+from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session, send_file, send_from_directory
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
+from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField, TelField
 from wtforms.validators import InputRequired, Length, ValidationError, EqualTo
 from flask_bcrypt import Bcrypt
 from flask_migrate import Migrate
 from datetime import datetime
+from base64 import b64encode
+import openpyxl
+from io import BytesIO
+from werkzeug.utils import secure_filename
+import os
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
@@ -14,6 +20,11 @@ migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = 'thisisasecretkey'
+
+UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # Add any other allowed file extensions
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -60,13 +71,24 @@ class Visitor(db.Model):
     arrivedTime = db.Column(db.String(20))
     departureOfficer = db.Column(db.String(50))
     departedTime = db.Column(db.String(20))
+    profilePhoto = db.Column(db.String(255), nullable=True)
+    # profilePhoto = db.Column(db.LargeBinary)
     # profilePhoto = db.Column(db.LargeBinary, name='profile_photo_upload')
 
-class ChangePasswordForm(FlaskForm):
-    old_password = PasswordField('Old Password', validators=[InputRequired(), Length(min=8, max=20)])
-    new_password = PasswordField('New Password', validators=[InputRequired(), Length(min=8, max=20)])
-    confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), EqualTo('new_password', message='Passwords must match')])
-    submit = SubmitField('Change Password')
+# class ChangePasswordForm(FlaskForm):
+#     old_password = PasswordField('Old Password', validators=[InputRequired(), Length(min=8, max=20)])
+#     new_password = PasswordField('New Password', validators=[InputRequired(), Length(min=8, max=20)])
+#     confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), EqualTo('new_password', message='Passwords must match')])
+#     submit = SubmitField('Change Password')
+
+# class ImageUploadForm(FlaskForm):
+#     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
+
+class ImageUploadForm(FlaskForm):
+    profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
+ 
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Route for the form
 @app.route('/newvisitor', methods=['GET', 'POST'])
@@ -75,6 +97,8 @@ def new_visitor():
     # visitor = Visitor.query.filter_by(visitorNo=visitor_id).first()
 
     visitor_code = generate_visitorCode()
+
+    form = ImageUploadForm()
 
     if request.method == 'POST':
         # Get form data using request.form.get to avoid BadRequestKeyError
@@ -96,7 +120,54 @@ def new_visitor():
         history = request.form.get('history', '')
         status = request.form.get('statusbtn', '')
         request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+        pic = request.files['pic']
+
+        filename = secure_filename(pic.filename)
         # profilePhoto = request.form.get('profilePhoto', '')  # Assuming status is captured from the button
+        
+        # Check if the file is present in the request
+        # if 'profilePhoto' in request.files:
+        #     uploaded_file = request.files['profilePhoto']
+
+        #     # Check if the file has an allowed extension
+        #     if uploaded_file and allowed_file(uploaded_file.filename):
+        #         # Generate a secure filename and save the file
+        #         filename = secure_filename(uploaded_file.filename)
+        #         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        #         uploaded_file.save(file_path)
+
+        #         # Update the Visitor object with the file path
+        #         new_visitor = Visitor(
+        #             lastName=last_name,
+        #             firstName=first_name,
+        #             companyName=company_name,
+        #             visitorId=visitor_id,
+        #             arrivingDate=arriving_date,
+        #             arrivingTime=arriving_time,
+        #             departingDate=departing_date,
+        #             departingTime=departing_time,
+        #             vehicleNo=vehicle_no,
+        #             visitorNo=visitor_no,
+        #             phoneNumber=phone_number,
+        #             emailAddress=email_address,
+        #             requester=requester,
+        #             noOfVisitors=noOfVisitors,
+        #             remarks=remarks,
+        #             history=history,
+        #             status=status,
+        #             requestTime=request_time,
+        #             # ... (your existing attributes)
+        #             profilePhoto=file_path
+        #         )
+
+        # Get the uploaded file from the form
+        # uploaded_file = request.files['profilePhoto']
+
+        # # Save the uploaded file as a BLOB in the 'profilePhoto' column
+        # if uploaded_file:
+        #     file_content = uploaded_file.read()
+        #     new_visitor.profilePhoto = file_content
 
         # Create a new Visitor object
         new_visitor = Visitor(
@@ -118,7 +189,7 @@ def new_visitor():
             history=history,
             status=status,
             requestTime=request_time,
-            # profilePhoto=profilePhoto
+            profilePhoto=pic.read()  # Assuming profilePhoto is the file path or name
         )
 
         # Add the new visitor to the database
@@ -131,8 +202,8 @@ def new_visitor():
         return redirect(url_for('dashboard'))
 
     return render_template('newvisitor.html',
-                           requester=current_user.username,
-                           visitorNo=visitor_code)
+                            requester=current_user.username,
+                            visitorNo=visitor_code)
 
 def generate_visitorCode():
     # Get the latest code from the database for the current date
@@ -261,7 +332,7 @@ def register():
             db.session.add(new_user)
             db.session.commit()
         flash('Account created successfully', 'success')
-        return redirect(url_for('dashboard'))
+        return redirect(url_for('all_users'))
 
     return render_template('register.html', form=form)
 
@@ -331,6 +402,9 @@ def get_visitor():
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
 
+        # Convert the BLOB data to Base64 encoding
+        profile_photo_data = b64encode(visitor.profilePhoto).decode('utf-8')
+           
         # Your logic based on the clicked button value
         if clicked_button_value == 'Approve':
             visitor.status = 'Approved'
@@ -345,8 +419,8 @@ def get_visitor():
             visitor.approvedTime= datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             db.session.commit()
             return redirect(url_for('dashboard'))
-
-        return render_template('filledForm.html', visitor=visitor)
+         
+        return render_template('filledForm.html', visitor=visitor, profile_photo_data=profile_photo_data)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
@@ -450,6 +524,66 @@ def update_user():
             return "User not found", 404
 
     return "Invalid request", 400
+
+# @app.route('/reports', methods=['GET', 'POST'])
+# @login_required
+# def reports():
+#     return render_template('reports.html')
+
+@app.route('/export_excel_user', methods=['POST'])
+def export_excel_user():
+    # Fetch data from the database
+    data = User.query.all()
+
+    # Create an Excel workbook and add a worksheet
+    wb = openpyxl.Workbook()
+    ws = wb.active
+
+    # Write headers to the worksheet
+    headers = User.__table__.columns.keys()
+    ws.append(headers)
+
+    # Write data to the worksheet
+    for row in data:
+        ws.append([getattr(row, field) for field in headers])
+
+    # Save the workbook to BytesIO object
+    excel_data = BytesIO()
+    wb.save(excel_data)
+    excel_data.seek(0)
+
+    # Return the Excel file as a downloadable attachment
+    return send_file(
+        excel_data,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name='users.xlsx'
+    )
+
+
+@app.route('/upload', methods=['GET', 'POST'])
+def upload():
+    form = ImageUploadForm()
+
+    if form.validate_on_submit():
+        user = User.query.filter_by(username='username_of_logged_in_user').first()  # Replace with actual username
+        if user:
+            image = form.image.data
+            filename = secure_filename(image.filename)
+            image.save(os.path.join(app.root_path, 'static', 'uploads', filename))
+            user.image = filename
+            db.session.commit()
+            return redirect(url_for('profile'))  # Redirect to user's profile page
+
+    return render_template('error.html', form=form)
+
+@app.route('/profile')
+def profile():
+    user = User.query.filter_by(username='username_of_logged_in_user').first()  # Replace with actual username
+    return render_template('profile.html', user=user)
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)

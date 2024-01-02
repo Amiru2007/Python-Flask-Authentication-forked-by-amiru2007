@@ -10,7 +10,7 @@
 
 <body class="visitorPage">
     <div class="content visitor">
-        <form method="POST" action="{{ url_for('new_visitor') }}" class="visitorForm">
+        <form method="POST" action="{{ url_for('new_visitor') }}" class="visitorForm" enctype="multipart/form-data">
             
             <div class="visitordetails">
                 <div class="names">
@@ -113,11 +113,11 @@
                 <div class="right">
                     <div class="visitor-photo">
                         <div class="photo-wrapper">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/Unknown_person.jpg/434px-Unknown_person.jpg" alt="visitor photo">
+                            <img id="uploadedImage" src="" alt="Uploaded Image">
                         </div>
                         <div class="photo-controls">
                             <input type="button" class="btn-live" id="live" value="Live">
-                            <input type="file" class="btn-import" id="profilePhoto" value="Import" name="profilePhoto">
+                            <input type="file" class="btn-import" id="profilePhoto" name="pic">
                         </div>
                     </div>
                     <div class="photo-wrapper">
@@ -138,5 +138,24 @@
             </div>
         </form>
     </div>
+    <script>
+        // JavaScript to dynamically update the uploaded image
+        document.getElementById('profilePhoto').addEventListener('change', function(event) {
+            var fileInput = event.target;
+            var uploadedImage = document.getElementById('uploadedImage');
+    
+            if (fileInput.files && fileInput.files[0]) {
+                var reader = new FileReader();
+    
+                reader.onload = function(e) {
+                    uploadedImage.src = e.target.result;
+                };
+    
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                uploadedImage.src = "";  // Clear the image if no file selected
+            }
+        });
+    </script>
 </body>
 </html>
