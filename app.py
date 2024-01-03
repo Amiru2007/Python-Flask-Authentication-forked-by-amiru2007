@@ -10,6 +10,7 @@ from flask_migrate import Migrate
 from datetime import datetime
 from base64 import b64encode
 import openpyxl
+from openpyxl.worksheet.table import Table, TableStyleInfo
 from io import BytesIO
 from werkzeug.utils import secure_filename
 import os
@@ -50,7 +51,7 @@ class Visitor(db.Model):
     lastName = db.Column(db.String(50), nullable=False)
     firstName = db.Column(db.String(50), nullable=False)
     companyName = db.Column(db.String(100))
-    visitorId = db.Column(db.String(20))
+    visitorId = db.Column(db.String(20), nullable=False)
     arrivingDate = db.Column(db.String(20))
     arrivingTime = db.Column(db.String(20))
     departingDate = db.Column(db.String(20))
@@ -72,6 +73,7 @@ class Visitor(db.Model):
     departureOfficer = db.Column(db.String(50))
     departedTime = db.Column(db.String(20))
     profilePhoto = db.Column(db.String(255), nullable=True)
+    committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
     # profilePhoto = db.Column(db.LargeBinary)
     # profilePhoto = db.Column(db.LargeBinary, name='profile_photo_upload')
 
@@ -120,56 +122,18 @@ def new_visitor():
         history = request.form.get('history', '')
         status = request.form.get('statusbtn', '')
         request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        if not visitor_id:
+            # Render the template with an error message
+            return render_template('newvisitor.html', 
+                                   requester=current_user.username, 
+                                   visitorNo=visitor_code,
+                                   error_message='You must enter a Visitor ID')
 
         pic = request.files['pic']
 
         filename = secure_filename(pic.filename)
-        # profilePhoto = request.form.get('profilePhoto', '')  # Assuming status is captured from the button
         
-        # Check if the file is present in the request
-        # if 'profilePhoto' in request.files:
-        #     uploaded_file = request.files['profilePhoto']
-
-        #     # Check if the file has an allowed extension
-        #     if uploaded_file and allowed_file(uploaded_file.filename):
-        #         # Generate a secure filename and save the file
-        #         filename = secure_filename(uploaded_file.filename)
-        #         file_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
-        #         uploaded_file.save(file_path)
-
-        #         # Update the Visitor object with the file path
-        #         new_visitor = Visitor(
-        #             lastName=last_name,
-        #             firstName=first_name,
-        #             companyName=company_name,
-        #             visitorId=visitor_id,
-        #             arrivingDate=arriving_date,
-        #             arrivingTime=arriving_time,
-        #             departingDate=departing_date,
-        #             departingTime=departing_time,
-        #             vehicleNo=vehicle_no,
-        #             visitorNo=visitor_no,
-        #             phoneNumber=phone_number,
-        #             emailAddress=email_address,
-        #             requester=requester,
-        #             noOfVisitors=noOfVisitors,
-        #             remarks=remarks,
-        #             history=history,
-        #             status=status,
-        #             requestTime=request_time,
-        #             # ... (your existing attributes)
-        #             profilePhoto=file_path
-        #         )
-
-        # Get the uploaded file from the form
-        # uploaded_file = request.files['profilePhoto']
-
-        # # Save the uploaded file as a BLOB in the 'profilePhoto' column
-        # if uploaded_file:
-        #     file_content = uploaded_file.read()
-        #     new_visitor.profilePhoto = file_content
-
-        # Create a new Visitor object
         new_visitor = Visitor(
             lastName=last_name,
             firstName=first_name,
@@ -189,7 +153,8 @@ def new_visitor():
             history=history,
             status=status,
             requestTime=request_time,
-            profilePhoto=pic.read()  # Assuming profilePhoto is the file path or name
+            profilePhoto=pic.read(),
+            committedDate=datetime.utcnow()  # Assuming profilePhoto is the file path or name
         )
 
         # Add the new visitor to the database
@@ -346,6 +311,9 @@ def arrive_visitor():
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
 
+        # Convert the BLOB data to Base64 encoding
+        profile_photo_data = b64encode(visitor.profilePhoto).decode('utf-8')
+           
         # Your logic based on the clicked button value
         if clicked_button_value == 'Arrived':
             visitor.status = 'Arrived'
@@ -354,7 +322,7 @@ def arrive_visitor():
             db.session.commit()
             return redirect(url_for('dashboard'))
 
-        return render_template('arriveVisitor.html', visitor=visitor)
+        return render_template('arriveVisitor.html', visitor=visitor, profile_photo_data=profile_photo_data)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
@@ -369,6 +337,9 @@ def depart_visitor():
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
 
+        # Convert the BLOB data to Base64 encoding
+        profile_photo_data = b64encode(visitor.profilePhoto).decode('utf-8')
+           
         # Your logic based on the clicked button value
         if clicked_button_value == 'Departed':
             visitor.status = 'Departed'
@@ -377,7 +348,7 @@ def depart_visitor():
             db.session.commit()
             return redirect(url_for('dashboard'))
 
-        return render_template('departVisitor.html', visitor=visitor)
+        return render_template('departVisitor.html', visitor=visitor, profile_photo_data=profile_photo_data)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
@@ -539,13 +510,34 @@ def export_excel_user():
     wb = openpyxl.Workbook()
     ws = wb.active
 
-    # Write headers to the worksheet
-    headers = User.__table__.columns.keys()
+    # Define headers to be included in the worksheet
+    headers = ['Index', 'username', 'email', 'name', 'telephoneNo', 'level']  # Include 'Index'
     ws.append(headers)
 
-    # Write data to the worksheet
-    for row in data:
-        ws.append([getattr(row, field) for field in headers])
+    # Write data to the worksheet with an index
+    for index, row in enumerate(data, start=1):
+        ws.append([index] + [getattr(row, field) for field in headers[1:]])
+
+    # Create a table
+    table = Table(displayName="UserData", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+    style = TableStyleInfo(
+        name="TableStyleMedium9", showFirstColumn=False,
+        showLastColumn=False, showRowStripes=True, showColumnStripes=True)
+    table.tableStyleInfo = style
+    ws.add_table(table)
+
+    # Adjust cell width to fit content
+    for column in ws.columns:
+        max_length = 0
+        column = [cell for cell in column]
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column[0].column_letter].width = adjusted_width
 
     # Save the workbook to BytesIO object
     excel_data = BytesIO()
@@ -558,6 +550,84 @@ def export_excel_user():
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         as_attachment=True,
         download_name='users.xlsx'
+    )
+
+@app.route('/export_excel_visitor', methods=['POST'])
+def export_excel_visitor():
+    # Get start and end dates from the form
+    start_date = request.form.get('startDate')
+    end_date = request.form.get('endDate')
+
+    # Convert start and end dates to datetime objects
+    start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
+    end_datetime = datetime.strptime(end_date, '%Y-%m-%d')
+
+    # Fetch visitor data from the database based on the committed date range
+    data = Visitor.query.filter(
+        db.func.date(Visitor.committedDate) >= start_datetime.date(),
+        db.func.date(Visitor.committedDate) <= end_datetime.date()
+    ).all()
+
+    # Create an Excel workbook and add a worksheet
+    wb = openpyxl.Workbook()
+    ws = wb.active
+
+    # Define headers to be included in the worksheet (consistent with the User model)
+    headers = [
+        'id', 'visitorNo', 'visitorId', 'firstName', 'lastName', 'companyName', 'arrivingDate', 'arrivingTime',
+        'departingDate', 'departingTime', 'vehicleNo', 'phoneNumber',
+        'emailAddress', 'requester', 'noOfVisitors', 'remarks', 'history',
+        'status', 'requestTime', 'approver', 'approvedTime', 'arrivalOfficer',
+        'arrivedTime', 'departureOfficer', 'departedTime'
+    ]
+
+    # Write headers to the worksheet
+    ws.append(headers)
+
+    # Write data to the worksheet
+    for row in data:
+        ws.append([
+            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime('%Y-%m-%d %H:%M:%S')
+            for field in headers
+        ])
+
+    # Create a table range
+    table = Table(displayName="VisitorTable", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+
+    # Add a TableStyleInfo to the table
+    style = TableStyleInfo(
+        name="TableStyleMedium9", showFirstColumn=False,
+        showLastColumn=False, showRowStripes=True, showColumnStripes=True
+    )
+    table.tableStyleInfo = style
+
+    # Add the table to the worksheet
+    ws.add_table(table)
+
+    # Adjust cell width to fit content
+    for column in ws.columns:
+        max_length = 0
+        column = [cell for cell in column]
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column[0].column_letter].width = adjusted_width
+
+    # Save the workbook to BytesIO object
+    excel_data = BytesIO()
+    wb.save(excel_data)
+    excel_data.seek(0)
+
+    # Return the Excel file as a downloadable attachment
+    return send_file(
+        excel_data,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name='visitor_records.xlsx'
     )
 
 

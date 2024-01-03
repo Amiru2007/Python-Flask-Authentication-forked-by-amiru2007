@@ -134,7 +134,7 @@
         </div>
         <div class="overlay" id="reportOverlay" onclick="closeReports()"></div>
         <div class="popup" id="reportButtons">
-            <div class="popupHeader">
+            <div class="popupHeader" style="position: relative; width: 100%;">
                 <h3>Export Reports</h3>
                 <button onclick="closeReports()"><i class="ph ph-x"></i></button>
             </div>
@@ -153,11 +153,11 @@
         </div>
         <div class="overlay" id="visitorReportOverlay" onclick="closeVisitorReport()"></div>
         <div class="popup" id="visitorReportButtons">
-            <div class="popupHeader">
+            <div class="popupHeader" style="position: relative; width: 100%;">
                 <h3>Set Duration</h3>
                 <button onclick="closeVisitorReport()"><i class="ph ph-x"></i></button>
             </div>
-            <form action="/export_excel_user" method="POST" class="excelExportVisitorBtns">
+            <form action="/export_excel_visitor" method="POST" class="excelExportVisitorBtns">
                 <div class="startDate excelTimeDuration">
                     <label for="startDate">Start Date</label>
                     <input type="date" id="startDate" name="startDate">
@@ -173,15 +173,6 @@
     <div class="dashboard-footer">
         <a href="{{url_for('logout')}}"><button type="button">logout</button></a>
     </div>
-    <form action="/upload" method="post" enctype="multipart/form-data">
-        <input type="file" name="image">
-        <input type="submit" value="Upload">
-    </form>
-
-    <!-- Display the selected image -->
-    {% if selected_image %}
-        <img src="{{ selected_image }}" alt="Selected Image">
-    {% endif %}
     <script>
         function openShowApprovedList() {
             document.getElementById('pendingApprovaloverlay').classList.add('visible');
@@ -204,12 +195,12 @@
         }
 
         function openArrivedList() {
-            document.getElementById('ApprovedVisitorsoverlay').classList.add('visible');
+            document.getElementById('arrivedOverlay').classList.add('visible');
             document.getElementById('arrivedVisitors').classList.add('visible');
         }
 
         function closeArrivedList() {
-            document.getElementById('ApprovedVisitorsoverlay').classList.remove('visible');
+            document.getElementById('arrivedOverlay').classList.remove('visible');
             document.getElementById('arrivedVisitors').classList.remove('visible');
         }
 

@@ -7,7 +7,7 @@
 }
 
 input[type="button"] {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 input:disabled {
@@ -81,12 +81,13 @@ body.register {
     height: 20px;
     font-weight: 400;
     margin: 5px 0;
+    padding: 0 5px;
 }
 
 .login-input {
-    width: 100%;
+    width: calc(100% - 28px);
     padding: 8px;
-    margin: 5px 0;
+    margin: 5px 5px;
     border: 1px solid #c8c8c8;
     border-radius: 8px;
     background-color: #ffffff;
@@ -169,7 +170,7 @@ body.register {
     width: 170px;
     height: fit-content;
     background-color: #ffffff;
-    margin: 10px;
+    /* margin: 10px; */
     padding: 10px 0 20px 0;
     color: #006bce;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .13), 0 1px 1px 0 rgba(0, 0, 0, .11);
@@ -250,6 +251,7 @@ body.register {
     opacity: 0;
     background-color: rgba(0, 0, 0, 0.226);
     transition: opacity 0.3s ease-in-out;
+    backdrop-filter: blur(2px);
 }
 
 .popup {
@@ -261,31 +263,43 @@ body.register {
     z-index: 1;
     width: 300px;
     height: fit-content;
+    max-height: calc(100vh - 30px); /* Set maximum height to 90% of the viewport height */
+    overflow-y: auto;
     background: #f9f9f9;
     border-radius: 10px;
     margin: 8px;
-    padding: 15px;
+    padding: 0 15px 15px 15px;
     opacity: 0;
-    transition: opacity 0.3s ease-in-out;
+    transition: all 1s;
+    -webkit-transition: all 1s;
+    border: 1px solid #ddd;
 }
 
 .popupHeader {
-    height: 60px;
+    height: 40px;
+    width: 300px;
+    padding-top: 5px;
     display: flex; 
-    justify-content: space-between;
+    font-size: 14px;
     align-items: center;
+    justify-content: space-between;
+    position: fixed;
+    z-index: 2;
+    background: #f9f9f9;
 }
 
 .popupHeader button {
     border: none;
     background: transparent;
     font-size: 20px;
+    /* margin: 5px; */
     cursor: pointer;
     color: #000;
 }
 
 .toApprove {
     list-style-type: none;
+    margin-top: 50px;
 }
 
 #reportButtons {
@@ -365,8 +379,10 @@ body.register {
     height: 30px;
     background-color: #ffffff;
     border: 1px solid #eeefe9;
-    border-radius: 10px;
+    border-radius: 5px;
+    display: flex;
 }
+
 .toApprove li form button {
     flex: 1;
     font-size: 14px;
@@ -375,7 +391,7 @@ body.register {
     text-align: left;
     background-color: transparent;
     border: none;
-    border-radius: 10px;
+    border-radius: 5px;
 }
 
 .overlay.visible,
@@ -540,6 +556,33 @@ body.register {
     margin: 0 3px;
 }
 
+.right .visitor-photo .photo-controls input[type=file] {
+    position: absolute;
+    font-size: 100px;
+    right: 0;
+    top: 0;
+    opacity: 0;
+}
+
+.right .visitor-photo .photo-controls .file-upload-label {
+    padding: 4px 10px;
+    border: 1px solid #c8c8c8;
+    border-radius: 8px;
+    font-size: 14px;
+    outline: none;
+    width: fit-content;
+    background-color: #0078d4;
+    color: white;
+    margin-top: auto;
+    text-align: center;
+    cursor: pointer;
+    display: inline-block;
+}
+
+.right .visitor-photo .photo-controls .file-upload-label:hover {
+    background-color: #0072c9;
+}
+
 .right .photo-wrapper img {
     width: 180px;
     height: 180px;
@@ -622,7 +665,6 @@ body.register {
 
 .user-list .outerContainer {
     width: 100%;
-
 }
 
 .user-list .table-container {
@@ -634,6 +676,20 @@ body.register {
     overflow-y: auto; 
     overflow-x: auto;
     table-layout: fixed; 
+}
+
+.checkbox:checked::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f00c";
+    display: inline-block;
+    /* padding: 3px; */
+    margin-top: -7px;
+    margin-left: 1px;
+    font-size: 10px;
+    color: #ffffff;
+    vertical-align: middle;
+    font-weight: 600;
+    -webkit-font-smoothing: antialiased;
 }
 
 .user-list table {
@@ -854,4 +910,363 @@ body.register {
 .user-list input[type="checkbox"] {
     transform: scale(1.2);
     margin: 7px; /* Adjust the font size as needed */
+}
+
+
+@media screen and (max-width: 1360px) {
+    .toolsAndPreview {
+        height: 400px;
+    }
+    
+    .tools .grid-container {
+        display: grid;
+        grid-template-columns: repeat(3, 170px);
+        grid-template-rows: repeat(2, 170px);
+        gap: 30px;
+    }
+}
+
+@media screen and (max-width: 920px) {    
+    body.visitorPage {
+        width: 100%;
+    }
+
+    .visitdetails {
+        display: block;
+    }
+
+    .visitdetails .left {
+        height: fit-content;
+        width: calc(100% - 46px);
+    }
+
+    .visitdetails .left h4 {
+        font-size: 18px;
+    }
+
+    .visitorForm .names,
+    .visitdetails .left .container {
+        height: 40px;
+        width: 100%
+    }
+    
+    .visitorForm .visitordetails .names .lastname,
+    .visitorForm .visitordetails .names .firstname,
+    .visitorForm .visitordetails .names .company,
+    .visitorForm .visitordetails .names .id {
+        padding: 5px;
+    }
+    
+    .visitdetails .left .enterDetail {
+        width: 100%;
+        padding: 10px;
+    }
+    
+    .names label,
+    .container label {
+        padding: 6px 4px 0 0;
+        float: left;
+        font-size: 11px;
+        width: 80px;
+        font-weight: 400;
+    }
+    
+    .names label {
+        width: 100px;
+    }
+    
+    .names input,
+    .container input,
+    .photo-controls input,
+    .footer input,
+    .footer button {
+        width: calc(100% - 90px);
+        padding: 1px 2px;
+        border: 1px solid #c8c8c8;
+        border-radius: 4px;
+        background-color: #ffffff;
+        font-size: 10px;
+        outline: none;
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .names input {
+        width: calc(100% - 110px);
+    }
+    
+    .photo-controls #live {
+        background-color: #0078d4;
+        color: white;
+        transition: background-color 0.3s, box-shadow 0.3s;
+        margin-top: auto;
+    }
+    
+    .buttons input,
+    .footer input,
+    .footer button {
+        width: 70px;
+    }
+    
+    #statusbtn {
+        width: fit-content;
+        background-color: #0078d4;
+        color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: background-color 0.3s, box-shadow 0.3s;
+        margin-top: auto;
+        text-align: center;
+    }
+    
+    .btn-status {
+        justify-content: flex-end;
+    }
+    
+    .right {
+        width: calc(100% - 46px);
+        height: fit-content;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .right .visitor-photo {
+        height: fit-content;
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .right .outside {
+        width: 50%;
+        height: 100px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .photo-wrapper {
+        height: fit-content;
+    }
+    
+    .right .visitor-photo .photo-wrapper img {
+        width: 100px;
+        height: 100px;
+        padding: 0;
+        border-radius: 10px;
+    }
+    
+    .right .visitor-photo .photo-controls {
+        width: 100%;
+        height: fit-content;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .right .visitor-photo .photo-controls input {
+        width: 50px;
+        font-size: 10px;
+        margin: 0 3px;
+    }
+    
+    .right .visitor-photo .photo-controls input[type=file] {
+        position: absolute;
+        font-size: 100px;
+        right: 0;
+        top: 0;
+        opacity: 0;
+    }
+    
+    .right .visitor-photo .photo-controls .file-upload-label {
+        padding: 4px 10px;
+        border: 1px solid #c8c8c8;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        width: fit-content;
+        background-color: #0078d4;
+        color: white;
+        margin-top: auto;
+        text-align: center;
+        cursor: pointer;
+        display: inline-block;
+    }
+    
+    .right .visitor-photo .photo-controls .file-upload-label:hover {
+        background-color: #0072c9;
+    }
+    
+    .right .photo-wrapper img {
+        width: 100px;
+        height: 100px;
+        border-radius: 10px;
+    }
+    
+    .footer {
+        width: calc(100% - 32px);
+        height: 70px;
+        background: transparent;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 8px;
+        padding: 8px;
+    }
+    
+    .footer .approveOrReject, 
+    .footer .saveOrCancel {
+        width: 50%;
+    }
+    
+    .footer .approveOrReject {
+        display: flex;
+        align-items: center;
+        justify-content: space;
+    }
+    
+    .footer .approveOrReject .accessed {
+        background-color: #0078d4;
+        color: white;
+        margin-top: auto;
+    }
+    
+    .footer .saveOrCancel {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+    }
+    
+    .footer .saveOrCancel .btn-save {
+        margin-top: 6px;
+    }
+    
+    .footer input  {
+        margin: 0 4px;
+    }
+
+    .toolsAndPreview {
+        height: 550px;
+        width: 100%;
+    }
+    
+    .tools .grid-container {
+        display: grid;
+        grid-template-columns: repeat(2, 170px);
+        grid-template-rows: repeat(3, 170px);
+        gap: 30px;
+        transform: scale(0.8);
+    }
+}
+
+@media screen and (max-width: 600px) {
+    body.login {
+        width: 100%;
+    }
+
+    .login .login-details {
+        width: 100%;
+    }
+
+    .dashboard .header-logo,
+    .login .login-details .logo-wrapper {
+        width: 100%;
+        height: auto;
+    }
+
+    .dashboard .header-logo .logo-image,
+    .login .login-details .logo-wrapper .logo-image {
+        width: 80%;
+        height: auto;
+    }
+
+    .toolsAndPreview {
+        height: 550px;
+        width: 100%;
+    }
+    
+    .tools .grid-container {
+        display: grid;
+        grid-template-columns: repeat(2, 170px);
+        grid-template-rows: repeat(3, 170px);
+        gap: 30px;
+        transform: scale(0.8);
+    }
+}
+
+@media screen and (max-width: 530px) {
+    .tools .grid-container {
+        display: grid;
+        grid-template-columns: repeat(2, 170px);
+        grid-template-rows: repeat(3, 170px);
+        gap: 30px;
+        transform: scale(0.8);
+    }
+}
+
+@media screen and (max-width: 400px) {
+    body.login {
+        width: 100%;
+    }
+
+    .login .login-details {
+        width: 100%;
+    }
+
+    .dashboard .header-logo,
+    .login .login-details .logo-wrapper {
+        width: 100%;
+        height: auto;
+    }
+
+    .dashboard .header-logo .logo-image,
+    .login .login-details .logo-wrapper .logo-image {
+        width: 80%;
+        height: auto;
+    }
+
+    .popup {
+        width: calc(100% - 32px);
+        max-height: calc(100vh - 140px);
+        margin: 0;
+    }
+    
+    .popupHeader {
+        width: calc(100% - 32px);
+    }
+}
+
+@media screen and (max-width: 330px) {
+    .toolsAndPreview {
+        height: 800px;
+        width: 100%;
+    }
+
+    .tools .grid-container {
+        width: calc(100%);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .tools .grid-container .grid-item {
+        width: calc(100% - 12px);
+        height: fit-content;
+        background-color: #ffffff;
+        /* margin: 10px; */
+        padding: 10px 0 20px 0;
+        color: #006bce;
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .13), 0 1px 1px 0 rgba(0, 0, 0, .11);
+        border: 1px solid #eeefe9;
+        border-radius: 10px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
 }

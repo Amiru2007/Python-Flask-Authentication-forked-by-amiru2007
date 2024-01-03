@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" type="text/css" href="//use.fontawesome.com/releases/v5.7.2/css/all.css">
     <title>All Users</title>
 </head>
 <body bgcolor="#f3f3f3">
@@ -44,7 +45,7 @@
                     <table>
                         <thead class="tableHeadRow"> 
                             <tr>
-                                <th><input type="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th> <!-- Add an empty header for checkboxes -->
+                                <th><input type="checkbox" class="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th> <!-- Add an empty header for checkboxes -->
                                 <th style="text-align: center;">#</th>
                                 <!-- <th>ID</th> -->
                                 <th>Username</th>
@@ -57,8 +58,10 @@
                         <!-- {% set row_number = 1 %} -->
                         <tbody>
                             {% for user in users %}
-                            <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';">
-                                <td style="border-radius: 10px;"><input type="checkbox" name="user_checkbox" value="{{ user.id }}"></td>
+                            <tr style="cursor: pointer;" {% if user.level.lower() == 'admin' %} onclick="event.preventDefault();" {% else %} onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';" {% endif %}>
+                                <td style="border-radius: 10px;">
+                                    <input type="checkbox" class="checkbox" name="user_checkbox" value="{{ user.id }}" {% if user.level.lower() == 'admin' %} disabled {% endif %}>
+                                </td>
                                 <td style="text-align: center;">{{ loop.index }}</td>  <!-- Display the row number -->
                                 <!-- <td>{{ user.id }}</td> -->
                                 <td>{{ user.username }}</td>
@@ -76,8 +79,8 @@
         </form>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.querySelector('form').addEventListener('submit', function(event) {
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('form').addEventListener('submit', function (event) {
                 event.preventDefault();
                 fetch(this.action, {
                     method: this.method,
@@ -88,13 +91,13 @@
                     document.querySelector('.user-list').innerHTML = html;
                 });
             });
-
+    
             const searchInput = document.getElementById('searchInput');
             const tableCells = document.querySelectorAll('.user-list td');
-            
-            searchInput.addEventListener('input', function() {
+    
+            searchInput.addEventListener('input', function () {
                 const searchText = this.value.trim().toLowerCase();
-
+    
                 tableCells.forEach(cell => {
                     const textContent = cell.textContent.trim().toLowerCase();
                     const highlightedText = textContent.replace(new RegExp(searchText, 'gi'), match => `<span class="highlight">${match}</span>`);
@@ -102,12 +105,32 @@
                 });
             });
         });
-
+    
         function toggleCheckboxes(masterCheckbox) {
             const checkboxes = document.querySelectorAll('tbody input[name="user_checkbox"]');
             checkboxes.forEach(checkbox => {
-                checkbox.checked = masterCheckbox.checked;
+                if (!isAdminRow(checkbox)) {
+                    checkbox.checked = masterCheckbox.checked;
+                    setCheckboxName(checkbox);
+                }
             });
+        }
+
+        function isAdminRow(checkbox) {
+            const row = checkbox.closest('tr');
+            const levelCell = row.querySelector('td:last-child');
+            return levelCell && levelCell.textContent.trim().toLowerCase() === 'admin';
+        }
+
+        function setCheckboxName(checkbox) {
+            const row = checkbox.closest('tr');
+            const levelCell = row.querySelector('td:last-child');
+            
+            if (levelCell && levelCell.textContent.trim().toLowerCase() === 'admin') {
+                checkbox.setAttribute('name', 'AdminCheckbox');
+            } else {
+                checkbox.setAttribute('name', 'user_checkbox');
+            }
         }
     </script>    
 </body>
