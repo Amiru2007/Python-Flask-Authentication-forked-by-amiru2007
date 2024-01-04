@@ -113,7 +113,11 @@
                 <div class="right">
                     <div class="visitor-photo">
                         <div class="photo-wrapper">
-                            <img src="data:image/jpeg;base64,{{ profile_photo_data }}" alt="visitor photo">
+                            {% if profile_photo_data %}
+                                <img src="data:image/jpeg;base64,{{ profile_photo_data }}" alt="visitor photo">
+                            {% else %}
+                                <img src="../static/visitor-photo.png" alt="default photo">
+                            {% endif %}
                         </div>
                         <div class="photo-controls">
                             <input type="button" class="btn-live" id="live" value="Live" disabled>

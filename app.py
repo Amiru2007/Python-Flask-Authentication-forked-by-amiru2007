@@ -251,7 +251,7 @@ def login():
 def dashboard():
     try:
         # Query to retrieve visitorNos where the status is 'Pending'
-        pending_visitor_numbers = Visitor.query.filter_by(status='Pending').with_entities(Visitor.visitorNo).all()
+        pending_visitor_numbers = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester != current_user.username).with_entities(Visitor.visitorNo).all()
         # Query to retrieve visitorNos where the status is 'Approved'
         approved_visitor_numbers = Visitor.query.filter_by(status='Approved').with_entities(Visitor.visitorNo).all()
         # Query to retrieve visitorNos where the status is 'Arrived'

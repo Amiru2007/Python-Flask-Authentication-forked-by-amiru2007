@@ -233,10 +233,7 @@ body.register {
     border: none;
     cursor: pointer;
     background: #ffffff;
-    color: rgb(0, 0, 0);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     border: 1px solid #c8c8c8;
-    transition: background-color 0.3s, box-shadow 0.3s;
     margin-top: auto;
     border-radius: 8px;
 }
