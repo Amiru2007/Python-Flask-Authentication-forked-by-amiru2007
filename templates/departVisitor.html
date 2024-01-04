@@ -103,11 +103,15 @@
                     </div>
                     <div class="container buttons">
                         <div class="enterDetail">
-                            <label for="statusbtn">Visitor Status</label>
-                            <input type="button" id="statusbtn" name="statusbtn" value="{{ visitor.status }}" style="cursor: auto;" readonly>
-                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
-                            <input type="button" class="btn-status" id="arrived" value="Arrived" disabled>
-                            <input type="submit" class="btn-status" name="changeStatus" id="departed" value="Departed" style="cursor: pointer;">
+                            <div class="visitorStatusUpdates">
+                                <label for="statusbtn">Visitor Status</label>
+                                <input type="button" id="statusbtn" name="statusbtn" value="{{ visitor.status }}" style="cursor: auto;" readonly>
+                                <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                            </div>
+                            <div class="visitorStatusUpdates">
+                                <input type="button" class="btn-status" id="arrived" value="Arrived" disabled>
+                                <input type="submit" class="btn-status" name="changeStatus" id="departed" value="Departed" style="cursor: pointer; background-color: #0078d4; color: #ffffff;">
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -132,7 +136,7 @@
                     <input type="button" class="btn-reject" id="reject" value="Reject" disabled>
                 </div>
                 <div class="saveOrCancel">
-                    <input type="button" class="btn-help" id="help" value="Help?">
+                    <!-- <input type="button" class="btn-help" id="help" value="Help?"> -->
                     <input type="button" class="btn-save" id="save" value="Save" disabled>
                     <a href="{{ url_for('dashboard') }}"><input type="button" class="btn-cancel" id="cancel" value="Cancel"></a>
                 </div>

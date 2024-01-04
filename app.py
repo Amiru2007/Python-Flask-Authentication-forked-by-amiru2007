@@ -51,7 +51,7 @@ class Visitor(db.Model):
     lastName = db.Column(db.String(50), nullable=False)
     firstName = db.Column(db.String(50), nullable=False)
     companyName = db.Column(db.String(100))
-    visitorId = db.Column(db.String(20), nullable=False)
+    visitorId = db.Column(db.String(15), nullable=False)
     arrivingDate = db.Column(db.String(20))
     arrivingTime = db.Column(db.String(20))
     departingDate = db.Column(db.String(20))

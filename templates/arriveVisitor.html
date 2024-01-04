@@ -103,11 +103,15 @@
                     </div>
                     <div class="container buttons">
                         <div class="enterDetail">
-                            <label for="statusbtn">Visitor Status</label>
-                            <input type="button" id="statusbtn" name="statusbtn" value="{{ visitor.status }}" style="cursor: auto;" readonly>
+                            <div class="visitorStatusUpdates">
+                                <label for="statusbtn">Visitor Status</label>
+                                <input type="button" id="statusbtn" name="statusbtn" value="{{ visitor.status }}" style="cursor: auto;" readonly>
+                            </div>
                             <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
-                            <input type="submit" class="btn-status" name="changeStatus" id="arrived" value="Arrived" style="cursor: pointer;">
-                            <input type="button" class="btn-status" id="departed" value="Departed" disabled>
+                            <div class="visitorStatusUpdates">
+                                <input type="submit" class="btn-status" name="changeStatus" id="arrived" value="Arrived" style="cursor: pointer; background-color: #0078d4; color: #ffffff;">
+                                <input type="button" class="btn-status" id="departed" value="Departed" disabled>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -128,11 +132,11 @@
             </div>
             <div class="footer">
                 <div class="approveOrReject">
-                    <input type="button" class="btn-approve accessed" id="approve" value="Approve" style="cursor: no-drop; background: #aabbee;" disabled>
+                    <input type="button" class="btn-approve accessed" id="approve" value="Approve" style="cursor: no-drop; background: #ffffff; color: #dddddd; font-weight: 300;" disabled>
                     <input type="button" class="btn-reject" id="reject" value="Reject" disabled>
                 </div>
                 <div class="saveOrCancel">
-                    <input type="button" class="btn-help" id="help" value="Help?">
+                    <!-- <input type="button" class="btn-help" id="help" value="Help?"> -->
                     <input type="button" class="btn-save" id="save" value="Save" disabled>
                     <a href="{{ url_for('dashboard') }}"><input type="button" class="btn-cancel" id="cancel" value="Cancel"></a>
                 </div>

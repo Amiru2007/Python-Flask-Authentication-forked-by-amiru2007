@@ -30,7 +30,7 @@
                     </div>
                     <div class="id">
                         <label for="VisitorId">Visitor Id No.</label>
-                        <input type="text" id="VisitorId" name="VisitorId">
+                        <input type="text" id="VisitorId" name="VisitorId" pattern=".{6,15}" title="Visitor Id must be between 8 and 15 characters" required>
                     </div>
                 </div>
             </div>
@@ -118,7 +118,7 @@
                         <div class="photo-controls">
                             <input type="button" class="btn-live" id="live" value="Live">
                             <label for="profilePhoto" class="file-upload-label">Choose File</label>
-                            <input type="file" class="btn-import" id="profilePhoto" name="pic">
+                            <input type="file" class="btn-import" id="profilePhoto" name="pic" accept="image/*" onchange="validateImage()">
                         </div>
                     </div>
                     <div class="photo-wrapper">
@@ -137,21 +137,12 @@
                     <a href="{{ url_for('dashboard') }}"><input type="button" class="btn-cancel" id="cancel" value="Cancel"></a>
                 </div>
             </div>
+            <div class="overlay" id="errorOverlay" onclick="closeErrorMessage()"></div>
+            <div id="error-message">
+                <p id="error-text"></p>
+            </div>
         </form>
     </div>
-    <!-- <div id="errorModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeErrorModal()">&times;</span>
-            <p id="errorText"></p>
-        </div>
-    </div>
-    <div id="errorMessage" class="error-message"></div> -->
-    <!-- <div id="errorModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeErrorModal()">&times;</span>
-            <p id="errorText"></p>
-        </div>
-    </div> -->
     <script>
         // JavaScript to dynamically update the uploaded image
         document.getElementById('profilePhoto').addEventListener('change', function(event) {
@@ -170,23 +161,7 @@
                 uploadedImage.src = "";  // Clear the image if no file selected
             }
         });
-        
-        function validateFileSize() {
-            var input = document.getElementById('profilePhoto');
-            var fileSize = input.files[0].size; // Size in bytes
-            var maxSize = 1024 * 1024; // 1 MB (adjust as needed)
 
-            // Check if the file size exceeds the limit
-            if (fileSize > maxSize) {
-                // Display error message
-                document.getElementById('fileSizeError').innerHTML = 'File size exceeds the limit (1 MB).';
-                // Reset the file input to clear the selected file
-                input.value = '';
-            } else {
-                // Clear the error message if the file size is within the limit
-                document.getElementById('fileSizeError').innerHTML = '';
-            }
-        }
         function validateForm() {
             // Get the value of visitorId input
             var visitorId = document.getElementById('VisitorId').value;
@@ -209,6 +184,31 @@
                 // Allow the form to submit
                 return true;
             }
+        }
+        
+        function validateImage() {
+            var input = document.getElementById('profilePhoto');
+            var errorMessage = document.getElementById('error-message');
+            var errorText = document.getElementById('error-text');
+            
+            if (input.files.length > 0) {
+                var fileSize = input.files[0].size; // in bytes
+                var maxSize = 100 * 1024; // 100 KB
+
+                if (fileSize > maxSize) {
+                    document.getElementById('errorOverlay').classList.add('visible');
+                    document.getElementById('error-message').classList.add('visible');
+                    errorText.innerHTML = 'Image size must be less than 100 KB.';
+                    input.value = ''; // Clear the input to prevent submission
+                } else {
+                    errorMessage.innerHTML = '';
+                }
+            }
+        }
+
+        function closeErrorMessage() {
+            document.getElementById('errorOverlay').classList.remove('visible');
+            document.getElementById('error-message').classList.remove('visible');
         }
     </script>
 </body>

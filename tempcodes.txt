@@ -238,3 +238,21 @@ CREATE TABLE visitor (
     </div> -->
     
                     <input type="button" class="btn-help" id="help" value="Help?">
+
+
+
+                    
+        if 'pic' in request.files:
+            pic = request.files['pic']
+
+            # Check file size
+            max_file_size = 100 * 1024  # 100KB
+            if pic and len(pic.read()) > max_file_size:
+                return render_template('newvisitor.html', 
+                                    requester=current_user.username, 
+                                    visitorNo=visitor_code,
+                                    error_message='File size exceeds the maximum limit (100KB)')
+
+            # Reset file pointer after reading
+            pic.seek(0)
+            filename = secure_filename(pic.filename)

@@ -8,6 +8,7 @@
     <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
     <title>Dashboard</title>
 </head>
 
@@ -173,45 +174,66 @@
     <div class="dashboard-footer">
         <a href="{{url_for('logout')}}"><button type="button">logout</button></a>
     </div>
+    <div class="contactMe" id="contactMe">
+        <div class="innerContainer">
+            <p style="padding-right: 20px;">Designed & developed By Amiru Weerathunga</p>
+            <div class="contactInfo">
+                <span>0768452122</span>
+                <div class="socialLinks">
+                    <a href="https://www.linkedin.com/in/amiru-weerathunga-499878280/" target="_blank"><i class="fa-brands fa-linkedin"></i> <span class="linkText">LinkedIn</span></a>
+                    <a href="https://www.youtube.com/@Amiru_Weerathunga/featured" target="_blank"><i class="fa-brands fa-youtube"></i> <span class="linkText">YouTube</span></a>
+                    <a href="https://github.com/Amiru2007" target="_blank"><i class="fa-brands fa-github"></i> <span class="linkText">GitHub</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
     <script>
         function openShowApprovedList() {
             document.getElementById('pendingApprovaloverlay').classList.add('visible');
             document.getElementById('pendingApproval').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
         }
 
         function closeShowApprovedList() {
             document.getElementById('pendingApprovaloverlay').classList.remove('visible');
             document.getElementById('pendingApproval').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
         }
 
         function openToApproveList() {
             document.getElementById('ApprovedVisitorsoverlay').classList.add('visible');
             document.getElementById('ApprovedVisitors').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
         }
 
         function closeToApproveList() {
             document.getElementById('ApprovedVisitorsoverlay').classList.remove('visible');
             document.getElementById('ApprovedVisitors').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
         }
 
         function openArrivedList() {
             document.getElementById('arrivedOverlay').classList.add('visible');
             document.getElementById('arrivedVisitors').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
         }
 
         function closeArrivedList() {
             document.getElementById('arrivedOverlay').classList.remove('visible');
             document.getElementById('arrivedVisitors').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
         }
 
         function openReports() {
             document.getElementById('reportOverlay').classList.add('visible');
             document.getElementById('reportButtons').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
         }
 
         function closeReports() {
             document.getElementById('reportOverlay').classList.remove('visible');
             document.getElementById('reportButtons').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
         }
 
         function openVisitorReport() {
@@ -219,11 +241,13 @@
             document.getElementById('reportButtons').classList.remove('visible');
             document.getElementById('visitorReportOverlay').classList.add('visible');
             document.getElementById('visitorReportButtons').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
         }
 
         function closeVisitorReport() {
             document.getElementById('visitorReportOverlay').classList.remove('visible');
             document.getElementById('visitorReportButtons').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
         }
     </script>    
 </body>

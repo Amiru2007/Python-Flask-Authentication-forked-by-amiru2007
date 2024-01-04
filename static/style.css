@@ -461,6 +461,13 @@ body.register {
 .visitdetails .left .enterDetail {
     width: 100%;
     padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.visitdetails .left .enterDetail .visitorStatusUpdates{
+    width: fit-content;
 }
 
 .names label,
@@ -626,7 +633,7 @@ body.register {
 
 .dashboard-footer {
     width: 100%;
-    height: 50px;
+    height: fit-content;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -909,6 +916,90 @@ body.register {
     margin: 7px; /* Adjust the font size as needed */
 }
 
+#error-message {
+    display: none;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    bottom: 0;
+    right: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.014);
+    z-index: 1;
+    width: 300px;
+    height: fit-content; /* Set maximum height to 90% of the viewport height */
+    overflow-y: auto;
+    background: #ffffff;
+    border-radius: 10px;
+    margin: 8px;
+    padding: 15px;
+    opacity: 0;
+    transition: all 1s;
+    -webkit-transition: all 1s;
+    border: 3px solid #993f3f;
+}
+
+#error-message #error-text {
+    height: fit-content;
+    padding: 5px;
+}
+
+#errorOverlay.visible,
+#error-message.visible {
+    display: block;
+    opacity: 1;
+}
+
+.contactMe {
+    width: calc(100% - 30px);
+    height: fit-content;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    box-shadow: -4px -4px 20px #edf8ff43;
+    z-index: 1;
+    height: fit-content; /* Set maximum height to 90% of the viewport height */
+    overflow-y: auto;
+    background: #edf8ff;
+    padding: 4px 15px;
+    transition: all 1s;
+    -webkit-transition: all 1s;
+    font-size: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#contactMe.hide {
+    opacity: 0;
+}
+
+.innerContainer {
+    width: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.contactMe a {
+    text-decoration: none;
+    color: #000cb6;
+    font-weight: 600;
+}
+
+.contactMe .contactInfo {
+    width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.contactMe .contactInfo .socialLinks {
+    width: 210px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
 @media screen and (max-width: 1360px) {
     .toolsAndPreview {
@@ -1191,6 +1282,24 @@ body.register {
         gap: 30px;
         transform: scale(0.8);
     }
+
+    .contactMe .contactInfo {
+        width: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .contactMe .contactInfo .socialLinks {
+        width: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .linkText {
+        display: none;
+    }
 }
 
 @media screen and (max-width: 530px) {
@@ -1200,6 +1309,18 @@ body.register {
         grid-template-rows: repeat(3, 170px);
         gap: 30px;
         transform: scale(0.8);
+    }
+
+    .dashboard-footer {
+        margin-bottom: 60px;
+    }
+    
+    .contactMe .contactInfo {
+        width: 60px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: space-between;
     }
 }
 
