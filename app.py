@@ -14,6 +14,8 @@ from openpyxl.worksheet.table import Table, TableStyleInfo
 from io import BytesIO
 from werkzeug.utils import secure_filename
 import os
+# from forms import ChangePasswordForm
+from werkzeug.security import check_password_hash, generate_password_hash
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
@@ -44,6 +46,13 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(80), nullable=False)
     telephoneNo = db.Column(db.String(80), nullable=False)
     level = db.Column(db.String(80), nullable=False)
+
+    def set_password(self, password):
+        # Explicitly encode the password as bytes before hashing
+        self.password = generate_password_hash(password.encode('utf-8'))
+
+    def check_password(self, password):
+        return check_password_hash(self.password, password)
 
 # Define the Visitor model
 class Visitor(db.Model):
@@ -219,6 +228,34 @@ class RegisterForm(FlaskForm):
             raise ValidationError(
                 'That username already exists. Please choose a different one.')
 
+
+class ChangePasswordForm(FlaskForm):
+    old_password = PasswordField(validators=[
+        InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Old Password"})
+
+    new_password = PasswordField(validators=[
+        InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "New Password"})
+
+    confirm_password = PasswordField(validators=[
+        InputRequired(), Length(min=8, max=20), EqualTo('new_password', message='Passwords must match')], render_kw={"placeholder": "Confirm New Password"})
+
+    submit = SubmitField('Change Password')
+
+# @app.route('/change_password', methods=['GET', 'POST'])
+# @login_required
+# def change_password():
+#     form = ChangePasswordForm()
+
+#     if form.validate_on_submit():
+#         if check_password_hash(current_user.password_hash, form.old_password.data):
+#             current_user.set_password(form.new_password.data)
+#             db.session.commit()
+#             flash('Your password has been changed successfully!', 'success')
+#             return redirect(url_for('dashboard'))
+#         else:
+#             flash('Old password is incorrect. Please try again.', 'danger')
+
+#     return render_template('change_password.html', form=form)
 
 class LoginForm(FlaskForm):
     username = StringField(validators=[
@@ -414,12 +451,17 @@ def change_password():
             flash('New password and confirmation do not match', 'error')
             return redirect(url_for('change_password'))
 
+        # Check if the current password is correct
+        if not current_user.check_password(request.form.get('current_password')):
+            flash('Current password is incorrect', 'error')
+            return redirect(url_for('change_password'))
+
         # Update the user's password
         current_user.set_password(new_password)
         db.session.commit()
 
         flash('Password changed successfully', 'success')
-        return redirect(url_for('index'))  # Change this to the appropriate route after password change
+        return redirect(url_for('dashboard'))  # Change this to the appropriate route after password change
 
     return render_template('changePassword.html')
 
@@ -429,6 +471,9 @@ def all_users():
     if request.method == 'POST':
         if 'delete_selected' in request.form:
             selected_ids = request.form.getlist('user_checkbox')
+            # Filter out the current user from the selected IDs
+            selected_ids = [user_id for user_id in selected_ids if int(user_id) != current_user.id]
+            
             # Assuming you have a method to delete users by their IDs from the database
             User.query.filter(User.id.in_(selected_ids)).delete(synchronize_session=False)
             db.session.commit()
@@ -439,7 +484,8 @@ def all_users():
         search_query = request.form.get('search_query')
         users = get_filtered_users(search_query)
     else:
-        users = User.query.all()
+        # Filter out the current user from the list
+        users = User.query.filter(User.id != current_user.id).all()
 
     return render_template('allUsers.html', users=users)
 

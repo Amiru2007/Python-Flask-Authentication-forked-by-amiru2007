@@ -58,9 +58,9 @@
                         <!-- {% set row_number = 1 %} -->
                         <tbody>
                             {% for user in users %}
-                            <tr style="cursor: pointer;" {% if user.level.lower() == 'admin' %} onclick="event.preventDefault();" {% else %} onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';" {% endif %}>
+                            <tr style="cursor: pointer;">
                                 <td style="border-radius: 10px;">
-                                    <input type="checkbox" class="checkbox" name="user_checkbox" value="{{ user.id }}" {% if user.level.lower() == 'admin' %} disabled {% endif %}>
+                                    <input type="checkbox" class="checkbox" name="user_checkbox" value="{{ user.id }}" {% if user.id == current_user.id %} disabled {% endif %}>
                                 </td>
                                 <td style="text-align: center;">{{ loop.index }}</td>  <!-- Display the row number -->
                                 <!-- <td>{{ user.id }}</td> -->
