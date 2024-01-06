@@ -17,12 +17,16 @@ import os
 # from forms import ChangePasswordForm
 from werkzeug.security import check_password_hash, generate_password_hash
 
+basedir = os.path.abspath(os.path.dirname(__file__))
+
 app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] =\
+        'sqlite:///' + os.path.join(basedir, 'database.db')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./database.db'
+app.config['SECRET_KEY'] = 'thisisasecretkey'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
-app.config['SECRET_KEY'] = 'thisisasecretkey'
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # Add any other allowed file extensions
@@ -230,9 +234,6 @@ class RegisterForm(FlaskForm):
 
 
 class ChangePasswordForm(FlaskForm):
-    old_password = PasswordField(validators=[
-        InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Old Password"})
-
     new_password = PasswordField(validators=[
         InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "New Password"})
 
@@ -241,6 +242,61 @@ class ChangePasswordForm(FlaskForm):
 
     submit = SubmitField('Change Password')
 
+class newPword(FlaskForm):
+    password = PasswordField(validators=[
+                             InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
+
+    submit = SubmitField('Change Your Password')
+
+@app.route('/change_password', methods=['GET', 'POST'])
+@login_required
+def change_password():
+    form = newPword()
+    if form.validate_on_submit():
+        print("password accessed")
+        user = current_user
+        hashed_password = bcrypt.generate_password_hash(form.password.data)
+        
+        user.password = hashed_password
+
+        with app.app_context():
+            db.session.commit()
+        # if user:
+        #     if bcrypt.check_password_hash(user.password, form.password.data):
+        #         login_user(user)
+        return redirect(url_for('dashboard'))
+    
+    return render_template('change_password.html', form=form)
+    # print("change Password")
+    # form = ChangePasswordForm()
+    # user = current_user
+    
+    # if form.validate_on_submit():
+    #     hashed_password = bcrypt.generate_password_hash(form.new_password.data)
+    #     print(form.new_password.data + ":" + hashed_password)
+
+    #     user.password = hashed_password
+
+    #     db.session.commit()
+    #     return redirect(url_for('dashboard'))
+    #     # Verify new password and confirmation
+    #     # if new_password != confirm_password:
+    #     #     flash('New password and confirmation do not match', 'error')
+    #     #     return redirect(url_for('change_password'))
+
+    #     # # Check if the current password is correct
+    #     # if not current_user.check_password(request.form.get('current_password')):
+    #     #     flash('Current password is incorrect', 'error')
+    #     #     return redirect(url_for('change_password'))
+
+    #     # # Update the user's password
+    #     # current_user.set_password(new_password)
+    #     # db.session.commit()
+
+    #     # flash('Password changed successfully', 'success')
+    #     # return redirect(url_for('dashboard'))  # Change this to the appropriate route after password change
+
+    # return render_template('changePassword.html')
 # @app.route('/change_password', methods=['GET', 'POST'])
 # @login_required
 # def change_password():
@@ -308,7 +364,7 @@ def dashboard():
                            arrived_visitor_numbers=arrived_visitor_numbers_list)
 
 @ app.route('/register', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def register():
     form = RegisterForm()
 
@@ -356,6 +412,7 @@ def arrive_visitor():
             visitor.status = 'Arrived'
             visitor.arrivalOfficer=current_user.username
             visitor.arrivedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            visitor.remarks = request.form.get('remarks', '')
             db.session.commit()
             return redirect(url_for('dashboard'))
 
@@ -418,6 +475,7 @@ def get_visitor():
             visitor.status = 'Approved'
             visitor.approver=current_user.username
             visitor.approvedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            visitor.remarks = request.form.get('remarks', '')
             db.session.commit()
             return redirect(url_for('dashboard'))
         
@@ -438,32 +496,6 @@ def get_visitor():
 def logout():
     logout_user()
     return redirect(url_for('login'))
-
-@app.route('/change_password', methods=['GET', 'POST'])
-@login_required
-def change_password():
-    if request.method == 'POST':
-        new_password = request.form.get('new_password')
-        confirm_password = request.form.get('confirm_password')
-
-        # Verify new password and confirmation
-        if new_password != confirm_password:
-            flash('New password and confirmation do not match', 'error')
-            return redirect(url_for('change_password'))
-
-        # Check if the current password is correct
-        if not current_user.check_password(request.form.get('current_password')):
-            flash('Current password is incorrect', 'error')
-            return redirect(url_for('change_password'))
-
-        # Update the user's password
-        current_user.set_password(new_password)
-        db.session.commit()
-
-        flash('Password changed successfully', 'success')
-        return redirect(url_for('dashboard'))  # Change this to the appropriate route after password change
-
-    return render_template('changePassword.html')
 
 @app.route('/all_users', methods=['GET', 'POST'])
 @login_required

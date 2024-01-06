@@ -92,7 +92,7 @@
                     <div class="container">
                         <div class="enterDetail">
                             <label for="remarks">Remarks</label>
-                            <input type="text" id="remarks" name="remarks" value="{{ visitor.remarks }}" readonly>
+                            <input type="text" id="remarks" name="remarks" value="{{ visitor.remarks }}">
                         </div>
                     </div>
                     <div class="container single">
@@ -103,10 +103,14 @@
                     </div>
                     <div class="container buttons">
                         <div class="enterDetail">
-                            <label for="statusbtn">Visitor Status</label>
-                            <input type="button" id="statusbtn" name="statusbtn" style="cursor: auto;" value="{{ visitor.status }}" readonly>
-                            <input type="button" class="btn-status" id="arrived" value="Arrived" disabled>
-                            <input type="button" class="btn-status" id="departed" value="Departed" disabled>
+                            <div class="visitorStatusUpdates">
+                                <label for="statusbtn">Visitor Status</label>
+                                <input type="button" id="statusbtn" name="statusbtn" style="cursor: auto;" value="{{ visitor.status }}" readonly>
+                            </div>
+                            <div class="visitorStatusUpdates">
+                                <input type="button" class="btn-status" id="arrived" value="Arrived" disabled>
+                                <input type="button" class="btn-status" id="departed" value="Departed" disabled>
+                            </div>
                         </div>
                     </div>
                 </div>

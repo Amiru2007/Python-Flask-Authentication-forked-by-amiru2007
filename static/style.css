@@ -470,6 +470,10 @@ body.register {
     width: fit-content;
 }
 
+.visitdetails .left .enterDetail .visitorStatusUpdates label {
+    width: 167px;
+}
+
 .names label,
 .container label {
     float: left;
@@ -711,7 +715,7 @@ body.register {
 
 .user-list tr {
     height: 50px;
-    background: #fdfdfa00;
+    background: #f3f3f3;
     margin-bottom: 50px;
     border-radius: 10px;
 }
@@ -1000,6 +1004,120 @@ body.register {
     align-items: center;
     justify-content: space-between;
 }
+
+.help-menu {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    bottom: auto;
+    width: 90%;
+    height: 90%;
+    padding-top: 0;
+}
+
+.help-menu .popupHeader {
+    width: 100%;
+    padding: 10px 0;
+    font-size: 28px;
+    height: fit-content;
+}
+
+.help-menu .panels {
+    width: 100%;
+    height: calc(100% - 68px);
+    background-color: #dddddd;
+    display: flex;
+    border-radius: 14px;
+    align-items: center;
+    justify-content: center;
+}
+
+.help-menu .panels .panel {
+    height: calc(100% - 16px);
+    background-color: #f1f1f1;
+    border-radius: 8px;
+}
+
+.help-menu .panels .tabs {
+    width: 250px;
+    margin: 8px;
+}
+
+.help-menu .panels .tabs button {
+    width: calc(100% - 10px);
+    margin: 5px;
+    padding: 15px 10px;
+    height: fit-content;
+    background-color: #ffffff;
+    border: 1px solid #eeefe9;
+    border-radius: 5px;
+    display: flex;
+    font-weight: 500;
+    border: 1px solid #dddddd;
+    cursor: pointer;
+}
+
+.help-menu .panels .helpDetails {
+    flex: 1;
+    margin: 8px 8px 8px 0;
+}
+
+.help-menu .panels .helpDetails .window {
+    width: calc(100% - 30px);
+    height: calc(100% - 30px);
+    padding: 15px;
+    background-color: #f1f1f1;
+    border-radius: 8px;
+    display: none;
+}
+
+.help-menu .panels .helpDetails .active {
+    display: block;
+}
+
+.help-menu .panels .helpDetails .window h3 {
+    font-size: 25px;
+    font-weight: 500;
+}
+
+.help-menu .panels .helpDetails .window .mainOl {
+    margin-top: 15px;
+    font-size: 14px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+}
+
+.help-menu .panels .helpDetails .window .mainOl .mainListItem {
+    list-style-position: inside;
+    align-items: center; /* Align content vertically in the flex container */
+    white-space: nowrap;
+}
+
+/* .help-menu .panels .helpDetails .window .mainOl .mainListItem::before {
+    content: '\2022';
+    width: 1em;
+    display: inline-block;
+    margin-right: 5px;
+    text-align: right;
+} */
+
+.help-menu .panels .helpDetails .window .mainOl .mainListItem ol {
+    list-style-type: upper-roman;
+    margin-left: 30px;
+    list-style-position: outside;
+}
+
+.help-menu .panels .helpDetails .window .mainOl .mainListItem img {
+    width: 400px;
+    height: auto;
+    float: left;
+    border: 4px solid #c8c8c8;
+    border-radius: 5px;
+    margin: 5px;
+}
+
 
 @media screen and (max-width: 1360px) {
     .toolsAndPreview {

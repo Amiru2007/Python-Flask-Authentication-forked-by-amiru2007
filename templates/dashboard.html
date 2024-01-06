@@ -170,10 +170,52 @@
                 <input type="submit" class="exportVisitorExcel" id="exportVisitorExcel" value="Export">
             </form>
         </div>
+        <div class="overlay" id="helpMenuOverlay" onclick="closeHelp()"></div>
+        <div class="popup help-menu" id="helpMenu">
+            <div class="popupHeader" style="position: relative; width: 100%;">
+                <h3>Set Duration</h3>
+                <button onclick="closeHelp()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="panels">
+                <div class="tabs panel">
+                    <button type="button" id="showReportButtons" onclick="openHelp()">New Visitor</button>
+                    <button type="button" id="showReportButtons" onclick="openHelp()">Approve Visitor</button>
+                    <button type="button" id="showReportButtons" onclick="openHelp()">Password Change</button>
+                </div>
+                <div class="helpDetails panel">
+                    <div class="window active">
+                        <h3>How to create a visitor?</h3>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Click on “New Visitor” icon(Create).</li>
+                            <li class="mainListItem">
+                                Fill required fields one by on
+                                <ol>
+                                    <li class="inneListItem">Visitor ID no is compulsory (Here you can use National ID No, Driving License No & Passport No.).</li>
+                                    <li class="inneListItem">If you have a photo of the visitor you can upload it. Its size must be less-than 100Kb.</li>
+                                </ol>
+                            </li>
+                            <li class="mainListItem">
+                                The final form like given below.
+                                <br>
+                                <img src="{{ url_for('static', filename='Create Visitor Preview.jpg') }}" alt="Visitor Form Preview">
+                            </li>
+                            <li class="mainListItem">If information are correct, Click on “Save”.</li>
+                            <li class="mainListItem">If you do not need to save Click on “Cancel”.</li>
+                        </ol>
+                    </div>
+                    <div class="window">
+                        <p></p>
+                    </div>
+                    <div class="window">
+                        <p></p>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <div class="dashboard-footer">
         <a href="{{url_for('logout')}}"><button type="button">logout</button></a>
-        <a href="{{url_for('change_password')}}"><button type="button">logout</button></a>
+        <button type="button" id="showReportButtons" onclick="openHelp()">Help?</button>
     </div>
     <div class="contactMe" id="contactMe">
         <div class="innerContainer">
@@ -248,6 +290,18 @@
         function closeVisitorReport() {
             document.getElementById('visitorReportOverlay').classList.remove('visible');
             document.getElementById('visitorReportButtons').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
+        }
+
+        function openHelp() {
+            document.getElementById('helpMenuOverlay').classList.add('visible');
+            document.getElementById('helpMenu').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
+        }
+
+        function closeHelp() {
+            document.getElementById('helpMenuOverlay').classList.remove('visible');
+            document.getElementById('helpMenu').classList.remove('visible');
             document.getElementById('contactMe').classList.remove('hide');
         }
     </script>    
