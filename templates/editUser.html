@@ -6,7 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}" />
-    <title>Register</title>
+    <title>Edit User Information</title>
 </head>
 
 <body class="register">
@@ -51,7 +51,7 @@
             </div>
             <div class="form-sections submit">
                 <input type="submit" class="login-btn" value="Update">
-                <a href="{{ url_for('all_users') }}"><input type="button" class="btn-cancel login-btn" style="margin-left: 10px;" id="cancel" value="Cancel"></a>
+                <a href="{{ url_for('all_users') }}"><input type="button" class="btn-cancel login-btn" style="margin-left: 10px; background: #ffffff; color: #000000; border: 1px solid #cecece;" id="cancel" value="Cancel"></a>
             </div>
         </form>
     </div>

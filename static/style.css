@@ -921,6 +921,30 @@ body.register {
     margin: 7px; /* Adjust the font size as needed */
 }
 
+.pwordchange-details {
+    width:300px;
+    height: fit-content;
+}
+
+.pwordchange-details .form-sections {
+    width: 100%;
+    height: fit-content;
+}
+
+.container h2 {
+    font-size: 25px;
+    font-weight: 600;
+}
+
+.pwordchange-details .form-sections .pwordchange-input {
+    width: calc(100% - 14px);
+}
+
+.pwordchange-details .form-sections .pwordchange-btn {
+    background: #0078d4;
+    color: #ffffff;
+}
+
 #error-message {
     display: none;
     position: fixed;
@@ -1056,6 +1080,13 @@ body.register {
     font-weight: 500;
     border: 1px solid #dddddd;
     cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.help-menu .panels .tabs .activeButton {
+    /* Add your styles for the active button here */
+    background-color: #ccc; /* Change this to your desired active button background color */
+    color: #000; /* Change this to your desired active button text color */
 }
 
 .help-menu .panels .helpDetails {
@@ -1072,18 +1103,23 @@ body.register {
     display: none;
 }
 
-.help-menu .panels .helpDetails .active {
+.help-menu .panels .helpDetails .window.visible {
     display: block;
 }
 
 .help-menu .panels .helpDetails .window h3 {
-    font-size: 25px;
+    font-size: 18px;
     font-weight: 500;
 }
 
+.help-menu .panels .helpDetails .window h4 {
+    font-size: 16px;
+    font-weight: 400;
+}
+
 .help-menu .panels .helpDetails .window .mainOl {
-    margin-top: 15px;
-    font-size: 14px;
+    margin-bottom: 10px;
+    font-size: 12px;
     display: flex;
     flex-direction: column;
     align-items: flex-start;
@@ -1093,7 +1129,7 @@ body.register {
 .help-menu .panels .helpDetails .window .mainOl .mainListItem {
     list-style-position: inside;
     align-items: center; /* Align content vertically in the flex container */
-    white-space: nowrap;
+    /* white-space: nowrap; */
 }
 
 /* .help-menu .panels .helpDetails .window .mainOl .mainListItem::before {
@@ -1117,8 +1153,45 @@ body.register {
     border: 4px solid #c8c8c8;
     border-radius: 5px;
     margin: 5px;
+    cursor: pointer;
 }
 
+.help-menu .quotes {
+    padding: 2px 5px;
+    background: #dddddd;
+    border-radius: 3px;
+}
+
+#fullscreenOverlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    z-index: 999;
+    justify-content: center;
+    align-items: center;
+}
+
+#fullscreenImage {
+    /* top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); */
+    max-width: 80%;
+    max-height: 80%;
+    border-radius: 15px;
+}
+
+#closeButton {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #fff;
+    cursor: pointer;
+    font-size: 20px;
+}
 
 @media screen and (max-width: 1360px) {
     .toolsAndPreview {

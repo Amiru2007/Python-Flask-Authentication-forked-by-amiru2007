@@ -14,7 +14,6 @@ from openpyxl.worksheet.table import Table, TableStyleInfo
 from io import BytesIO
 from werkzeug.utils import secure_filename
 import os
-# from forms import ChangePasswordForm
 from werkzeug.security import check_password_hash, generate_password_hash
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -22,7 +21,6 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] =\
         'sqlite:///' + os.path.join(basedir, 'database.db')
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///./database.db'
 app.config['SECRET_KEY'] = 'thisisasecretkey'
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
@@ -87,17 +85,6 @@ class Visitor(db.Model):
     departedTime = db.Column(db.String(20))
     profilePhoto = db.Column(db.String(255), nullable=True)
     committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
-    # profilePhoto = db.Column(db.LargeBinary)
-    # profilePhoto = db.Column(db.LargeBinary, name='profile_photo_upload')
-
-# class ChangePasswordForm(FlaskForm):
-#     old_password = PasswordField('Old Password', validators=[InputRequired(), Length(min=8, max=20)])
-#     new_password = PasswordField('New Password', validators=[InputRequired(), Length(min=8, max=20)])
-#     confirm_password = PasswordField('Confirm Password', validators=[InputRequired(), EqualTo('new_password', message='Passwords must match')])
-#     submit = SubmitField('Change Password')
-
-# class ImageUploadForm(FlaskForm):
-#     image = FileField('Upload Image', validators=[FileAllowed(['jpg', 'png', 'jpeg'])])
 
 class ImageUploadForm(FlaskForm):
     profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
@@ -200,11 +187,6 @@ def generate_visitorCode():
     new_code = f'{today}{new_counter}'
     return new_code
 
-# @app.route('/visitor_list')
-# def visitor_list():
-#     visitors = Visitor.query.all()
-#     return render_template('visitor_list.html', visitors=visitors)
-
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
                            InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
@@ -236,7 +218,7 @@ class newPword(FlaskForm):
     password = PasswordField(validators=[
                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
 
-    submit = SubmitField('Change Your Password')
+    submit = SubmitField('Save')
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -300,85 +282,6 @@ def update_user():
 
     return "Invalid request", 400
 
-# @ app.route('/updateUser', methods=['GET', 'POST'])
-# @login_required
-# def register():
-#     form = RegisterForm()
-
-#     if form.validate_on_submit():
-#         hashed_password = bcrypt.generate_password_hash(form.password.data)
-
-#         # Check if the provided level is one of the allowed values
-#         allowed_levels = ['Admin', 'Approver', 'Requester', 'Gate']
-#         if form.level.data not in allowed_levels:
-#             flash('Invalid user level', 'error')
-#             return redirect(url_for('register'))
-
-#         new_user = User(
-#             username=form.username.data,
-#             password=hashed_password,
-#             email=form.email.data,
-#             name=form.name.data,
-#             telephoneNo=form.telephoneNo.data,
-#             level=form.level.data
-#         )
-
-#         with app.app_context():
-#             db.session.add(new_user)
-#             db.session.commit()
-#         flash('Account created successfully', 'success')
-#         return redirect(url_for('all_users'))
-
-#     return render_template('register.html', form=form)
-    
-
-
-    # print("change Password")
-    # form = ChangePasswordForm()
-    # user = current_user
-    
-    # if form.validate_on_submit():
-    #     hashed_password = bcrypt.generate_password_hash(form.new_password.data)
-    #     print(form.new_password.data + ":" + hashed_password)
-
-    #     user.password = hashed_password
-
-    #     db.session.commit()
-    #     return redirect(url_for('dashboard'))
-    #     # Verify new password and confirmation
-    #     # if new_password != confirm_password:
-    #     #     flash('New password and confirmation do not match', 'error')
-    #     #     return redirect(url_for('change_password'))
-
-    #     # # Check if the current password is correct
-    #     # if not current_user.check_password(request.form.get('current_password')):
-    #     #     flash('Current password is incorrect', 'error')
-    #     #     return redirect(url_for('change_password'))
-
-    #     # # Update the user's password
-    #     # current_user.set_password(new_password)
-    #     # db.session.commit()
-
-    #     # flash('Password changed successfully', 'success')
-    #     # return redirect(url_for('dashboard'))  # Change this to the appropriate route after password change
-
-    # return render_template('changePassword.html')
-# @app.route('/change_password', methods=['GET', 'POST'])
-# @login_required
-# def change_password():
-#     form = ChangePasswordForm()
-
-#     if form.validate_on_submit():
-#         if check_password_hash(current_user.password_hash, form.old_password.data):
-#             current_user.set_password(form.new_password.data)
-#             db.session.commit()
-#             flash('Your password has been changed successfully!', 'success')
-#             return redirect(url_for('dashboard'))
-#         else:
-#             flash('Old password is incorrect. Please try again.', 'danger')
-
-#     return render_template('change_password.html', form=form)
-
 class LoginForm(FlaskForm):
     username = StringField(validators=[
                            InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
@@ -387,12 +290,6 @@ class LoginForm(FlaskForm):
                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
 
     submit = SubmitField('Login')
-
-
-# @app.route('/')
-# def home():
-#     return render_template('home.html')
-
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -512,16 +409,6 @@ def depart_visitor():
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
-    
-# @app.route('/arrive_visitor', methods=['GET', 'POST'])
-# def arrive_visitor():
-#     visitor_no = request.form.get('visitor_no')
-#     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
-
-#     if visitor:
-#         return render_template('filledForm.html', visitor=visitor)
-#     else:
-#         return jsonify({'error': 'Visitor not found'}), 404
         
 @app.route('/get_visitor', methods=['POST'])
 @login_required
@@ -596,12 +483,6 @@ def get_filtered_users(search_query):
         (User.telephoneNo.like(f'%{search_query}%')) |
         (User.level.like(f'%{search_query}%'))
     ).all()
-
-
-# @app.route('/reports', methods=['GET', 'POST'])
-# @login_required
-# def reports():
-#     return render_template('reports.html')
 
 @app.route('/export_excel_user', methods=['POST'])
 def export_excel_user():
@@ -753,9 +634,6 @@ def upload():
 def profile():
     user = User.query.filter_by(username='username_of_logged_in_user').first()  # Replace with actual username
     return render_template('profile.html', user=user)
-
-
-
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -18,7 +18,7 @@
     </div>
     <div class="toolsAndPreview">
         <div class="tools">
-            <div class="grid-container">
+            <div class="grid-container" id="dynamic-grid">
                 <!-- New Visitor -->
                 {% if current_user.level in ['Admin', 'Approver', 'Requester'] %}
                     <div class="grid-item">
@@ -173,17 +173,20 @@
         <div class="overlay" id="helpMenuOverlay" onclick="closeHelp()"></div>
         <div class="popup help-menu" id="helpMenu">
             <div class="popupHeader" style="position: relative; width: 100%;">
-                <h3>Set Duration</h3>
+                <h3>Help Menu</h3>
                 <button onclick="closeHelp()"><i class="ph ph-x"></i></button>
             </div>
             <div class="panels">
                 <div class="tabs panel">
-                    <button type="button" id="showReportButtons" onclick="openHelp()">New Visitor</button>
-                    <button type="button" id="showReportButtons" onclick="openHelp()">Approve Visitor</button>
-                    <button type="button" id="showReportButtons" onclick="openHelp()">Password Change</button>
+                    <button type="button" onclick="openWindow(1)" id="button1">New Visitor</button>
+                    <button type="button" onclick="openWindow(2)" id="button2">Approve Visitor</button>
+                    <button type="button" onclick="openWindow(3)" id="button3">Password Change</button>
+                    <button type="button" onclick="openWindow(4)" id="button4">User Management</button>
+                    <button type="button" onclick="openWindow(5)" id="button5">Reports</button>
+                    <button type="button" onclick="openWindow(6)" id="button6">Gate User</button>
                 </div>
                 <div class="helpDetails panel">
-                    <div class="window active">
+                    <div class="window" id="window1">
                         <h3>How to create a visitor?</h3>
                         <ol class="mainOl">
                             <li class="mainListItem">Click on “New Visitor” icon(Create).</li>
@@ -197,21 +200,101 @@
                             <li class="mainListItem">
                                 The final form like given below.
                                 <br>
-                                <img src="{{ url_for('static', filename='Create Visitor Preview.jpg') }}" alt="Visitor Form Preview">
+                                <img id="fullscreenTrigger" src="{{ url_for('static', filename='Create Visitor Preview.jpg') }}" alt="Visitor Form Preview">
                             </li>
                             <li class="mainListItem">If information are correct, Click on “Save”.</li>
                             <li class="mainListItem">If you do not need to save Click on “Cancel”.</li>
                         </ol>
                     </div>
-                    <div class="window">
-                        <p></p>
+                    <div class="window" id="window2">
+                        <h3>How to Approve a visitor?</h3>
+                        <p style="font-size: 10px; color: #666666;">(Requester cannot approve his own request).</p>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Click on “Approve Visitor” icon “<span class="quotes"><i class="ph ph-arrow-right"></i></span>”.</li>
+                            <li class="mainListItem">Click on the relevant visitor number on side panel.</li>
+                            <li class="mainListItem">If any information need to update, mention in Remarks Field as required.</li>
+                            <li class="mainListItem">If enough information are there, Click on “Approve”,  else Click on “Reject”.</li>
+                        </ol>
                     </div>
-                    <div class="window">
-                        <p></p>
+                    <div class="window" id="window3">
+                        <h3>How to change current user's password?</h3>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Click on “Change” icon.</li>
+                            <li class="mainListItem">Type new password in both text boxes.</li>
+                            <li class="mainListItem">Click on “Save”.</li>
+                        </ol>
+                    </div>
+                    <div class="window" id="window4">
+                        <h3>How to create a new user?</h3>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Click on “Manage” icon.</li>
+                            <li class="mainListItem">To create a new user Click on “Create” icon.</li>
+                            <li class="mainListItem">Fill all fields with relevant information.</li>
+                            <li class="mainListItem">
+                                4. Select User level.
+                                <ol>
+                                    <li class="inneListItem">Admin – Can do any changes except Gate users functions.</li>
+                                    <li class="inneListItem">Approver - Can Approve & Create a new visitor Request.</li>
+                                    <li class="inneListItem">Requester – Only do request for a new user.</li>
+                                    <li class="inneListItem">Gate – Only Arrive & Departure functions are allowed.</li>
+                                </ol>
+                            </li>
+                            <li class="mainListItem">Click on “Register”</li>
+                        </ol>
+                        <h3>How to update an existing user's information?</h3>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Click on relevant user record.</li>
+                            <li class="mainListItem">Change information as required.</li>
+                            <li class="mainListItem">Click on “Save”</li>
+                        </ol>
+                        <h3>How to delete a user login?</h3>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Type the user name in search box, then Click on “Search” icon or Click on the Check box of the relevant users which is located at the left side of the user name.</li>
+                            <li class="mainListItem">Click on “Delete” icon.</li>
+                            <li class="mainListItem"><span style="color: #ff0000;">*</span>By clicking on “Select all” check box you can delete all users at once.</li>
+                            <li class="mainListItem">By Clicking on “<span class="quotes"><i class="ph ph-arrow-left"></i></span>” icon on left upper corner, you can come back to your dashboard.</li>
+                        </ol>
+                    </div>
+                    <div class="window" id="window5">
+                        <h3>How to generate Reports?</h3>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Click on Reports “<span class="quotes"><i class="ph ph-arrow-right"></i></span>” icon.</li>
+                            <li class="mainListItem">
+                                Select required report on side panel.
+                                <ol>
+                                    <li class="inneListItem">User report – Generate users list.,</li>
+                                    <li class="inneListItem">Visitor Reports – Generate visitors list.(You should select a starting date & ending date for the report.)</li>
+                                </ol>
+                            </li>
+                            <li class="mainListItem">Finally Click on “Export” to generate the excel sheet.</li>
+                        </ol>
+                    </div>
+                    <div class="window" id="window6">
+                        <h3>How to visitor entrance manage?</h3>
+                        <h4>Visitor Entrance</h4>
+                        <ol class="mainOl">
+                            <li class="mainListItem">When a visitor arrives, ask the visitor number.</li>
+                            <li class="mainListItem">Click on Arrive Visitor “<span class="quotes"><i class="ph ph-arrow-right"></i></span>” icon.</li>
+                            <li class="mainListItem">Click on the relevant visitor number.</li>
+                            <li class="mainListItem">Check the Visitor ID number.</li>
+                            <li class="mainListItem">If any information mismatch except Visitor ID number, update the Remarks Field as required.</li>
+                            <li class="mainListItem">Click on “Arrived”</li>
+                        </ol>
+                        <h4>When Visitor Departure</h4>
+                        <ol class="mainOl">
+                            <li class="mainListItem">When a visitor depart, ask the visitor number.</li>
+                            <li class="mainListItem">Click on Departure Visitor “<span class="quotes"><i class="ph ph-arrow-right"></i></span>” icon.</li>
+                            <li class="mainListItem">Click on the relevant visitor number.</li>
+                            <li class="mainListItem">Click on “Departed”</li>
+                        </ol>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div id="fullscreenOverlay">
+        <div id="closeButton" onclick="closeFullscreen()">&#x2715;</div>
+        <img id="fullscreenImage" src="" alt="Fullscreen Image">
     </div>
     <div class="dashboard-footer">
         <a href="{{url_for('logout')}}"><button type="button">logout</button></a>
@@ -223,9 +306,9 @@
             <div class="contactInfo">
                 <span>0768452122</span>
                 <div class="socialLinks">
-                    <a href="https://www.linkedin.com/in/amiru-weerathunga-499878280/" target="_blank"><img width="16" height="16" src="https://img.icons8.com/3d-fluency/94/linkedin.png" alt="LinkedIn"/> <span class="linkText">LinkedIn</span></a>
-                    <a href="https://www.youtube.com/@Amiru_Weerathunga/featured" target="_blank"><img width="16" height="16" src="https://img.icons8.com/3d-fluency/94/youtube-play.png" alt="youtube-play"/> <span class="linkText">YouTube</span></a>
-                    <a href="https://github.com/Amiru2007" target="_blank"><img width="16" height="16" src="https://img.icons8.com/3d-fluency/94/github.png" alt="github"/> <span class="linkText">GitHub</span></a>
+                    <a href="https://www.linkedin.com/in/amiru-weerathunga-499878280/" target="_blank"><i class="fa-brands fa-linkedin" style="color: #0077b5;"></i> <span class="linkText">LinkedIn</span></a>
+                    <a href="https://www.youtube.com/@Amiru_Weerathunga/featured" target="_blank"><i class="fa-brands fa-youtube" style="color: #CD201F;"></i> <span class="linkText">YouTube</span></a>
+                    <a href="https://github.com/Amiru2007" target="_blank"><i class="fa-brands fa-github" style="color: #000000;"></i> <span class="linkText">GitHub</span></a>
                 </div>
             </div>
         </div>
@@ -303,6 +386,37 @@
             document.getElementById('helpMenuOverlay').classList.remove('visible');
             document.getElementById('helpMenu').classList.remove('visible');
             document.getElementById('contactMe').classList.remove('hide');
+        }
+        
+        document.addEventListener("DOMContentLoaded", function () {
+            openWindow(1);
+        });
+
+        function openWindow(index) {
+            for (let i = 1; i <= 6; i++) {
+                const windowElement = document.getElementById(`window${i}`);
+                const buttonElement = document.getElementById(`button${i}`);
+                
+                if (i === index) {
+                    windowElement.classList.add('visible');
+                    buttonElement.classList.add('activeButton');
+                } else {
+                    windowElement.classList.remove('visible');
+                    buttonElement.classList.remove('activeButton');
+                }
+            }
+        }
+        
+        document.getElementById("fullscreenTrigger").addEventListener("click", function() {
+            const fullscreenImage = document.getElementById("fullscreenImage");
+            const fullscreenOverlay = document.getElementById("fullscreenOverlay");
+
+            fullscreenImage.src = this.src;
+            fullscreenOverlay.style.display = "flex";
+        });
+
+        function closeFullscreen() {
+            document.getElementById("fullscreenOverlay").style.display = "none";
         }
     </script>    
 </body>
