@@ -232,16 +232,6 @@ class RegisterForm(FlaskForm):
             raise ValidationError(
                 'That username already exists. Please choose a different one.')
 
-
-class ChangePasswordForm(FlaskForm):
-    new_password = PasswordField(validators=[
-        InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "New Password"})
-
-    confirm_password = PasswordField(validators=[
-        InputRequired(), Length(min=8, max=20), EqualTo('new_password', message='Passwords must match')], render_kw={"placeholder": "Confirm New Password"})
-
-    submit = SubmitField('Change Password')
-
 class newPword(FlaskForm):
     password = PasswordField(validators=[
                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
@@ -267,6 +257,82 @@ def change_password():
         return redirect(url_for('dashboard'))
     
     return render_template('change_password.html', form=form)
+
+@app.route('/get_user_by_username/<username>', methods=['GET'])
+def get_user_by_username(username):
+    user = User.query.filter_by(username=username).first()
+
+    if user:
+        return render_template('editUser.html', user=user)
+    else:
+        return "User not found", 404
+
+@app.route('/update_user', methods=['POST'])
+def update_user():
+    if request.method == 'POST':
+        # Get the form data
+        username = request.form.get('username')
+        password = request.form.get('password')
+        email = request.form.get('email')
+        name = request.form.get('name')
+        telephoneNo = request.form.get('telephoneNo')
+        level = request.form.get('level')
+
+        # Find the user by username
+        user = User.query.filter_by(username=username).first()
+        hashed_password = bcrypt.generate_password_hash(password)
+
+        if user:
+            # Update the user record
+            user.password = hashed_password
+            user.email = email
+            user.name = name
+            user.telephoneNo = telephoneNo
+            user.level = level
+
+            # Commit the changes to the database
+            db.session.commit()
+
+            # Redirect to a success page or any other appropriate action
+            return redirect(url_for('all_users'))
+        else:
+            return "User not found", 404
+
+    return "Invalid request", 400
+
+# @ app.route('/updateUser', methods=['GET', 'POST'])
+# @login_required
+# def register():
+#     form = RegisterForm()
+
+#     if form.validate_on_submit():
+#         hashed_password = bcrypt.generate_password_hash(form.password.data)
+
+#         # Check if the provided level is one of the allowed values
+#         allowed_levels = ['Admin', 'Approver', 'Requester', 'Gate']
+#         if form.level.data not in allowed_levels:
+#             flash('Invalid user level', 'error')
+#             return redirect(url_for('register'))
+
+#         new_user = User(
+#             username=form.username.data,
+#             password=hashed_password,
+#             email=form.email.data,
+#             name=form.name.data,
+#             telephoneNo=form.telephoneNo.data,
+#             level=form.level.data
+#         )
+
+#         with app.app_context():
+#             db.session.add(new_user)
+#             db.session.commit()
+#         flash('Account created successfully', 'success')
+#         return redirect(url_for('all_users'))
+
+#     return render_template('register.html', form=form)
+    
+
+
     # print("change Password")
     # form = ChangePasswordForm()
     # user = current_user
@@ -364,7 +430,7 @@ def dashboard():
                            arrived_visitor_numbers=arrived_visitor_numbers_list)
 
 @ app.route('/register', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def register():
     form = RegisterForm()
 
@@ -531,48 +597,6 @@ def get_filtered_users(search_query):
         (User.level.like(f'%{search_query}%'))
     ).all()
 
-@app.route('/get_user_by_username/<username>', methods=['GET'])
-@login_required
-def get_user_by_username(username):
-    user = User.query.filter_by(username=username).first()
-
-    if user:
-        return render_template('editUser.html', user=user)
-    else:
-        return "User not found", 404
-
-@app.route('/update_user', methods=['POST'])
-@login_required
-def update_user():
-    if request.method == 'POST':
-        # Get the form data
-        username = request.form.get('username')
-        # password = request.form.get('password')
-        email = request.form.get('email')
-        name = request.form.get('name')
-        telephoneNo = request.form.get('telephoneNo')
-        level = request.form.get('level')
-
-        # Find the user by username
-        user = User.query.filter_by(username=username).first()
-
-        if user:
-            # Update the user record
-            # user.password = password
-            user.email = email
-            user.name = name
-            user.telephoneNo = telephoneNo
-            user.level = level
-
-            # Commit the changes to the database
-            db.session.commit()
-
-            # Redirect to a success page or any other appropriate action
-            return redirect(url_for('dashboard'))
-        else:
-            return "User not found", 404
-
-    return "Invalid request", 400
 
 # @app.route('/reports', methods=['GET', 'POST'])
 # @login_required

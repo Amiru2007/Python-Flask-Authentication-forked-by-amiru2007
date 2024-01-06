@@ -19,38 +19,39 @@
                 <div class="section">
                     <div class="form-sections">
                         <h4 class="input-head">Username</h4>
-                        <input type="text" id="username" name="username" value="{{ user.username }}" readonly>
+                        <input type="text" class="login-input" id="username" name="username" value="{{ user.username }}" readonly>
                     </div>
                     <br>
-                    <!-- <div class="form-sections">
+                    <div class="form-sections">
                         <h4 class="input-head">Password</h4>
-                        <input type="text" id="password" name="password" value="{{ user.password }}">
-                    </div> -->
+                        <input type="text" class="login-input" id="password" name="password" value="{{ user.password }}">
+                    </div>
                     <br>
                     <div class="form-sections">
                         <h4 class="input-head">E-mail</h4>
-                        <input type="text" id="email" name="email" value="{{ user.email }}">
+                        <input type="text" class="login-input" id="email" name="email" value="{{ user.email }}">
                     </div>
                 </div>
                 <div class="section">
                     <div class="form-sections">
                         <h4 class="input-head">Name</h4>
-                        <input type="text" id="name" name="name" value="{{ user.name }}">
+                        <input type="text" class="login-input" id="name" name="name" value="{{ user.name }}">
                     </div>
                     <br>
                     <div class="form-sections">
                         <h4 class="input-head">Telephone Number</h4>
-                        <input type="text" id="telephoneNo" name="telephoneNo" value="{{ user.telephoneNo }}">
+                        <input type="text" class="login-input" id="telephoneNo" name="telephoneNo" value="{{ user.telephoneNo }}">
                     </div>
                     <br>
                     <div class="form-sections">
                         <h4 class="input-head">User Level</h4>
-                        <input type="text" id="level" name="level" value="{{ user.level }}">
+                        <input type="text" class="login-input" id="level" name="level" value="{{ user.level }}">
                     </div>
                 </div>
             </div>
             <div class="form-sections submit">
                 <input type="submit" class="login-btn" value="Update">
+                <a href="{{ url_for('all_users') }}"><input type="button" class="btn-cancel login-btn" style="margin-left: 10px;" id="cancel" value="Cancel"></a>
             </div>
         </form>
     </div>

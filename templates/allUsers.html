@@ -30,9 +30,7 @@
                         <input type="text" id="searchInput" name="search_query" placeholder="Search...">
                         <button type="submit"><i class="ph-bold ph-magnifying-glass"></i></button>
                     </div>
-                    <button type="submit" class="deleteUser" name="delete_selected">
-                        <span><i class="ph-bold ph-trash"></i></span> Delete User
-                    </button>
+                    <button type="button" id="showDeleteWarn" onclick="showDeleteWarn()">New Visitor</button>
                     <a href="{{ url_for('register') }}">
                         <button type="button" class="createUser">
                             <span><i class="ph-bold ph-plus-circle"></i> Create</span>
@@ -58,7 +56,7 @@
                         <!-- {% set row_number = 1 %} -->
                         <tbody>
                             {% for user in users %}
-                            <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';">
+                            <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';"> 
                                 <td style="border-radius: 10px;">
                                     <input type="checkbox" class="checkbox" name="user_checkbox" value="{{ user.id }}" {% if user.id == current_user.id %} disabled {% endif %}>
                                 </td>
@@ -78,7 +76,33 @@
             </div>
         </form>
     </div>
+    <div class="overlay" id="showDeleteWarnOverlay" onclick="closeDeleteWarn()"></div>
+    <div class="popup" id="showDeleteWarnPopup">
+        <div class="popupHeader">
+            <h3>Are you sure</h3>
+            <button onclick="closeDeleteWarn()"><i class="ph ph-x"></i></button>
+        </div>
+        <div class="warnContent">
+            <p>You're going to delete a User</p>
+            <button type="submit" class="deleteUser" name="delete_selected">
+                <span><i class="ph-bold ph-trash"></i></span> Delete User
+            </button>
+        </div>
+    </div>
     <script>
+        
+        function showDeleteWarn() {
+            console.log('showDeleteWarn called');
+            document.getElementById('showDeleteWarnOverlay').classList.add('visible');
+            document.getElementById('showDeleteWarnPopup').classList.add('visible');
+        }
+
+        function closeDeleteWarn() {
+            console.log('closeDeleteWarn called');
+            document.getElementById('showDeleteWarnOverlay').classList.remove('visible');
+            document.getElementById('showDeleteWarnPopup').classList.remove('visible');
+        }
+
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('form').addEventListener('submit', function (event) {
                 event.preventDefault();
