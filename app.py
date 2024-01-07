@@ -85,6 +85,7 @@ class Visitor(db.Model):
     departedTime = db.Column(db.String(20))
     profilePhoto = db.Column(db.String(255), nullable=True)
     committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
+    
 
 class ImageUploadForm(FlaskForm):
     profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
@@ -187,6 +188,7 @@ def generate_visitorCode():
     new_code = f'{today}{new_counter}'
     return new_code
 
+
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
                            InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
@@ -214,11 +216,21 @@ class RegisterForm(FlaskForm):
             raise ValidationError(
                 'That username already exists. Please choose a different one.')
 
+
+class ChangePasswordForm(FlaskForm):
+    new_password = PasswordField(validators=[
+        InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "New Password"})
+
+    confirm_password = PasswordField(validators=[
+        InputRequired(), Length(min=8, max=20), EqualTo('new_password', message='Passwords must match')], render_kw={"placeholder": "Confirm New Password"})
+
+    submit = SubmitField('Change Password')
+
 class newPword(FlaskForm):
     password = PasswordField(validators=[
                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
 
-    submit = SubmitField('Save')
+    submit = SubmitField('Change Your Password')
 
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
@@ -240,47 +252,6 @@ def change_password():
     
     return render_template('change_password.html', form=form)
 
-@app.route('/get_user_by_username/<username>', methods=['GET'])
-def get_user_by_username(username):
-    user = User.query.filter_by(username=username).first()
-
-    if user:
-        return render_template('editUser.html', user=user)
-    else:
-        return "User not found", 404
-
-@app.route('/update_user', methods=['POST'])
-def update_user():
-    if request.method == 'POST':
-        # Get the form data
-        username = request.form.get('username')
-        password = request.form.get('password')
-        email = request.form.get('email')
-        name = request.form.get('name')
-        telephoneNo = request.form.get('telephoneNo')
-        level = request.form.get('level')
-
-        # Find the user by username
-        user = User.query.filter_by(username=username).first()
-        hashed_password = bcrypt.generate_password_hash(password)
-
-        if user:
-            # Update the user record
-            user.password = hashed_password
-            user.email = email
-            user.name = name
-            user.telephoneNo = telephoneNo
-            user.level = level
-
-            # Commit the changes to the database
-            db.session.commit()
-
-            # Redirect to a success page or any other appropriate action
-            return redirect(url_for('all_users'))
-        else:
-            return "User not found", 404
-
-    return "Invalid request", 400
 
 class LoginForm(FlaskForm):
     username = StringField(validators=[
@@ -290,6 +261,8 @@ class LoginForm(FlaskForm):
                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
 
     submit = SubmitField('Login')
+
+
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -327,7 +300,7 @@ def dashboard():
                            arrived_visitor_numbers=arrived_visitor_numbers_list)
 
 @ app.route('/register', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def register():
     form = RegisterForm()
 
@@ -409,6 +382,7 @@ def depart_visitor():
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
+    
         
 @app.route('/get_visitor', methods=['POST'])
 @login_required
@@ -450,25 +424,29 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
-class DeleteUserForm(FlaskForm):
-    submit = SubmitField('Delete Selected Users')
-
 @app.route('/all_users', methods=['GET', 'POST'])
 @login_required
 def all_users():
-    form = DeleteUserForm()
+    if request.method == 'POST':
+        if 'delete_selected' in request.form:
+            selected_ids = request.form.getlist('user_checkbox')
+            # Filter out the current user from the selected IDs
+            selected_ids = [user_id for user_id in selected_ids if int(user_id) != current_user.id]
+            
+            # Assuming you have a method to delete users by their IDs from the database
+            User.query.filter(User.id.in_(selected_ids)).delete(synchronize_session=False)
+            db.session.commit()
 
-    if form.validate_on_submit():
-        selected_ids = request.form.getlist('user_checkbox')
-        User.query.filter(User.id.in_(selected_ids)).delete(synchronize_session=False)
-        db.session.commit()
+            # Return a JSON response to update the table dynamically
+            return redirect(url_for('all_users'))
 
-        return redirect(url_for('all_users', _anchor='reload'))
+        search_query = request.form.get('search_query')
+        users = get_filtered_users(search_query)
+    else:
+        # Filter out the current user from the list
+        users = User.query.filter(User.id != current_user.id).all()
 
-    search_query = request.form.get('search_query')
-    users = get_filtered_users(search_query) if search_query else User.query.all()
-
-    return render_template('allUsers.html', users=users, form=form)
+    return render_template('allUsers.html', users=users)
 
 def get_filtered_users(search_query):
     # Assuming you have a method to filter users based on a search query
@@ -479,6 +457,49 @@ def get_filtered_users(search_query):
         (User.telephoneNo.like(f'%{search_query}%')) |
         (User.level.like(f'%{search_query}%'))
     ).all()
+
+@app.route('/get_user_by_username/<username>', methods=['GET'])
+@login_required
+def get_user_by_username(username):
+    user = User.query.filter_by(username=username).first()
+
+    if user:
+        return render_template('editUser.html', user=user)
+    else:
+        return "User not found", 404
+
+@app.route('/update_user', methods=['POST'])
+@login_required
+def update_user():
+    if request.method == 'POST':
+        # Get the form data
+        username = request.form.get('username')
+        # password = request.form.get('password')
+        email = request.form.get('email')
+        name = request.form.get('name')
+        telephoneNo = request.form.get('telephoneNo')
+        level = request.form.get('level')
+
+        # Find the user by username
+        user = User.query.filter_by(username=username).first()
+
+        if user:
+            # Update the user record
+            # user.password = password
+            user.email = email
+            user.name = name
+            user.telephoneNo = telephoneNo
+            user.level = level
+
+            # Commit the changes to the database
+            db.session.commit()
+
+            # Redirect to a success page or any other appropriate action
+            return redirect(url_for('dashboard'))
+        else:
+            return "User not found", 404
+
+    return "Invalid request", 400
 
 @app.route('/export_excel_user', methods=['POST'])
 def export_excel_user():
@@ -630,6 +651,9 @@ def upload():
 def profile():
     user = User.query.filter_by(username='username_of_logged_in_user').first()  # Replace with actual username
     return render_template('profile.html', user=user)
+
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
