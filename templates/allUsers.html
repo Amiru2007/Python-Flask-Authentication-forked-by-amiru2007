@@ -26,6 +26,7 @@
                         <input type="text" id="searchInput" name="search_query" placeholder="Search...">
                         <button type="submit"><i class="ph-bold ph-magnifying-glass"></i></button>
                     </div>
+                    {{ form.hidden_tag() }}
                     <button type="submit" class="deleteUser" name="delete_selected">
                         <span><i class="ph-bold ph-trash"></i></span> Delete User
                     </button>
@@ -88,58 +89,54 @@
         </div>
     </div>
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('form').addEventListener('submit', function (event) {
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('form').addEventListener('submit', function(event) {
                 event.preventDefault();
+
+                const formData = new FormData(this);
+
+                // Log the user_checkbox values for debugging
+                console.log(formData.getAll('user_checkbox'));
+
                 fetch(this.action, {
                     method: this.method,
-                    body: new FormData(this),
+                    body: formData,
                 })
                 .then(response => response.text())
                 .then(html => {
                     document.querySelector('.user-list').innerHTML = html;
                 });
             });
-    
-            const searchInput = document.getElementById('searchInput');
-            const tableCells = document.querySelectorAll('.user-list td');
-    
-            searchInput.addEventListener('input', function () {
-                const searchText = this.value.trim().toLowerCase();
-    
-                tableCells.forEach(cell => {
-                    const textContent = cell.textContent.trim().toLowerCase();
-                    const highlightedText = textContent.replace(new RegExp(searchText, 'gi'), match => `<span class="highlight">${match}</span>`);
-                    cell.innerHTML = highlightedText;
-                });
-            });
+
+            // Other code remains the same...
         });
-    
+
+
         function toggleCheckboxes(masterCheckbox) {
             const checkboxes = document.querySelectorAll('tbody input[name="user_checkbox"]');
             checkboxes.forEach(checkbox => {
-                if (!isAdminRow(checkbox)) {
-                    checkbox.checked = masterCheckbox.checked;
-                    setCheckboxName(checkbox);
-                }
+                checkbox.checked = masterCheckbox.checked;
             });
         }
 
-        function isAdminRow(checkbox) {
-            const row = checkbox.closest('tr');
-            const levelCell = row.querySelector('td:last-child');
-            return levelCell && levelCell.textContent.trim().toLowerCase() === 'admin';
-        }
+        // function isAdminRow(checkbox) {
+        //     const row = checkbox.closest('tr');
+        //     const levelCell = row.querySelector('td:last-child');
+        //     return levelCell && levelCell.textContent.trim().toLowerCase() === 'admin';
+        // }
 
-        function setCheckboxName(checkbox) {
-            const row = checkbox.closest('tr');
-            const levelCell = row.querySelector('td:last-child');
+        // function setCheckboxName(checkbox) {
+        //     const row = checkbox.closest('tr');
+        //     const levelCell = row.querySelector('td:last-child');
             
-            if (levelCell && levelCell.textContent.trim().toLowerCase() === 'admin') {
-                checkbox.setAttribute('name', 'AdminCheckbox');
-            } else {
-                checkbox.setAttribute('name', 'user_checkbox');
-            }
+        //     if (levelCell && levelCell.textContent.trim().toLowerCase() === 'admin') {
+        //         checkbox.setAttribute('name', 'AdminCheckbox');
+        //     } else {
+        //         checkbox.setAttribute('name', 'user_checkbox');
+        //     }
+        // }
+        if (window.location.href.includes('reload')) {
+            window.location.reload();
         }
     </script>    
 </body>

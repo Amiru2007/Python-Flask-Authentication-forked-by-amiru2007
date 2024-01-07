@@ -450,29 +450,25 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+class DeleteUserForm(FlaskForm):
+    submit = SubmitField('Delete Selected Users')
+
 @app.route('/all_users', methods=['GET', 'POST'])
 @login_required
 def all_users():
-    if request.method == 'POST':
-        if 'delete_selected' in request.form:
-            selected_ids = request.form.getlist('user_checkbox')
-            # Filter out the current user from the selected IDs
-            selected_ids = [user_id for user_id in selected_ids if int(user_id) != current_user.id]
-            
-            # Assuming you have a method to delete users by their IDs from the database
-            User.query.filter(User.id.in_(selected_ids)).delete(synchronize_session=False)
-            db.session.commit()
+    form = DeleteUserForm()
 
-            # Return a JSON response to update the table dynamically
-            return redirect(url_for('all_users'))
+    if form.validate_on_submit():
+        selected_ids = request.form.getlist('user_checkbox')
+        User.query.filter(User.id.in_(selected_ids)).delete(synchronize_session=False)
+        db.session.commit()
 
-        search_query = request.form.get('search_query')
-        users = get_filtered_users(search_query)
-    else:
-        # Filter out the current user from the list
-        users = User.query.filter(User.id != current_user.id).all()
+        return redirect(url_for('all_users', _anchor='reload'))
 
-    return render_template('allUsers.html', users=users)
+    search_query = request.form.get('search_query')
+    users = get_filtered_users(search_query) if search_query else User.query.all()
+
+    return render_template('allUsers.html', users=users, form=form)
 
 def get_filtered_users(search_query):
     # Assuming you have a method to filter users based on a search query
