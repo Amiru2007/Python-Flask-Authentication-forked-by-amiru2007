@@ -484,6 +484,7 @@ body.register {
 
 .names input,
 .container input,
+.container textarea,
 .photo-controls input,
 .footer input {
     width: calc(100% - 182px);
@@ -938,11 +939,13 @@ body.register {
 
 .pwordchange-details .form-sections .pwordchange-input {
     width: calc(100% - 14px);
+    height: 30px;
 }
 
 .pwordchange-details .form-sections .pwordchange-btn {
     background: #0078d4;
     color: #ffffff;
+    width: fit-content;
 }
 
 #error-message {
@@ -991,8 +994,8 @@ body.register {
     overflow-y: auto;
     background: #edf8ff;
     padding: 4px 15px;
-    transition: all 1s;
-    -webkit-transition: all 1s;
+    transition: all 0.2s;
+    -webkit-transition: all 0.2s;
     font-size: 12px;
     display: flex;
     align-items: center;

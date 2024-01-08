@@ -120,7 +120,7 @@ def new_visitor():
         requester = request.form.get('requester', '')
         noOfVisitors = request.form.get('noOfVisitors', '')
         remarks = request.form.get('remarks', '')
-        history = request.form.get('history', '')
+        history = request.form.get('remarks', '')
         status = request.form.get('statusbtn', '')
         request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
@@ -348,7 +348,17 @@ def arrive_visitor():
             visitor.status = 'Arrived'
             visitor.arrivalOfficer=current_user.username
             visitor.arrivedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            visitor.remarks = request.form.get('remarks', '')
+
+            # Retrieve the current history and append new remarks
+            current_history = visitor.history
+            new_remarks = request.form.get('remarks', '')  # Change here
+
+            # Replace newline characters with HTML line breaks
+            updated_history = f"{current_history}\r\n{new_remarks}"
+
+            # Update the database with the new content
+            visitor.history = updated_history
+
             db.session.commit()
             return redirect(url_for('dashboard'))
 
@@ -375,6 +385,17 @@ def depart_visitor():
             visitor.status = 'Departed'
             visitor.departureOfficer=current_user.username
             visitor.departedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+
+            # Retrieve the current history and append new remarks
+            current_history = visitor.history
+            new_remarks = request.form.get('remarks', '')  # Change here
+
+            # Replace newline characters with HTML line breaks
+            updated_history = f"{current_history}\r\n{new_remarks}"
+
+            # Update the database with the new content
+            visitor.history = updated_history
+
             db.session.commit()
             return redirect(url_for('dashboard'))
 
@@ -402,7 +423,17 @@ def get_visitor():
             visitor.status = 'Approved'
             visitor.approver=current_user.username
             visitor.approvedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            visitor.remarks = request.form.get('remarks', '')
+
+            # Retrieve the current history and append new remarks
+            current_history = visitor.history
+            new_remarks = request.form.get('remarks', '')  # Change here
+
+            # Replace newline characters with HTML line breaks
+            updated_history = f"{current_history}\r\n{new_remarks}"
+
+            # Update the database with the new content
+            visitor.history = updated_history
+
             db.session.commit()
             return redirect(url_for('dashboard'))
         

@@ -92,13 +92,13 @@
                     <div class="container">
                         <div class="enterDetail">
                             <label for="remarks">Remarks</label>
-                            <input type="text" id="remarks" name="remarks" value="{{ visitor.remarks }}" readonly>
+                            <input type="text" id="remarks" name="remarks" value="">
                         </div>
                     </div>
                     <div class="container single">
                         <div class="enterDetail">
                             <label for="history">History</label>
-                            <input type="text" id="history" name="history" value="{{ visitor.history }}" readonly>
+                            <textarea id="history" name="history" readonly>{{ visitor.history | safe }}</textarea>
                         </div>
                     </div>
                     <div class="container buttons">
