@@ -20,7 +20,7 @@
         <div class="tools">
             <div class="grid-container" id="dynamic-grid">
                 <!-- New Visitor -->
-                {% if current_user.level in ['Admin', 'Approver', 'Requester'] %}
+                {% if current_user.level in ['Admin', 'Approver', 'Requester', 'Gate'] %}
                     <div class="grid-item">
                         <span><i class="ph ph-plus-circle"></i></span>
                         <h3>New Visitor</h3>
