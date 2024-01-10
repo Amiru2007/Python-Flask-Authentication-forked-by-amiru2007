@@ -300,6 +300,14 @@ body.register {
     margin-top: 50px;
 }
 
+.toApprove img {
+    width: 35px;
+    height: 35px;
+    border: 1px solid #cecece;
+    border-radius: 50%;
+    margin: -3px 10px 0 -3px;
+}
+
 #reportButtons {
     width: 250px;
     height: 200px;

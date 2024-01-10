@@ -92,8 +92,13 @@
                 {% for visitor in approved_visitor_numbers %}
                     <li>
                         <form method="post" action="{{ url_for('arrive_visitor') }}">
-                            <input type="hidden" name="visitor_no" value="{{ visitor }}">
-                            <button type="submit">{{ visitor }}</button>
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                            {% if visitor.profilePhoto == 'none' %}
+                                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
+                            {% elif visitor.profilePhoto %}
+                                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
+                            {% endif %}
+                            <button type="submit">{{ visitor.visitorNo }}</button>
                         </form>
                     </li>
                 {% endfor %}
@@ -128,8 +133,13 @@
                 {% for visitor in arrived_visitor_numbers %}
                     <li>
                         <form method="post" action="{{ url_for('depart_visitor') }}">
-                            <input type="hidden" name="visitor_no" value="{{ visitor }}">
-                            <button type="submit">{{ visitor }}</button>
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                            {% if visitor.profilePhoto == 'none' %}
+                                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
+                            {% elif visitor.profilePhoto %}
+                                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
+                            {% endif %}
+                            <button type="submit">{{ visitor.visitorNo }}</button>
                         </form>
                     </li>
                 {% endfor %}

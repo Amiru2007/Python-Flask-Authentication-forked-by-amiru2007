@@ -147,6 +147,10 @@ def new_visitor():
             file_path = os.path.join(upload_folder, filename)
             
             pic.save(file_path)
+        else:
+            # Handle the case where no image is uploaded
+            # Save a blank or default image to the database
+            filename = 'none'
 
         # filename = secure_filename(pic.filename)
         
@@ -299,17 +303,11 @@ def dashboard():
         # Query to retrieve visitorNos where the status is 'Pending'
         pending_visitors = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester != current_user.username).all()
         # Query to retrieve visitorNos where the status is 'Approved'
-        approved_visitor_numbers = Visitor.query.filter_by(status='Approved').with_entities(Visitor.visitorNo).all()
+        approved_visitors = Visitor.query.filter(Visitor.status == 'Approved', Visitor.requester != current_user.username).all()
         # Query to retrieve visitorNos where the status is 'Arrived'
-        arrived_visitor_numbers = Visitor.query.filter_by(status='Arrived').with_entities(Visitor.visitorNo).all()
+        arrived_visitors = Visitor.query.filter(Visitor.status == 'Arrived', Visitor.requester != current_user.username).all()
 
-        # print("Pending Visitors:", pending_visitors)
-
-        # Convert the result to a list
-        pending_visitor_numbers_list = [number.visitorNo for number in pending_visitors]
-        # pending_visitor_requesters_list = [number.requester for number in pending_visitor_requesters]
-        approved_visitor_numbers_list = [number.visitorNo for number in approved_visitor_numbers]
-        arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
+        # arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
 
     except Exception as e:
         return jsonify({'error': str(e)})
@@ -317,8 +315,8 @@ def dashboard():
     return render_template('dashboard.html',
                            pending_visitor_numbers=pending_visitors,
                         #    pending_visitor_requesters=pending_visitor_requesters_list,
-                           approved_visitor_numbers=approved_visitor_numbers_list,
-                           arrived_visitor_numbers=arrived_visitor_numbers_list)
+                           approved_visitor_numbers=approved_visitors,
+                           arrived_visitor_numbers=arrived_visitors)
 
 @ app.route('/register', methods=['GET', 'POST'])
 # @login_required

@@ -124,10 +124,10 @@
                 <div class="right">
                     <div class="visitor-photo">
                         <div class="photo-wrapper">
-                            {% if visitor.profilePhoto and url_for('serve_uploaded_image', filename=visitor.profilePhoto) %}
-                                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
-                            {% else %}
+                            {% if visitor.profilePhoto == 'none' %}
                                 <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
+                            {% elif visitor.profilePhoto %}
+                                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
                             {% endif %}
                         </div>
                         <div class="photo-controls">
