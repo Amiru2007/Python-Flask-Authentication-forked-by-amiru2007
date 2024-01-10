@@ -92,7 +92,14 @@
                     <div class="container">
                         <div class="enterDetail">
                             <label for="remarks">Remarks</label>
-                            <input type="text" id="remarks" name="remarks">
+                            <div class="dropdown">
+                                <input type="text" id="remarks" name="remarks">
+                                <div class="dropdown-content" id="dropdownOptions">
+                                    <div class="option" onclick="selectOption('Option 1')">Option 1</div>
+                                    <div class="option" onclick="selectOption('Option 2')">Option 2</div>
+                                    <div class="option" onclick="selectOption('Other')">Other</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="container single">
@@ -280,6 +287,38 @@
         // Attach the video stream to the video element and autoplay.
         navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
             player.srcObject = stream;
+        });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const dropdown = document.querySelector(".dropdown");
+            const inputRemarks = document.getElementById("remarks");
+            const dropdownContent = document.querySelector(".dropdown-content");
+            const remarkOption = document.querySelector(".remarkOption");
+
+            dropdown.addEventListener("click", function() {
+                dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
+            });
+
+            inputRemarks.addEventListener("click", function() {
+            });
+
+            function selectOption(option) {
+                if (option === 'Other') {
+                    inputRemarks.value = '';
+                    document.getElementById('dropdownOptions').classList.add('hide');
+                } else {
+                    inputRemarks.value = option;
+                }
+                dropdownContent.style.display = "none";
+            }
+
+            window.selectOption = selectOption;
+
+            document.addEventListener("click", function(event) {
+                if (!dropdown.contains(event.target) && !inputRemarks.contains(event.target) && dropdownContent.style.display === "block") {
+                    dropdownContent.style.display = "none";
+                }
+            });
         });
     </script>
 </body>
