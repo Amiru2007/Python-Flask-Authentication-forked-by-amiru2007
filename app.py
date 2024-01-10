@@ -93,6 +93,9 @@ class ImageUploadForm(FlaskForm):
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def get_file_extension(filename):
+    return os.path.splitext(filename)[1]
+
 # Route for the form
 @app.route('/newvisitor', methods=['GET', 'POST'])
 @login_required
@@ -132,8 +135,20 @@ def new_visitor():
                                    error_message='You must enter a Visitor ID')
 
         pic = request.files['pic']
+        visitor_no = request.form.get('visitorNo', '')
 
-        filename = secure_filename(pic.filename)
+        if pic and visitor_no:
+            upload_folder = 'uploads'
+            os.makedirs(upload_folder, exist_ok=True)
+            
+            # Securely generate a new filename using the visitorNo value
+            original_extension = get_file_extension(pic.filename)
+            filename = secure_filename(f"{visitor_no}{original_extension}")
+            file_path = os.path.join(upload_folder, filename)
+            
+            pic.save(file_path)
+
+        # filename = secure_filename(pic.filename)
         
         new_visitor = Visitor(
             lastName=last_name,
@@ -154,16 +169,18 @@ def new_visitor():
             history=history,
             status=status,
             requestTime=request_time,
-            profilePhoto=pic.read(),
+            profilePhoto=filename,
             committedDate=datetime.utcnow()  # Assuming profilePhoto is the file path or name
         )
 
         # Add the new visitor to the database
-        try:
-            db.session.add(new_visitor)
-            db.session.commit()
-        except Exception as e:
-            return f"Error committing to database: {e}"
+        with app.app_context():
+            try:
+                db.session.add(new_visitor)
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                return f"Error committing to database: {e}"
 
         return redirect(url_for('dashboard'))
 
@@ -280,14 +297,17 @@ def login():
 def dashboard():
     try:
         # Query to retrieve visitorNos where the status is 'Pending'
-        pending_visitor_numbers = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester != current_user.username).with_entities(Visitor.visitorNo).all()
+        pending_visitors = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester != current_user.username).all()
         # Query to retrieve visitorNos where the status is 'Approved'
         approved_visitor_numbers = Visitor.query.filter_by(status='Approved').with_entities(Visitor.visitorNo).all()
         # Query to retrieve visitorNos where the status is 'Arrived'
         arrived_visitor_numbers = Visitor.query.filter_by(status='Arrived').with_entities(Visitor.visitorNo).all()
 
+        # print("Pending Visitors:", pending_visitors)
+
         # Convert the result to a list
-        pending_visitor_numbers_list = [number.visitorNo for number in pending_visitor_numbers]
+        pending_visitor_numbers_list = [number.visitorNo for number in pending_visitors]
+        # pending_visitor_requesters_list = [number.requester for number in pending_visitor_requesters]
         approved_visitor_numbers_list = [number.visitorNo for number in approved_visitor_numbers]
         arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
 
@@ -295,7 +315,8 @@ def dashboard():
         return jsonify({'error': str(e)})
     
     return render_template('dashboard.html',
-                           pending_visitor_numbers=pending_visitor_numbers_list,
+                           pending_visitor_numbers=pending_visitors,
+                        #    pending_visitor_requesters=pending_visitor_requesters_list,
                            approved_visitor_numbers=approved_visitor_numbers_list,
                            arrived_visitor_numbers=arrived_visitor_numbers_list)
 
@@ -340,9 +361,6 @@ def arrive_visitor():
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
 
-        # Convert the BLOB data to Base64 encoding
-        profile_photo_data = b64encode(visitor.profilePhoto).decode('utf-8')
-           
         # Your logic based on the clicked button value
         if clicked_button_value == 'Arrived':
             visitor.status = 'Arrived'
@@ -362,7 +380,11 @@ def arrive_visitor():
             db.session.commit()
             return redirect(url_for('dashboard'))
 
-        return render_template('arriveVisitor.html', visitor=visitor, profile_photo_data=profile_photo_data)
+        # Read the image file path from the database
+        image_path = visitor.profilePhoto
+        print("Image Path:", visitor.profilePhoto)
+    
+        return render_template('arriveVisitor.html', visitor=visitor, image_path=image_path)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
@@ -377,9 +399,6 @@ def depart_visitor():
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
 
-        # Convert the BLOB data to Base64 encoding
-        profile_photo_data = b64encode(visitor.profilePhoto).decode('utf-8')
-           
         # Your logic based on the clicked button value
         if clicked_button_value == 'Departed':
             visitor.status = 'Departed'
@@ -399,11 +418,19 @@ def depart_visitor():
             db.session.commit()
             return redirect(url_for('dashboard'))
 
-        return render_template('departVisitor.html', visitor=visitor, profile_photo_data=profile_photo_data)
+        # Read the image file path from the database
+        image_path = visitor.profilePhoto
+        print("Image Path:", visitor.profilePhoto)
+        return render_template('departVisitor.html', visitor=visitor, image_path=image_path)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
-    
+
+
+# Route to serve uploads
+@app.route('/uploads/<filename>')
+def serve_uploaded_image(filename):
+    return send_from_directory('uploads', filename)
         
 @app.route('/get_visitor', methods=['POST'])
 @login_required
@@ -415,18 +442,15 @@ def get_visitor():
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
 
-        # Convert the BLOB data to Base64 encoding
-        profile_photo_data = b64encode(visitor.profilePhoto).decode('utf-8')
-           
         # Your logic based on the clicked button value
         if clicked_button_value == 'Approve':
             visitor.status = 'Approved'
-            visitor.approver=current_user.username
+            visitor.approver = current_user.username
             visitor.approvedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
             # Retrieve the current history and append new remarks
             current_history = visitor.history
-            new_remarks = request.form.get('remarks', '')  # Change here
+            new_remarks = request.form.get('remarks', '')
 
             # Replace newline characters with HTML line breaks
             updated_history = f"{current_history}\r\n{new_remarks}"
@@ -439,12 +463,15 @@ def get_visitor():
         
         elif clicked_button_value == 'Reject':
             visitor.status = 'Rejected'
-            visitor.approver=current_user.username
-            visitor.approvedTime= datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            visitor.approver = current_user.username
+            visitor.approvedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
             db.session.commit()
             return redirect(url_for('dashboard'))
-         
-        return render_template('filledForm.html', visitor=visitor, profile_photo_data=profile_photo_data)
+
+        # Read the image file path from the database
+        image_path = visitor.profilePhoto
+        print("Image Path:", visitor.profilePhoto)
+        return render_template('filledForm.html', visitor=visitor, image_path=image_path)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404

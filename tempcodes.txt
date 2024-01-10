@@ -100,7 +100,7 @@ CREATE TABLE visitor (
     arrivedTime TEXT,
 	departureOfficer TEXT,
     departedTime TEXT,
-    profilePhoto BLOB
+    profilePhoto TEXT
 );
 
 

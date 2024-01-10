@@ -92,7 +92,14 @@
                     <div class="container">
                         <div class="enterDetail">
                             <label for="remarks">Remarks</label>
-                            <input type="text" id="remarks" name="remarks" value="">
+                            <div class="dropdown">
+                                <input type="text" id="remarks" name="remarks">
+                                <div class="dropdown-content" id="dropdownOptions">
+                                    <div class="option" onclick="selectOption('Option 1')">Option 1</div>
+                                    <div class="option" onclick="selectOption('Option 2')">Option 2</div>
+                                    <div class="option" onclick="selectOption('Other')">Other</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="container single">
@@ -117,10 +124,10 @@
                 <div class="right">
                     <div class="visitor-photo">
                         <div class="photo-wrapper">
-                            {% if profile_photo_data %}
-                                <img src="data:image/jpeg;base64,{{ profile_photo_data }}" alt="visitor photo">
+                            {% if visitor.profilePhoto and url_for('serve_uploaded_image', filename=visitor.profilePhoto) %}
+                                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
                             {% else %}
-                                <img src="../static/visitor-photo.png" alt="default photo">
+                                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
                             {% endif %}
                         </div>
                         <div class="photo-controls">
@@ -154,6 +161,37 @@
         </form>
     </div>
     <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const dropdown = document.querySelector(".dropdown");
+            const inputRemarks = document.getElementById("remarks");
+            const dropdownContent = document.querySelector(".dropdown-content");
+            const remarkOption = document.querySelector(".remarkOption");
+
+            dropdown.addEventListener("click", function() {
+                dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
+            });
+
+            inputRemarks.addEventListener("click", function() {
+            });
+
+            function selectOption(option) {
+                if (option === 'Other') {
+                    inputRemarks.value = '';
+                    document.getElementById('dropdownOptions').classList.add('hide');
+                } else {
+                    inputRemarks.value = option;
+                }
+                dropdownContent.style.display = "none";
+            }
+
+            window.selectOption = selectOption;
+
+            document.addEventListener("click", function(event) {
+                if (!dropdown.contains(event.target) && !inputRemarks.contains(event.target) && dropdownContent.style.display === "block") {
+                    dropdownContent.style.display = "none";
+                }
+            });
+        });
         // function openOutlook() {
         //         var subject = "Visitor Approval - {{ visitor.visitorNo }}";
         //         var body = "Last Name: {{ visitor.lastName }}\n" +

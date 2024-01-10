@@ -109,8 +109,10 @@
                 {% for visitor in pending_visitor_numbers %}
                     <li>
                         <form method="post" action="{{ url_for('get_visitor') }}">
-                            <input type="hidden" name="visitor_no" value="{{ visitor }}">
-                            <button type="submit">{{ visitor }}</button>
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span>{{ visitor.visitorNo }}</span><span>{{ visitor.requester }}</span>
+                            </button>
                         </form>
                     </li>
                 {% endfor %}
