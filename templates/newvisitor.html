@@ -116,13 +116,28 @@
                 </div>
                 <div class="right">
                     <div class="visitor-photo">
-                        <div class="photo-wrapper">
+                        <div class="photo-wrapper" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)">
                             <img id="uploadedImage" src="../static/visitor-photo.png" alt="Uploaded Image">
                         </div>
                         <div class="photo-controls">
-                            <input type="button" class="btn-live" id="live" value="Live">
+                            <input type="button" class="btn-live" id="live" value="Live" onclick="openCamera()">
                             <label for="profilePhoto" class="file-upload-label">Choose File</label>
                             <input type="file" class="btn-import" id="profilePhoto" name="pic" accept="image/*" onchange="validateImage()">
+                                                        
+                            <!-- Modal for camera input -->
+                            <div id="cameraModal" class="modal">
+                                <div class="modal-content">
+                                    <div>
+                                        <video id="player" controls autoplay></video>
+                                    </div>
+                                    <div>
+                                        <button id="capture">Capture</button>
+                                    </div>
+                                    <button type="button" onclick="closeCamera()"><span>X</span></button>
+                                    <canvas id="canvas" width="320" height="240"></canvas>
+                                    <img src="" alt="" id="outputImg">
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="photo-wrapper">
@@ -214,6 +229,58 @@
             document.getElementById('errorOverlay').classList.remove('visible');
             document.getElementById('error-message').classList.remove('visible');
         }
+        
+        function dropHandler(event) {
+            event.preventDefault();
+            const file = event.dataTransfer.files[0];
+            if (file.type.match('image.*')) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const image = new Image();
+                    image.src = e.target.result;
+                    document.getElementById('uploadedImage').src = e.target.result;
+                    const fileInput = document.getElementById('profilePhoto');
+                    fileInput.files = [file];
+                };
+                reader.readAsDataURL(file);
+            } else {
+                alert('Please drop an image file.');
+            }
+        }
+
+        function dragOverHandler(event) {
+            event.preventDefault();
+        }
+        
+        function openCamera() {
+            document.getElementById('cameraModal').classList.add('visible');
+        }
+
+        function closeCamera() {
+            document.getElementById('cameraModal').classList.remove('visible');
+        }
+
+        const player = document.getElementById('player');
+        const canvas = document.getElementById('canvas');
+        const context = canvas.getContext('2d');
+        const captureButton = document.getElementById('capture');
+        const imgTag = document.getElementById('uploadedImage');
+
+        const constraints = {
+            video: true,
+        };
+
+        captureButton.addEventListener('click', () => {
+            context.drawImage(player, 0, 0, canvas.width, canvas.height);
+
+            // Convert canvas content to an image and set it as the src of img tag
+            imgTag.src = canvas.toDataURL();
+        });
+
+        // Attach the video stream to the video element and autoplay.
+        navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+            player.srcObject = stream;
+        });
     </script>
 </body>
 </html>
