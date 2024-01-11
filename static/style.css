@@ -263,7 +263,7 @@ body.register {
     height: fit-content;
     max-height: calc(100vh - 30px); /* Set maximum height to 90% of the viewport height */
     overflow-y: auto;
-    background: #f9f9f9;
+    background: #f1f8fe;
     border-radius: 10px;
     margin: 8px;
     padding: 0 15px 15px 15px;
@@ -283,7 +283,7 @@ body.register {
     justify-content: space-between;
     position: fixed;
     z-index: 2;
-    background: #f9f9f9;
+    background: #f1f8fe;
 }
 
 .popupHeader button {
@@ -383,8 +383,8 @@ body.register {
     margin: 5px 0;
     padding: 10px;
     height: 30px;
-    background-color: #ffffff;
-    border: 1px solid #eeefe9;
+    background-color: #fbfdff;
+    border: 1px solid #eceef0;
     border-radius: 5px;
     display: flex;
 }
@@ -605,6 +605,7 @@ body.register {
     width: 180px;
     height: 180px;
     border-radius: 10px;
+    border: 1px solid #e7e7e7;
 }
 
 .footer {
@@ -1282,6 +1283,57 @@ body.register {
 
 .dropdown-content.hide {
     display: none;
+}
+
+/* Add this to your existing CSS or in a separate file */
+.search-container {
+    display: flex;
+    position: fixed;
+    align-items: center;
+    padding-bottom: 5px;
+    margin-top: 40px;
+    height: 40px;
+    padding: 0;
+    width: 300px;
+    background: #f1f8fe;
+    box-shadow: 0px 10px 10px#f1f8fe;
+}
+
+.search-input {
+    padding: 4px;
+    width: 400px;
+    height: fit-content;
+    border: 1px solid #c8c8c8;
+    border-radius: 8px;
+    background-color: #ffffff;
+    font-size: 14px;
+    outline: none;
+}
+
+.search-container button {
+    padding: 5px 4px;
+    margin-left: -30px;
+    width: fit-content;
+    height: fit-content;
+    border: none;
+    border-radius: 8px;
+    background-color: #00000000;
+    font-size: 16px;
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#visitor-search {
+    width: 200px;
+}
+
+#search-results {
+    list-style-type: none;
+    margin-top: 100px;
+}
+
+#search-results li form:hover {
+    background-color: #f3f7f9;
 }
 
 @media screen and (max-width: 1360px) {

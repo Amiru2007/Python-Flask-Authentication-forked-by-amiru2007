@@ -80,6 +80,15 @@
                         <button type="button" id="showReportButtons" onclick="openReports()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
+
+                <!-- Reports -->
+                {% if current_user.level == 'Admin' %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-person"></i></span>
+                        <h3>Visitors</h3>
+                        <button type="button" id="showVisitorList" onclick="openVisitors()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
             </div>
         </div>
         <div class="overlay" id="pendingApprovaloverlay" onclick="closeShowApprovedList()"></div>
@@ -121,6 +130,36 @@
                         </form>
                     </li>
                 {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="visitorsOverlay" onclick="closeVisitors()"></div>
+        <div class="popup" id="visitorsList">
+            <div class="popupHeader">
+                <h3>Visitor List</h3>
+                <button onclick="closeVisitors()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="search-container">
+                <input type="text" id="visitor-search" class="search-input" placeholder="Search..." style="width: calc(100% - 10px);">
+                <button type="button" onclick="performSearch()">
+                    <i class="ph-bold ph-magnifying-glass"></i>
+                </button>
+            </div>
+            <ul class="toApprove" id="search-results">
+                {% for visitor in visitors_list %}
+                    <li>
+                        <form method="post" action="{{ url_for('visitor', visitor_no=visitor.visitorNo) }}">
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                            {% if visitor.profilePhoto == 'none' %}
+                                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
+                            {% elif visitor.profilePhoto %}
+                                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
+                            {% endif %}
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span>{{ visitor.visitorNo }}</span><span>{{ visitor.status }}</span>
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}            
             </ul>
         </div>
         <div class="overlay" id="arrivedOverlay" onclick="closeArrivedList()"></div>
@@ -245,10 +284,10 @@
                             <li class="mainListItem">
                                 4. Select User level.
                                 <ol>
-                                    <li class="inneListItem">Admin – Can do any changes except Gate users functions.</li>
+                                    <li class="inneListItem">Admin - Can do any changes except Gate users functions.</li>
                                     <li class="inneListItem">Approver - Can Approve & Create a new visitor Request.</li>
-                                    <li class="inneListItem">Requester – Only do request for a new user.</li>
-                                    <li class="inneListItem">Gate – Only Arrive & Departure functions are allowed.</li>
+                                    <li class="inneListItem">Requester - Only do request for a new user.</li>
+                                    <li class="inneListItem">Gate - Only Arrive & Departure functions are allowed.</li>
                                 </ol>
                             </li>
                             <li class="mainListItem">Click on “Register”</li>
@@ -274,8 +313,8 @@
                             <li class="mainListItem">
                                 Select required report on side panel.
                                 <ol>
-                                    <li class="inneListItem">User report – Generate users list.,</li>
-                                    <li class="inneListItem">Visitor Reports – Generate visitors list.(You should select a starting date & ending date for the report.)</li>
+                                    <li class="inneListItem">User report - Generate users list.,</li>
+                                    <li class="inneListItem">Visitor Reports - Generate visitors list.(You should select a starting date & ending date for the report.)</li>
                                 </ol>
                             </li>
                             <li class="mainListItem">Finally Click on “Export” to generate the excel sheet.</li>
@@ -388,6 +427,18 @@
             document.getElementById('contactMe').classList.remove('hide');
         }
 
+        function openVisitors() {
+            document.getElementById('visitorsOverlay').classList.add('visible');
+            document.getElementById('visitorsList').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
+        }
+
+        function closeVisitors() {
+            document.getElementById('visitorsOverlay').classList.remove('visible');
+            document.getElementById('visitorsList').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
+        }
+
         function openHelp() {
             document.getElementById('helpMenuOverlay').classList.add('visible');
             document.getElementById('helpMenu').classList.add('visible');
@@ -430,6 +481,34 @@
         function closeFullscreen() {
             document.getElementById("fullscreenOverlay").style.display = "none";
         }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // ... (your existing code)
+
+            // Add the event listener for the search box
+            const searchInput = document.getElementById("visitor-search");
+            searchInput.addEventListener("input", function () {
+                const searchTerm = this.value.trim().toLowerCase();
+                performSearch(searchTerm);
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById('visitor-search');
+            const searchResults = document.getElementById('search-results');
+            const allVisitors = document.querySelectorAll('#search-results li');
+
+            searchInput.addEventListener('input', function () {
+                const searchTerm = searchInput.value.toLowerCase();
+
+                // Show only the matching visitors based on the search term
+                allVisitors.forEach(function (visitor) {
+                    const visitorNumber = visitor.querySelector('span:first-child').textContent.toLowerCase();
+                    const shouldShow = visitorNumber.includes(searchTerm);
+                    visitor.style.display = shouldShow ? 'block' : 'none';
+                });
+            });
+        });
     </script>    
 </body>
 </html>

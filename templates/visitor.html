@@ -10,7 +10,7 @@
 
 <body class="visitorPage">
     <div class="content visitor">
-        <form method="POST" action="{{ url_for('get_visitor', visitor_no=visitor.visitorNo) }}" class="visitorForm">
+        <form method="POST" action="{{ url_for('visitor', visitor_no=visitor.visitorNo) }}" class="visitorForm">
             
             <div class="visitordetails">
                 <div class="names">
@@ -93,16 +93,7 @@
                         <div class="enterDetail">
                             <label for="remarks">Remarks</label>
                             <div class="dropdown">
-                                <input type="text" id="remarks" name="remarks">
-                                <div class="dropdown-content" id="dropdownOptions">
-                                    <div class="option" onclick="selectOption('To Rent a machine')">To Rent a machine</div>
-                                    <div class="option" onclick="selectOption('To Return a machine')">To Return a machine</div>
-                                    <div class="option" onclick="selectOption('To Purchase a machine')">To Purchase a machine</div>
-                                    <div class="option" onclick="selectOption('Supplier')">Supplier</div>
-                                    <div class="option" onclick="selectOption('To an official work')">To an official work</div>
-                                    <div class="option" onclick="selectOption('To meet an employee / Visitor')">To meet an employee / Visitor</div>
-                                    <div class="option" onclick="selectOption('Other')">Other</div>
-                                </div>
+                                <input type="text" id="remarks" name="remarks" readonly>
                             </div>
                         </div>
                     </div>
@@ -149,8 +140,8 @@
             <div class="footer">
                 <div class="approveOrReject">
                     <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
-                    <a href="{{ url_for('dashboard') }}"><button type="submit" class="btn-approve accessed" name="changeStatus" value="Approve">Approve</button></a>
-                    <a href="{{ url_for('dashboard') }}"><button type="submit" class="btn-reject" name="changeStatus" value="Reject">Reject</button></a>
+                    <input type="button" class="btn-approve accessed" id="approve" value="Approve" style="cursor: no-drop; background: #ffffff; color: #dddddd; font-weight: 300;" disabled>
+                    <input type="button" class="btn-reject" id="reject" value="Reject" disabled>
                 </div>
                 <div class="saveOrCancel">
                     <input type="button" class="btn-save" id="save" value="Save"disabled>
@@ -165,53 +156,6 @@
         </form>
     </div>
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const dropdown = document.querySelector(".dropdown");
-            const inputRemarks = document.getElementById("remarks");
-            const dropdownContent = document.querySelector(".dropdown-content");
-            const remarkOption = document.querySelector(".remarkOption");
-
-            dropdown.addEventListener("click", function() {
-                dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
-            });
-
-            inputRemarks.addEventListener("click", function() {
-            });
-
-            function selectOption(option) {
-                if (option === 'Other') {
-                    inputRemarks.value = '';
-                    document.getElementById('dropdownOptions').classList.add('hide');
-                } else {
-                    inputRemarks.value = option;
-                }
-                dropdownContent.style.display = "none";
-            }
-
-            window.selectOption = selectOption;
-
-            document.addEventListener("click", function(event) {
-                if (!dropdown.contains(event.target) && !inputRemarks.contains(event.target) && dropdownContent.style.display === "block") {
-                    dropdownContent.style.display = "none";
-                }
-            });
-        });
-        // function openOutlook() {
-        //         var subject = "Visitor Approval - {{ visitor.visitorNo }}";
-        //         var body = "Last Name: {{ visitor.lastName }}\n" +
-        //             "First Name: {{ visitor.firstName }}\n" +
-        //             "Company Name: {{ visitor.companyName }}\n" +
-        //             "Visitor ID: {{ visitor.visitorId }}\n" +
-        //             "Arriving Date: {{ visitor.arrivingDate }}\n" +
-        //             "Arriving Time: {{ visitor.arrivingTime }}"
-        //             // Add other fields as needed
-
-        //         var outlookLink = "https://outlook.office.com/mail/compose?subject=" + encodeURIComponent(subject) +
-        //             "&body=" + encodeURIComponent(body);
-
-        //         // Open Outlook website in a new tab or window
-        //         window.open(outlookLink, '_blank');
-        //     }
     </script>
 </body>
 </html>

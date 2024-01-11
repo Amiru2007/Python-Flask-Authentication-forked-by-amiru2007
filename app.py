@@ -293,7 +293,8 @@ def login():
         if user:
             if bcrypt.check_password_hash(user.password, form.password.data):
                 login_user(user)
-                return redirect(url_for('dashboard'))
+                next_url = request.args.get('next')
+                return redirect(next_url) if next_url else redirect(url_for('dashboard'))
     return render_template('login.html', form=form)
 
 @app.route('/dashboard', methods=['GET', 'POST'])
@@ -306,6 +307,8 @@ def dashboard():
         approved_visitors = Visitor.query.filter(Visitor.status == 'Approved', Visitor.requester != current_user.username).all()
         # Query to retrieve visitorNos where the status is 'Arrived'
         arrived_visitors = Visitor.query.filter(Visitor.status == 'Arrived', Visitor.requester != current_user.username).all()
+        # Query to retrieve visitorNos where the status is 'Arrived'
+        visitors_list = Visitor.query.all()
 
         # arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
 
@@ -316,7 +319,8 @@ def dashboard():
                            pending_visitor_numbers=pending_visitors,
                         #    pending_visitor_requesters=pending_visitor_requesters_list,
                            approved_visitor_numbers=approved_visitors,
-                           arrived_visitor_numbers=arrived_visitors)
+                           arrived_visitor_numbers=arrived_visitors,
+                           visitors_list=visitors_list)
 
 @ app.route('/register', methods=['GET', 'POST'])
 # @login_required
@@ -470,6 +474,28 @@ def get_visitor():
         image_path = visitor.profilePhoto
         print("Image Path:", visitor.profilePhoto)
         return render_template('filledForm.html', visitor=visitor, image_path=image_path)
+    
+    else:
+        return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
+
+@app.route('/visitor', methods=['GET', 'POST'])
+@login_required
+def visitor():
+    if request.method == 'POST':
+        visitor_no = request.form.get('visitor_no')
+    elif request.method == 'GET':
+        visitor_no = request.args.get('visitor_no')
+    else:
+        return jsonify({'error': 'Method not allowed'}), 405
+
+    visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
+
+    if visitor:
+        # Read the image file path from the database
+        image_path = visitor.profilePhoto
+        print("Image Path:", visitor.profilePhoto)
+    
+        return render_template('visitor.html', visitor=visitor, image_path=image_path)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
