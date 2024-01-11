@@ -1270,10 +1270,10 @@ body.register {
 
 .option {
     padding: 7px;
-    font-size: 14px;
+    font-size: 12px;
     cursor: pointer;
     border-radius: 5px;
-    width: calc(100% - 20px);
+    width: calc(100% - 14px);
 }
 
 .option:hover {
