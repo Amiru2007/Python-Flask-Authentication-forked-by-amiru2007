@@ -82,7 +82,7 @@
                 {% endif %}
 
                 <!-- Reports -->
-                {% if current_user.level == 'Admin' %}
+                {% if current_user.level in ['Admin', 'Approver', 'Requester', 'Gate'] %}
                     <div class="grid-item">
                         <span><i class="ph ph-person"></i></span>
                         <h3>Visitors</h3>

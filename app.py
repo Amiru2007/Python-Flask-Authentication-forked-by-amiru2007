@@ -737,6 +737,6 @@ def profile():
 
 
 if __name__ == "__main__":
-    app.run(host='192.168.1.4', port=5000, debug=True)
+    app.run(debug=True)
 
 db.create_all()
