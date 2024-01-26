@@ -304,9 +304,9 @@ def dashboard():
         # Query to retrieve visitorNos where the status is 'Pending'
         pending_visitors = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester != current_user.username).all()
         # Query to retrieve visitorNos where the status is 'Approved'
-        approved_visitors = Visitor.query.filter(Visitor.status == 'Approved', Visitor.requester != current_user.username).all()
+        approved_visitors = Visitor.query.filter(Visitor.status == 'Approved').all()
         # Query to retrieve visitorNos where the status is 'Arrived'
-        arrived_visitors = Visitor.query.filter(Visitor.status == 'Arrived', Visitor.requester != current_user.username).all()
+        arrived_visitors = Visitor.query.filter(Visitor.status == 'Arrived').all()
         # Query to retrieve visitorNos where the status is 'Arrived'
         visitors_list = Visitor.query.all()
 
@@ -681,6 +681,7 @@ def export_excel_visitor():
         name="TableStyleMedium9", showFirstColumn=False,
         showLastColumn=False, showRowStripes=True, showColumnStripes=True
     )
+    
     table.tableStyleInfo = style
 
     # Add the table to the worksheet
@@ -737,6 +738,6 @@ def profile():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run("192.168.1.4", debug=True)
 
 db.create_all()
