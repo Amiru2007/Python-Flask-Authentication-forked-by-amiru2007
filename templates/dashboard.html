@@ -28,6 +28,15 @@
                     </div>
                 {% endif %}
 
+                <!-- Edit Request -->
+                {% if current_user.level in ['Admin', 'Approver', 'Requester', 'Gate'] %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-pencil-simple"></i></span>
+                        <h3>Edit Request</h3>
+                        <button type="button" id="showRequestList" onclick="openShowRequestList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
                 <!-- Arrive Visitor -->
                 {% if current_user.level == 'Gate' %}
                     <div class="grid-item">
@@ -90,6 +99,28 @@
                     </div>
                 {% endif %}
             </div>
+        </div>
+        <div class="overlay" id="requestListoverlay" onclick="closeShowRequestList()"></div>
+        <div class="popup" id="requestList">
+            <div class="popupHeader">
+                <h3>Approved Visitor List</h3>
+                <button onclick="closeShowRequestList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for visitor in request_list %}
+                    <li>
+                        <form method="post" action="{{ url_for('edit_request') }}">
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                            {% if visitor.profilePhoto == 'none' %}
+                                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
+                            {% elif visitor.profilePhoto %}
+                                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
+                            {% endif %}
+                            <button type="submit">{{ visitor.visitorNo }}</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
         <div class="overlay" id="pendingApprovaloverlay" onclick="closeShowApprovedList()"></div>
         <div class="popup" id="pendingApproval">
@@ -347,7 +378,7 @@
         <div id="closeButton" onclick="closeFullscreen()">&#x2715;</div>
         <img id="fullscreenImage" src="" alt="Fullscreen Image">
     </div>
-    <div class="dashboard-footer">
+    <div class="dashboard-footer" id="dashboardFooter">
         <a href="{{url_for('logout')}}"><button type="button">logout</button></a>
         <button type="button" id="showReportButtons" onclick="openHelp()">Help?</button>
     </div>
@@ -365,6 +396,19 @@
         </div>
     </div>
     <script>
+        function openShowRequestList() {
+            document.getElementById('requestListoverlay').classList.add('visible');
+            document.getElementById('requestList').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
+        }
+
+        function closeShowRequestList() {
+            document.getElementById('requestListoverlay').classList.remove('visible');
+            document.getElementById('requestList').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
+        }
         function openShowApprovedList() {
             document.getElementById('pendingApprovaloverlay').classList.add('visible');
             document.getElementById('pendingApproval').classList.add('visible');

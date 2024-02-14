@@ -142,10 +142,12 @@ body.register {
 .logo-image {
     height: 100px;
     width: auto;
+    position: absolute;
+    top: 50px;
 }
 
 .toolsAndPreview {
-    height: 350px;
+    height: 100vh;
     width: 100%;
     display: flex; 
     justify-content: center;
@@ -156,14 +158,17 @@ body.register {
     display: flex; 
     justify-content: center;
     align-items: center;
+    width: 100%;
+    height: fit-content;
     flex: 1;
-    height: calc(100vh - 50px);
+    padding-bottom: 100px;
 }
 
 .tools .grid-container {
     display: flex;
     justify-content: center;
     align-items: center;
+    height: fit-content;
 }
 
 .tools .grid-container .grid-item {
@@ -652,6 +657,9 @@ body.register {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: fixed;
+    /* position: absolute; */
+    bottom: 50px;
 }
 
 .dashboard-footer button {
@@ -1015,6 +1023,15 @@ body.register {
     opacity: 0;
 }
 
+#dashboardFooter {
+    transition: all 0.2s;
+    -webkit-transition: all 0.2s;
+}
+
+#dashboardFooter.hide {
+    opacity: 0;
+}
+
 .innerContainer {
     width: 600px;
     display: flex;
@@ -1338,18 +1355,23 @@ body.register {
 
 @media screen and (max-width: 1360px) {
     .toolsAndPreview {
-        height: 400px;
+        height: fit-content;
     }
     
     .tools .grid-container {
         display: grid;
         grid-template-columns: repeat(3, 170px);
-        grid-template-rows: repeat(2, 170px);
+        grid-template-rows: repeat(3, 170px);
         gap: 30px;
     }
 }
 
 @media screen and (max-width: 920px) {    
+    .tools {
+        padding-top: 150px;
+        padding-bottom: 50px;
+    }
+
     body.visitorPage {
         width: 100%;
     }
@@ -1585,6 +1607,11 @@ body.register {
 }
 
 @media screen and (max-width: 600px) {
+    .tools {
+        padding-top: 370px;
+        /* padding-bottom: 50px; */
+    }
+
     body.login {
         width: 100%;
     }
@@ -1635,6 +1662,9 @@ body.register {
     .linkText {
         display: none;
     }
+    .dashboard-footer {
+        bottom: 10px;
+    }
 }
 
 @media screen and (max-width: 530px) {
@@ -1660,6 +1690,11 @@ body.register {
 }
 
 @media screen and (max-width: 400px) {
+    .tools {
+        padding-top: 500px;
+        padding-bottom: 0;
+    }
+
     body.login {
         width: 100%;
     }

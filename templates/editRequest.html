@@ -5,32 +5,32 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
-    <title>Vistor Form</title>
+    <title>Arrive Vistor Form</title>
 </head>
 
 <body class="visitorPage">
     <div class="content visitor">
-        <form method="POST" action="{{ url_for('get_visitor', visitor_no=visitor.visitorNo) }}" class="visitorForm">
+        <form method="POST" action="{{ url_for('edit_request', visitor_no=visitor.visitorNo) }}" class="visitorForm">
             
             <div class="visitordetails">
                 <div class="names">
                     <div class="lastname">
                         <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" name="lastName" value="{{ visitor.lastName }}" readonly>
+                        <input type="text" id="lastName" name="lastName" value="{{ visitor.lastName }}">
                     </div>
                     <div class="firstname">
                         <label for="firstName">First Name</label>
-                        <input type="text" id="firstName" name="firstName" value="{{ visitor.firstName }}" readonly>
+                        <input type="text" id="firstName" name="firstName" value="{{ visitor.firstName }}">
                     </div>
                 </div>
                 <div class="names">
                     <div class="company">
                         <label for="companyName">Company Name</label>
-                        <input type="text" id="companyName" name="companyName" value="{{ visitor.companyName }}" readonly>
+                        <input type="text" id="companyName" name="companyName" value="{{ visitor.companyName }}">
                     </div>
                     <div class="id">
                         <label for="VisitorId">Visitor Id</label>
-                        <input type="text" id="VisitorId" name="VisitorId" value="{{ visitor.visitorId }}" readonly>
+                        <input type="text" id="VisitorId" name="VisitorId" value="{{ visitor.visitorId }}">
                     </div>
                 </div>
             </div>
@@ -40,27 +40,27 @@
                     <div class="container">
                         <div class="enterDetail">
                             <label for="arrivingDate">Arriving Date</label>
-                            <input type="text" id="arrivingDate" name="arrivingDate" value="{{ visitor.arrivingDate }}" readonly>
+                            <input type="date" id="arrivingDate" name="arrivingDate" value="{{ visitor.arrivingDate }}">
                         </div>
                         <div class="enterDetail">
                             <label for="arrivingTime">Arriving Time</label>
-                            <input type="text" id="arrivingTime" name="arrivingTime" value="{{ visitor.arrivingTime }}" readonly>
+                            <input type="time" id="arrivingTime" name="arrivingTime" value="{{ visitor.arrivingTime }}">
                         </div>
                     </div>
                     <div class="container">
                         <div class="enterDetail">
                             <label for="departingDate">Departing Date</label>
-                            <input type="text" id="departingDate" name="departingDate" value="{{ visitor.departingDate }}" readonly>
+                            <input type="date" id="departingDate" name="departingDate" value="{{ visitor.departingDate }}">
                         </div>
                         <div class="enterDetail">
                             <label for="departingTime">Departing Time</label>
-                            <input type="text" id="departingTime" name="departingTime" value="{{ visitor.departingTime }}" readonly>
+                            <input type="time" id="departingTime" name="departingTime" value="{{ visitor.departingTime }}">
                         </div>
                     </div>
                     <div class="container">
                         <div class="enterDetail">
                             <label for="vehicleNo">Vehicle No.</label>
-                            <input type="text" id="vehicleNo" name="vehicleNo" value="{{ visitor.vehicleNo }}" readonly>
+                            <input type="text" id="vehicleNo" name="vehicleNo" value="{{ visitor.vehicleNo }}">
                         </div>
                         <div class="enterDetail">
                             <label for="visitorNo">Visitor No.</label>
@@ -70,11 +70,11 @@
                     <div class="container">
                         <div class="enterDetail">
                             <label for="phoneNumber">Phone Number</label>
-                            <input type="text" id="phoneNumber" name="phoneNumber" value="{{ visitor.phoneNumber }}" readonly>
+                            <input type="text" id="phoneNumber" name="phoneNumber" value="{{ visitor.phoneNumber }}">
                         </div>
                         <div class="enterDetail">
                             <label for="emailAddress">E-mail Address</label>
-                            <input type="text" id="emailAddress" name="emailAddress" value="{{ visitor.emailAddress }}" readonly>
+                            <input type="text" id="emailAddress" name="emailAddress" value="{{ visitor.emailAddress }}">
                         </div>
                     </div>
                     <div class="container">
@@ -86,7 +86,7 @@
                     <div class="container">
                         <div class="enterDetail">
                             <label for="noOfVisitors">No. of visitors</label>
-                            <input type="text" id="noOfVisitors" name="noOfVisitors" value="{{ visitor.noOfVisitors }}" readonly>
+                            <input type="text" id="noOfVisitors" name="noOfVisitors" value="{{ visitor.noOfVisitors }}">
                         </div>
                     </div>
                     <div class="container">
@@ -109,17 +109,18 @@
                     <div class="container single">
                         <div class="enterDetail">
                             <label for="history">History</label>
-                            <textarea id="history" name="history" readonly>{{ visitor.history | safe }}</textarea>
+                            <textarea id="history" name="history" readonly>{{ visitor.history }}</textarea>
                         </div>
                     </div>
                     <div class="container buttons">
                         <div class="enterDetail">
                             <div class="visitorStatusUpdates">
                                 <label for="statusbtn">Visitor Status</label>
-                                <input type="button" id="statusbtn" name="statusbtn" style="cursor: auto;" value="{{ visitor.status }}" readonly>
+                                <input type="button" id="statusbtn" name="statusbtn" value="{{ visitor.status }}" style="cursor: auto;" readonly>
                             </div>
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
                             <div class="visitorStatusUpdates">
-                                <input type="button" class="btn-status" id="arrived" value="Arrived" disabled>
+                                <input type="button" class="btn-status" name="changeStatus" id="arrived" value="Arrived" disabled>
                                 <input type="button" class="btn-status" id="departed" value="Departed" disabled>
                             </div>
                         </div>
@@ -139,21 +140,20 @@
                             <input type="button" class="btn-import" id="import" value="Import" disabled>
                         </div>
                     </div>
-                    <div class="visitor-photo">
-                        <div class="photo-wrapper outside">
-                            <img src="/static/logo2.jpg" alt="visitor photo">
-                        </div>
+                    <div class="photo-wrapper">
+                        <img src="/static/logo2.jpg" alt="visitor photo">
                     </div>
                 </div>
             </div>
             <div class="footer">
                 <div class="approveOrReject">
-                    <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
-                    <a href="{{ url_for('dashboard') }}"><button type="submit" class="btn-approve accessed" name="changeStatus" value="Approve">Approve</button></a>
-                    <a href="{{ url_for('dashboard') }}"><button type="submit" class="btn-reject" name="changeStatus" value="Reject">Reject</button></a>
+                    <input type="button" class="btn-approve accessed" id="approve" value="Approve" style="cursor: no-drop; background: #ffffff; color: #dddddd; font-weight: 300;" disabled>
+                    <input type="button" class="btn-reject" id="reject" value="Reject" disabled>
                 </div>
                 <div class="saveOrCancel">
-                    <input type="button" class="btn-save" id="save" value="Save"disabled>
+                    <!-- <input type="button" class="btn-help" id="help" value="Help?"> -->
+                    <input type="submit" class="btn-save" name="changeStatus" id="save" value="Save">
+                    <!-- <input type="submit" class="btn-save" id="" value="" disabled> -->
                     <a href="{{ url_for('dashboard') }}"><input type="button" class="btn-cancel" id="cancel" value="Cancel"></a>
                 </div>
             </div>
@@ -196,22 +196,6 @@
                 }
             });
         });
-        // function openOutlook() {
-        //         var subject = "Visitor Approval - {{ visitor.visitorNo }}";
-        //         var body = "Last Name: {{ visitor.lastName }}\n" +
-        //             "First Name: {{ visitor.firstName }}\n" +
-        //             "Company Name: {{ visitor.companyName }}\n" +
-        //             "Visitor ID: {{ visitor.visitorId }}\n" +
-        //             "Arriving Date: {{ visitor.arrivingDate }}\n" +
-        //             "Arriving Time: {{ visitor.arrivingTime }}"
-        //             // Add other fields as needed
-
-        //         var outlookLink = "https://outlook.office.com/mail/compose?subject=" + encodeURIComponent(subject) +
-        //             "&body=" + encodeURIComponent(body);
-
-        //         // Open Outlook website in a new tab or window
-        //         window.open(outlookLink, '_blank');
-        //     }
     </script>
 </body>
 </html>

@@ -209,7 +209,6 @@ def generate_visitorCode():
     new_code = f'{today}{new_counter}'
     return new_code
 
-
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
                            InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
@@ -307,7 +306,9 @@ def dashboard():
         approved_visitors = Visitor.query.filter(Visitor.status == 'Approved').all()
         # Query to retrieve visitorNos where the status is 'Arrived'
         arrived_visitors = Visitor.query.filter(Visitor.status == 'Arrived').all()
-        # Query to retrieve visitorNos where the status is 'Arrived'
+
+        request_list = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester == current_user.username).all()
+        
         visitors_list = Visitor.query.all()
 
         # arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
@@ -320,6 +321,7 @@ def dashboard():
                         #    pending_visitor_requesters=pending_visitor_requesters_list,
                            approved_visitor_numbers=approved_visitors,
                            arrived_visitor_numbers=arrived_visitors,
+                           request_list=request_list,
                            visitors_list=visitors_list)
 
 @ app.route('/register', methods=['GET', 'POST'])
@@ -474,6 +476,56 @@ def get_visitor():
         image_path = visitor.profilePhoto
         print("Image Path:", visitor.profilePhoto)
         return render_template('filledForm.html', visitor=visitor, image_path=image_path)
+    
+    else:
+        return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
+
+
+@app.route('/editrequest', methods=['POST'])
+@login_required
+def edit_request():
+    visitor_no = request.form.get('visitor_no')
+    visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
+
+    if visitor:
+        # Access the value of the clicked button from the form data
+        clicked_button_value = request.form.get('changeStatus')
+        print(clicked_button_value)
+
+        # Your logic based on the clicked button value
+        if clicked_button_value == 'Save':
+            visitor.lastName = request.form.get('lastName')
+            visitor.firstName = request.form.get('firstName')
+            visitor.companyName = request.form.get('companyName')
+            visitor.visitorId = request.form.get('VisitorId')
+            visitor.arrivingDate = request.form.get('arrivingDate')
+            visitor.arrivingTime = request.form.get('arrivingTime')
+            visitor.departingDate = request.form.get('departingDate')
+            visitor.departingTime = request.form.get('departingTime')
+            visitor.vehicleNo = request.form.get('vehicleNo')
+            visitor.phoneNumber = request.form.get('phoneNumber')
+            visitor.emailAddress = request.form.get('emailAddress')
+            visitor.noOfVisitors = request.form.get('noOfVisitors')
+            visitor.requestTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+            visitor.committedDate=datetime.utcnow()
+
+            # Retrieve the current history and append new remarks
+            current_history = visitor.history
+            new_remarks = request.form.get('remarks', '')
+
+            # Replace newline characters with HTML line breaks
+            updated_history = f"{current_history}\r\n{new_remarks}"
+
+            # Update the database with the new content
+            visitor.history = updated_history
+
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+
+        # Read the image file path from the database
+        image_path = visitor.profilePhoto
+        print("Image Path:", visitor.profilePhoto)
+        return render_template('editRequest.html', visitor=visitor, image_path=image_path)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
@@ -738,6 +790,6 @@ def profile():
 
 
 if __name__ == "__main__":
-    app.run("192.168.1.4", debug=True)
+    app.run("192.168.1.6", debug=True)
 
 db.create_all()
