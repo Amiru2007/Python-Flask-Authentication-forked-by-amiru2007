@@ -291,6 +291,10 @@ body.register {
     background: #f1f8fe;
 }
 
+#visitorsList .popupHeader {
+    width: 700px;
+}
+
 .popupHeader button {
     border: none;
     background: transparent;
@@ -409,6 +413,10 @@ body.register {
 .popup.visible {
     display: block;
     opacity: 1;
+}
+
+#visitorsList {
+    width: 700px;
 }
 
 .visitorPage {

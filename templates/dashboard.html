@@ -186,7 +186,21 @@
                                 <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
                             {% endif %}
                             <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                                <span>{{ visitor.visitorNo }}</span><span>{{ visitor.status }}</span>
+                                <span>{{ visitor.visitorNo }}</span>
+
+                                {% if visitor.arrivedTime %}
+                                    <span>{{ visitor.arrivedTime }}</span>
+                                {% else %}
+                                    <span>-</span>
+                                {% endif %}
+
+                                {% if visitor.departedTime %}
+                                    <span>{{ visitor.departedTime }}</span>
+                                {% else %}
+                                    <span>-</span>
+                                {% endif %}
+
+                                <span>{{ visitor.status }}</span>
                             </button>
                         </form>
                     </li>
@@ -413,48 +427,56 @@
             document.getElementById('pendingApprovaloverlay').classList.add('visible');
             document.getElementById('pendingApproval').classList.add('visible');
             document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
         }
 
         function closeShowApprovedList() {
             document.getElementById('pendingApprovaloverlay').classList.remove('visible');
             document.getElementById('pendingApproval').classList.remove('visible');
             document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
         }
 
         function openToApproveList() {
             document.getElementById('ApprovedVisitorsoverlay').classList.add('visible');
             document.getElementById('ApprovedVisitors').classList.add('visible');
             document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
         }
 
         function closeToApproveList() {
             document.getElementById('ApprovedVisitorsoverlay').classList.remove('visible');
             document.getElementById('ApprovedVisitors').classList.remove('visible');
             document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
         }
 
         function openArrivedList() {
             document.getElementById('arrivedOverlay').classList.add('visible');
             document.getElementById('arrivedVisitors').classList.add('visible');
             document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
         }
 
         function closeArrivedList() {
             document.getElementById('arrivedOverlay').classList.remove('visible');
             document.getElementById('arrivedVisitors').classList.remove('visible');
             document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
         }
 
         function openReports() {
             document.getElementById('reportOverlay').classList.add('visible');
             document.getElementById('reportButtons').classList.add('visible');
             document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
         }
 
         function closeReports() {
             document.getElementById('reportOverlay').classList.remove('visible');
             document.getElementById('reportButtons').classList.remove('visible');
             document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
         }
 
         function openVisitorReport() {
@@ -463,36 +485,42 @@
             document.getElementById('visitorReportOverlay').classList.add('visible');
             document.getElementById('visitorReportButtons').classList.add('visible');
             document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
         }
 
         function closeVisitorReport() {
             document.getElementById('visitorReportOverlay').classList.remove('visible');
             document.getElementById('visitorReportButtons').classList.remove('visible');
             document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
         }
 
         function openVisitors() {
             document.getElementById('visitorsOverlay').classList.add('visible');
             document.getElementById('visitorsList').classList.add('visible');
             document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
         }
 
         function closeVisitors() {
             document.getElementById('visitorsOverlay').classList.remove('visible');
             document.getElementById('visitorsList').classList.remove('visible');
             document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
         }
 
         function openHelp() {
             document.getElementById('helpMenuOverlay').classList.add('visible');
             document.getElementById('helpMenu').classList.add('visible');
             document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
         }
 
         function closeHelp() {
             document.getElementById('helpMenuOverlay').classList.remove('visible');
             document.getElementById('helpMenu').classList.remove('visible');
             document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
         }
         
         document.addEventListener("DOMContentLoaded", function () {
