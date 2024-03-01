@@ -309,7 +309,7 @@ def dashboard():
 
         request_list = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester == current_user.username).all()
         
-        visitors_list = Visitor.query.all()
+        visitors_list = Visitor.query.order_by(Visitor.visitorNo.desc()).all()
 
         # arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
 
