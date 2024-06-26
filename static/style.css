@@ -22,6 +22,15 @@ input:disabled {
     height: 100vh;
 } */
 
+body {
+    background-image: url(./bgimage.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-y: top;
+    background-attachment: fixed;
+}
+
 body.login,
 body.register {
     display: flex;
@@ -202,7 +211,7 @@ body.login {
 .tools .grid-container .grid-item {
     width: 170px;
     height: fit-content;
-    background-color: #ffffff;
+    background-color: #ffffff57;
     /* margin: 10px; */
     padding: 10px 0 20px 0;
     color: #006bce;
@@ -732,7 +741,7 @@ body.login {
 
 .user-list .table-container {
     width: calc(100%);
-    height: 450px;
+    height: fit-content;
     border: 1px solid #b5b5b3;
     border-radius: 10px;
     overflow: scroll;
@@ -756,14 +765,14 @@ body.login {
 }
 
 .user-list table {
-    width: calc(100% - 40px);
+    width: 100%;
     border-collapse: collapse;
-    margin: 0 20px 20px 20px;
+    /* margin: 0 20px 20px 20px; */
 }
 
 .user-list tbody {
     overflow: scroll;
-    height: 300px;
+    height: 150px;
     overflow-y: auto; 
     scroll-behavior: smooth;
 }
@@ -803,7 +812,7 @@ body.login {
 
 .user-list tr:nth-child(even) {
     background-color: #fdfdfa;
-    border-radius: 10px;
+    border-radius: 0;
     outline: 1px solid #c9c9c5;
 }
 

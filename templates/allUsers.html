@@ -55,7 +55,7 @@
                         <tbody>
                             {% for user in users %}
                             <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';">
-                                <td style="border-radius: 10px;">
+                                <td>
                                     <input type="checkbox" class="checkbox" name="user_checkbox" value="{{ user.id }}" {% if user.id == current_user.id %} disabled {% endif %}>
                                 </td>
                                 <td style="text-align: center;">{{ loop.index }}</td>  <!-- Display the row number -->
@@ -64,7 +64,7 @@
                                 <td>{{ user.email }}</td>
                                 <td>{{ user.name }}</td>
                                 <td>{{ user.telephoneNo }}</td>
-                                <td style="border-radius: 10px;">{{ user.level }}</td>
+                                <td>{{ user.level }}</td>
                             </tr>
                             <!-- {% set row_number = row_number + 1 %} -->
                             {% endfor %}
