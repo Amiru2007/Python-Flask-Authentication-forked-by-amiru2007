@@ -1376,6 +1376,26 @@ body.login {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+/* First child div with a larger width */
+.visitorsListDetail:first-child {
+    flex: 1.2;
+    overflow: hidden;
+    white-space: nowrap; 
+    text-overflow: ellipsis;
+    margin-right: 0 !important;
+}
+
+.visitorsListDetail {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    margin-right: 20px;
+}
+.visitorsListDetail:last-child {
+    margin-right: 0 !important;
+}
+
 #visitor-search {
     width: 200px;
 }

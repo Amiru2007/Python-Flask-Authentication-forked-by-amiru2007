@@ -186,21 +186,23 @@
                                 <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
                             {% endif %}
                             <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                                <span>{{ visitor.visitorNo }}</span>
-
+                                <span class="visitorsListDetail">{{ visitor.visitorNo }}</span>
+                                {% if visitor.companyName %}
+                                    <span class="visitorsListDetail">{{ visitor.companyName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail">-</span>
+                                {% endif %}
                                 {% if visitor.arrivedTime %}
-                                    <span>{{ visitor.arrivedTime }}</span>
+                                    <span class="visitorsListDetail">{{ visitor.arrivedTime }}</span>
                                 {% else %}
-                                    <span>-</span>
+                                    <span class="visitorsListDetail">-</span>
                                 {% endif %}
-
                                 {% if visitor.departedTime %}
-                                    <span>{{ visitor.departedTime }}</span>
+                                    <span class="visitorsListDetail">{{ visitor.departedTime }}</span>
                                 {% else %}
-                                    <span>-</span>
+                                    <span class="visitorsListDetail">-</span>
                                 {% endif %}
-
-                                <span>{{ visitor.status }}</span>
+                                <span class="visitorsListDetail">{{ visitor.status }}</span>
                             </button>
                         </form>
                     </li>

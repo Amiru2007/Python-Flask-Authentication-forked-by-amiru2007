@@ -6,8 +6,8 @@ from flask_wtf.file import FileField, FileAllowed
 from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField, TelField
 from wtforms.validators import InputRequired, Length, ValidationError, EqualTo
 from flask_bcrypt import Bcrypt
-from flask_migrate import Migrate
-from datetime import datetime
+# from flask_migrate import Migrate
+from datetime import datetime, timedelta
 from base64 import b64encode
 import openpyxl
 from openpyxl.worksheet.table import Table, TableStyleInfo
@@ -23,7 +23,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] =\
         'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SECRET_KEY'] = 'thisisasecretkey'
 db = SQLAlchemy(app)
-migrate = Migrate(app, db)
+# migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
@@ -309,7 +309,11 @@ def dashboard():
 
         request_list = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester == current_user.username).all()
         
-        visitors_list = Visitor.query.order_by(Visitor.visitorNo.desc()).all()
+        # Calculate the date 14 days ago
+        fourteen_days_ago = datetime.utcnow() - timedelta(days=14)
+        
+        # Query visitors added within the last 14 days
+        visitors_list = Visitor.query.filter(Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
 
         # arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
 
