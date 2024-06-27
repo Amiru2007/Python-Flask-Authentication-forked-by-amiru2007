@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
     <title>Register</title>
 </head>
 
@@ -52,6 +53,8 @@
             </div>
             <div class="form-sections submit">
                 {{ form.submit(class="login-btn") }}
+
+                <a href="{{ url_for('all_users') }}"><input type="button" style="margin-left: 15px;" class="btn-cancel login-btn" id="cancel" value="Cancel"></a>
             </div>
         </form>
     </div>
