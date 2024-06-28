@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session, send_file, send_from_directory, g
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_, func
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
@@ -565,26 +566,29 @@ def logout():
 @app.route('/all_users', methods=['GET', 'POST'])
 @login_required
 def all_users():
+    page = request.args.get('page', 1, type=int)
+    rows_per_page = request.args.get('rows_per_page', 7, type=int)
+    
     if request.method == 'POST':
         if 'delete_selected' in request.form:
             selected_ids = request.form.getlist('user_checkbox')
-            # Filter out the current user from the selected IDs
             selected_ids = [user_id for user_id in selected_ids if int(user_id) != current_user.id]
-            
-            # Assuming you have a method to delete users by their IDs from the database
             User.query.filter(User.id.in_(selected_ids)).delete(synchronize_session=False)
             db.session.commit()
-
-            # Return a JSON response to update the table dynamically
             return redirect(url_for('all_users'))
-
+        
         search_query = request.form.get('search_query')
-        users = get_filtered_users(search_query)
+        if search_query:
+            users_pagination = User.query.filter(
+                User.username.contains(search_query),
+                User.id != current_user.id
+            ).paginate(page=page, per_page=rows_per_page)
+        else:
+            users_pagination = User.query.filter(User.id != current_user.id).paginate(page=page, per_page=rows_per_page)
     else:
-        # Filter out the current user from the list
-        users = User.query.filter(User.id != current_user.id).all()
-
-    return render_template('allUsers.html', users=users)
+        users_pagination = User.query.filter(User.id != current_user.id).paginate(page=page, per_page=rows_per_page)
+    
+    return render_template('allUsers.html', users_pagination=users_pagination)
 
 def get_filtered_users(search_query):
     # Assuming you have a method to filter users based on a search query
