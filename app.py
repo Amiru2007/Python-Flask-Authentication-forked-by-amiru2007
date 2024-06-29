@@ -44,15 +44,14 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
-    password = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.String(128), nullable=False)  # Increased length for hashed password
     email = db.Column(db.String(80), nullable=False)
     name = db.Column(db.String(80), nullable=False)
     telephoneNo = db.Column(db.String(80), nullable=False)
     level = db.Column(db.String(80), nullable=False)
 
     def set_password(self, password):
-        # Explicitly encode the password as bytes before hashing
-        self.password = generate_password_hash(password.encode('utf-8'))
+        self.password = generate_password_hash(password)
 
     def check_password(self, password):
         return check_password_hash(self.password, password)
@@ -283,19 +282,18 @@ class LoginForm(FlaskForm):
 
     submit = SubmitField('Login')
 
+# @app.route('/', methods=['GET', 'POST'])
+# def login():
+#     form = LoginForm()
+#     if form.validate_on_submit():
+#         user = User.query.filter_by(username=form.username.data).first()
+#         if user and user.check_password(form.password.data):
+#             login_user(user)
+#             next_url = request.args.get('next')
+#             return redirect(next_url) if next_url else redirect(url_for('dashboard'))
+#     return render_template('login.html', form=form)
 
 
-@app.route('/', methods=['GET', 'POST'])
-def login():
-    form = LoginForm()
-    if form.validate_on_submit():
-        user = User.query.filter_by(username=form.username.data).first()
-        if user:
-            if bcrypt.check_password_hash(user.password, form.password.data):
-                login_user(user)
-                next_url = request.args.get('next')
-                return redirect(next_url) if next_url else redirect(url_for('dashboard'))
-    return render_template('login.html', form=form)
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
@@ -616,7 +614,7 @@ def update_user():
     if request.method == 'POST':
         # Get the form data
         username = request.form.get('username')
-        # password = request.form.get('password')
+        password = request.form.get('password')
         email = request.form.get('email')
         name = request.form.get('name')
         telephoneNo = request.form.get('telephoneNo')
@@ -627,7 +625,9 @@ def update_user():
 
         if user:
             # Update the user record
-            # user.password = password
+            if password:
+                print(f"Updating password for user {username}")  # Debug statement
+                user.set_password(password)  # Hash the new password before saving
             user.email = email
             user.name = name
             user.telephoneNo = telephoneNo
@@ -642,6 +642,26 @@ def update_user():
             return "User not found", 404
 
     return "Invalid request", 400
+
+@app.route('/', methods=['GET', 'POST'])
+def login():
+    form = LoginForm()
+    if form.validate_on_submit():
+        user = User.query.filter_by(username=form.username.data).first()
+        if user:
+            print(f"Checking password for user {form.username.data}")  # Debug statement
+            if user.check_password(form.password.data):
+                print(f"Password valid for user {form.username.data}")  # Debug statement
+                login_user(user)
+                next_url = request.args.get('next')
+                return redirect(next_url) if next_url else redirect(url_for('dashboard'))
+            else:
+                print(f"Invalid password for user {form.username.data}")  # Debug statement
+        else:
+            print(f"User {form.username.data} not found")  # Debug statement
+    return render_template('login.html', form=form)
+
+
 
 @app.route('/export_excel_user', methods=['POST'])
 def export_excel_user():
