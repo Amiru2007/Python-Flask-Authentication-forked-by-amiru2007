@@ -1,5 +1,6 @@
-from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session, send_file, send_from_directory
+from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session, send_file, send_from_directory, g
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import or_, func
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
@@ -14,7 +15,7 @@ from openpyxl.worksheet.table import Table, TableStyleInfo
 from io import BytesIO
 from werkzeug.utils import secure_filename
 import os
-from werkzeug.security import check_password_hash, generate_password_hash
+# from werkzeug.security import check_password_hash, generate_password_hash
 
 basedir = os.path.abspath(os.path.dirname(__file__))
 
@@ -25,6 +26,7 @@ app.config['SECRET_KEY'] = 'thisisasecretkey'
 db = SQLAlchemy(app)
 # migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
+bcrypt.init_app(app)
 
 UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # Add any other allowed file extensions
@@ -43,7 +45,8 @@ def load_user(user_id):
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), nullable=False, unique=True)
-    password = db.Column(db.String(80), nullable=False)
+    # password = db.Column(db.String(80), nullable=False)
+    password = db.Column(db.String(128), nullable=False)
     email = db.Column(db.String(80), nullable=False)
     name = db.Column(db.String(80), nullable=False)
     telephoneNo = db.Column(db.String(80), nullable=False)
@@ -51,10 +54,13 @@ class User(db.Model, UserMixin):
 
     def set_password(self, password):
         # Explicitly encode the password as bytes before hashing
-        self.password = generate_password_hash(password.encode('utf-8'))
+        # self.password = generate_password_hash(password.encode('utf-8'))
+        # self.password = generate_password_hash(password)
+        self.password = bcrypt.generate_password_hash(password).decode('utf-8')
 
     def check_password(self, password):
-        return check_password_hash(self.password, password)
+        # return check_password_hash(self.password, password)
+        return bcrypt.check_password_hash(self.password, password)
 
 # Define the Visitor model
 class Visitor(db.Model):
@@ -284,17 +290,45 @@ class LoginForm(FlaskForm):
 
 
 
+# @app.route('/', methods=['GET', 'POST'])
+# def login():
+#     form = LoginForm()
+#     if form.validate_on_submit():
+#         user = User.query.filter_by(username=form.username.data).first()
+#         if user:
+#             if bcrypt.check_password_hash(user.password, form.password.data):
+#                 login_user(user)
+#                 next_url = request.args.get('next')
+#                 return redirect(next_url) if next_url else redirect(url_for('dashboard'))
+#     return render_template('login.html', form=form)
+
 @app.route('/', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
-        if user:
-            if bcrypt.check_password_hash(user.password, form.password.data):
-                login_user(user)
-                next_url = request.args.get('next')
-                return redirect(next_url) if next_url else redirect(url_for('dashboard'))
+        if user and user.check_password(form.password.data):
+            login_user(user)
+            return redirect(url_for('dashboard'))
+        else:
+            flash('Invalid username or password')
     return render_template('login.html', form=form)
+    # form = LoginForm()
+    # if form.validate_on_submit():
+    #     user = User.query.filter_by(username=form.username.data).first()
+    #     if user:
+    #         print(f"Checking password for user {form.username.data}")  # Debug statement
+    #         # if user.check_password(form.password.data):
+    #         if bcrypt.check_password_hash(user.password, form.password.data):
+    #             print(f"Password valid for user {form.username.data}")  # Debug statement
+    #             login_user(user)
+    #             next_url = request.args.get('next')
+    #             return redirect(next_url) if next_url else redirect(url_for('dashboard'))
+    #         else:
+    #             print(f"Invalid password for user {form.username.data}")  # Debug statement
+    #     else:
+    #         print(f"User {form.username.data} not found")  # Debug statement
+    # return render_template('login.html', form=form)
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
@@ -565,26 +599,29 @@ def logout():
 @app.route('/all_users', methods=['GET', 'POST'])
 @login_required
 def all_users():
+    page = request.args.get('page', 1, type=int)
+    rows_per_page = request.args.get('rows_per_page', 7, type=int)
+    
     if request.method == 'POST':
         if 'delete_selected' in request.form:
             selected_ids = request.form.getlist('user_checkbox')
-            # Filter out the current user from the selected IDs
             selected_ids = [user_id for user_id in selected_ids if int(user_id) != current_user.id]
-            
-            # Assuming you have a method to delete users by their IDs from the database
             User.query.filter(User.id.in_(selected_ids)).delete(synchronize_session=False)
             db.session.commit()
-
-            # Return a JSON response to update the table dynamically
             return redirect(url_for('all_users'))
-
+        
         search_query = request.form.get('search_query')
-        users = get_filtered_users(search_query)
+        if search_query:
+            users_pagination = User.query.filter(
+                User.username.contains(search_query),
+                User.id != current_user.id
+            ).paginate(page=page, per_page=rows_per_page)
+        else:
+            users_pagination = User.query.filter(User.id != current_user.id).paginate(page=page, per_page=rows_per_page)
     else:
-        # Filter out the current user from the list
-        users = User.query.filter(User.id != current_user.id).all()
-
-    return render_template('allUsers.html', users=users)
+        users_pagination = User.query.filter(User.id != current_user.id).paginate(page=page, per_page=rows_per_page)
+    
+    return render_template('allUsers.html', users_pagination=users_pagination)
 
 def get_filtered_users(search_query):
     # Assuming you have a method to filter users based on a search query
@@ -613,6 +650,7 @@ def update_user():
         # Get the form data
         username = request.form.get('username')
         # password = request.form.get('password')
+        password = request.form.get('password')
         email = request.form.get('email')
         name = request.form.get('name')
         telephoneNo = request.form.get('telephoneNo')
@@ -622,6 +660,9 @@ def update_user():
         user = User.query.filter_by(username=username).first()
 
         if user:
+            if password:
+                print(f"Updating password for user {username}")  # Debug statement
+                user.set_password(password) 
             # Update the user record
             # user.password = password
             user.email = email
@@ -794,6 +835,6 @@ def profile():
 
 
 if __name__ == "__main__":
-    app.run("192.168.1.4", debug=True)
+    app.run("192.168.1.208", port=5000,  debug=True)
 
 db.create_all()

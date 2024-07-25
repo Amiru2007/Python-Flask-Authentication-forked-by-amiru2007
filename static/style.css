@@ -1,9 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
 
 * {
     margin: 0;
     padding: 0;
-    font-family: 'Poppins', sans-serif;
+    font-family: 'DM Sans', sans-serif;
 }
 
 input[type="button"] {
@@ -21,6 +21,15 @@ input:disabled {
     backdrop-filter: brightness(120%) saturate(180%);
     height: 100vh;
 } */
+
+body {
+    background-image: url(./bgimage.jpg);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position-y: top;
+    background-attachment: fixed;
+}
 
 body.login,
 body.register {
@@ -175,7 +184,7 @@ body.login {
 }
 
 .toolsAndPreview {
-    height: 100vh;
+    height: calc(100vh - 300px);
     width: 100%;
     display: flex; 
     justify-content: center;
@@ -202,8 +211,8 @@ body.login {
 .tools .grid-container .grid-item {
     width: 170px;
     height: fit-content;
-    background-color: #ffffff;
-    /* margin: 10px; */
+    background-color: #ffffff57;
+    margin: 0 10px;
     padding: 10px 0 20px 0;
     color: #006bce;
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .13), 0 1px 1px 0 rgba(0, 0, 0, .11);
@@ -321,6 +330,7 @@ body.login {
 
 #visitorsList .popupHeader {
     width: 700px;
+    z-index: 9999;
 }
 
 .popupHeader button {
@@ -428,9 +438,9 @@ body.login {
 
 .toApprove li form button {
     flex: 1;
-    font-size: 14px;
+    font-size: 13px;
     height: 100%;
-    width: 100%;
+    width: calc(100% - 50px);
     text-align: left;
     background-color: transparent;
     border: none;
@@ -732,7 +742,7 @@ body.login {
 
 .user-list .table-container {
     width: calc(100%);
-    height: 450px;
+    height: fit-content;
     border: 1px solid #b5b5b3;
     border-radius: 10px;
     overflow: scroll;
@@ -756,14 +766,14 @@ body.login {
 }
 
 .user-list table {
-    width: calc(100% - 40px);
+    width: 100%;
     border-collapse: collapse;
-    margin: 0 20px 20px 20px;
+    /* margin: 0 20px 20px 20px; */
 }
 
 .user-list tbody {
     overflow: scroll;
-    height: 300px;
+    height: 150px;
     overflow-y: auto; 
     scroll-behavior: smooth;
 }
@@ -799,11 +809,14 @@ body.login {
     overflow: hidden;
     margin-bottom: 10px;
     white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    max-width: 200px;
 }
 
 .user-list tr:nth-child(even) {
     background-color: #fdfdfa;
-    border-radius: 10px;
+    border-radius: 0;
     outline: 1px solid #c9c9c5;
 }
 
@@ -897,7 +910,7 @@ body.login {
 }
 
 .highlight {
-    background-color: yellow;
+    background-color: #30C5FF;
     border-radius: 5px;
 }
 
@@ -1347,9 +1360,10 @@ body.login {
     margin-top: 40px;
     height: 40px;
     padding: 0;
-    width: 300px;
+    width: 685px;
     background: #f1f8fe;
     box-shadow: 0px 10px 10px#f1f8fe;
+    z-index: 9999;
 }
 
 .search-input {
@@ -1378,22 +1392,24 @@ body.login {
 
 /* First child div with a larger width */
 .visitorsListDetail:first-child {
-    flex: 1.2;
+    flex: 1.2 !important;
     overflow: hidden;
     white-space: nowrap; 
     text-overflow: ellipsis;
-    margin-right: 0 !important;
+    margin: 0 !important;
 }
 
 .visitorsListDetail {
-    flex: 1;
+    flex: 1.1;
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    margin-right: 20px;
+    margin: 0 10px;
 }
 .visitorsListDetail:last-child {
-    margin-right: 0 !important;
+    flex: 1;
+    margin: 0 !important;
+    text-align: right;
 }
 
 #visitor-search {
@@ -1407,6 +1423,121 @@ body.login {
 
 #search-results li form:hover {
     background-color: #f3f7f9;
+}
+
+.visitor-item {
+    position: relative;
+}
+
+.detail-box {
+    display: none;
+    position: absolute;
+    background-color: #f7fdfd;
+    border: 1px solid #ccc;
+    padding: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    width: fit-content;
+    padding: 6px 12px;
+    border-radius: 5px;
+}
+
+.detail-box-row {
+    height: 35px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.detail-box-row span:first-child {
+    font-weight: 600;
+    width: 180px;
+}
+
+.visitor-item:hover .detail-box {
+    display: block;
+}
+
+.visitorsListDetail {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+}
+
+.pagination .disabled {
+    color: #6c757d;
+    pointer-events: none;
+}
+
+.pagination {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 20px;
+}
+
+.pagination .pagination-btn {
+    background: #efefef;
+    border: 0;
+    width: 18px;
+    height: 18px;
+    text-decoration: none;
+    padding: 6px;
+    color: #000000;
+    margin: 0 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 7px;
+    font-size: 14px;
+}
+
+.pagination .pagination-controls {
+    margin: 0 10px !important;
+    width: 15px !important;
+    height: 15px !important;
+    border-radius: 50% !important;
+    background: #efefefaf !important;
+}
+
+.pagination .pagination-current {
+    font-weight: bold;
+    background-color: #0078d4;
+    color: white;
+    border-color: #0078d4;
+}
+
+.pagination-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pagination-container #pageNumberInput {
+    width: 60px;
+    height: 16px;
+    padding: 6px;
+    border: 1px solid #81817f;
+    border-right: hidden !important;
+    border-top-left-radius: 6px;
+    border-bottom-left-radius: 6px;
+    outline: none;
+    margin: 0 0 0 4px;
+}
+
+.pagination-container button {
+    height: 30px;
+    padding: 6px;
+    background: #ececec;
+    border: 1px solid #81817f;
+    border-top-right-radius: 6px;
+    border-bottom-right-radius: 6px;
+    outline: none;
+    margin: 0 4px 0 0;
 }
 
 @media screen and (max-width: 1360px) {

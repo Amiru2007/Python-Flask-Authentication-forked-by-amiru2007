@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" type="text/css" href="//use.fontawesome.com/releases/v5.7.2/css/all.css">
     <title>All Users</title>
 </head>
 <body bgcolor="#f3f3f3">
     <div class="user-list">
-        <form action="{{ url_for('all_users') }}" method="post"></form>
         <form action="{{ url_for('all_users') }}" method="post">
             <div class="mainTableHeader">
                 <div class="leftControls">
@@ -23,10 +23,10 @@
                 </div>
                 <div class="operatingTools">
                     <div class="searchContainer">
-                        <input type="text" id="searchInput" name="search_query" placeholder="Search...">
+                        <input type="text" id="searchInput" name="search_query" placeholder="Search..." value="{{ search_query }}">
                         <button type="submit"><i class="ph-bold ph-magnifying-glass"></i></button>
                     </div>
-                    <button type="submit" class="deleteUser" name="delete_selected" onclick="confirmDelete()">
+                    <button type="submit" class="deleteUser" name="delete_selected" onclick="return confirmDelete()">
                         <span><i class="ph-bold ph-trash"></i></span> Delete User
                     </button>
                     <a href="{{ url_for('register') }}">
@@ -51,29 +51,54 @@
                                 <th>Level</th>
                             </tr>
                         </thead> 
-                        <!-- {% set row_number = 1 %} -->
                         <tbody>
-                            {% for user in users %}
+                            {% for user in users_pagination.items %}
                             <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';">
-                                <td style="border-radius: 10px;">
+                                <td>
                                     <input type="checkbox" class="checkbox" name="user_checkbox" value="{{ user.id }}" {% if user.id == current_user.id %} disabled {% endif %}>
                                 </td>
-                                <td style="text-align: center;">{{ loop.index }}</td>  <!-- Display the row number -->
+                                <td style="text-align: center;">
+                                    {% set row_number = (users_pagination.page - 1) * users_pagination.per_page + loop.index %}
+                                    {{ row_number }}
+                                </td>  <!-- Display the row number -->
                                 <!-- <td>{{ user.id }}</td> -->
                                 <td>{{ user.username }}</td>
                                 <td>{{ user.email }}</td>
                                 <td>{{ user.name }}</td>
                                 <td>{{ user.telephoneNo }}</td>
-                                <td style="border-radius: 10px;">{{ user.level }}</td>
+                                <td>{{ user.level }}</td>
                             </tr>
-                            <!-- {% set row_number = row_number + 1 %} -->
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
         </form>
+        <div class="pagination">
+            {% if users_pagination.has_prev %}
+                <a href="{{ url_for('all_users', page=users_pagination.prev_num) }}" class="pagination-btn pagination-controls"><i class="ph ph-arrow-left"></i></a>
+            {% endif %}
+            {% for page_num in users_pagination.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num == users_pagination.page %}
+                        <p class="pagination-btn pagination-current">{{ page_num }}</p>
+                    {% else %}
+                        <a href="{{ url_for('all_users', page=page_num) }}" class="pagination-btn">{{ page_num }}</a>
+                    {% endif %}
+                {% else %}
+                    <span>...</span>
+                {% endif %}
+            {% endfor %}
+            <div class="pagination-container">
+                <input type="text" id="pageNumberInput" placeholder="Enter page number...">
+                <button type="button" onclick="gotoPage()"><i class="ph ph-arrow-elbow-down-left"></i></button>
+            </div>
+            {% if users_pagination.has_next %}
+                <a href="{{ url_for('all_users', page=users_pagination.next_num) }}" class="pagination-btn pagination-controls"><i class="ph ph-arrow-right"></i></a>
+            {% endif %}
+        </div>
     </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             document.querySelector('form').addEventListener('submit', function (event) {
@@ -130,7 +155,24 @@
         }
 
         function confirmDelete() {
+            return confirm("Are you sure you want to delete the selected users?");
         }
+
+        function gotoPage() {
+            var pageNumber = document.getElementById('pageNumberInput').value;
+            
+            // Ensure the page number is valid and within bounds
+            if (pageNumber && pageNumber > 0 && pageNumber <= {{ users_pagination.pages }}) {
+                window.location.href = "{{ url_for('all_users') }}?page=" + pageNumber;
+            }
+        }
+
+        // Allow pressing enter to submit the page number
+        document.getElementById('pageNumberInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                gotoPage();
+            }
+        });
     </script>    
 </body>
 </html>

@@ -6,6 +6,7 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
     <title>Edit User Information</title>
 </head>
 
@@ -13,7 +14,7 @@
     <div class="content login">
         <form method="POST" action="{{ url_for('update_user') }}" class="login-details">
             <div class="logo-wrapper">
-                <img class="logo-image" src="{{ url_for('static', filename='logo.jpg') }}" alt="Dayartne Holdings Logo">
+                <img class="logo-image" src="{{ url_for('static', filename='logo.png') }}" alt="Dayartne Holdings Logo">
             </div>
             <div class="twosections">
                 <div class="section">
@@ -24,7 +25,8 @@
                     <br>
                     <div class="form-sections">
                         <h4 class="input-head">Password</h4>
-                        <input type="text" class="login-input" id="password" name="password" value="{{ user.password }}">
+                        <input type="password" class="login-input" id="password" name="password" placeholder="Enter new password">
+                        <!-- <input type="text" class="login-input" id="password" name="password" value="{{ user.password }}"> -->
                     </div>
                     <br>
                     <div class="form-sections">
