@@ -92,6 +92,35 @@ class Visitor(db.Model):
     profilePhoto = db.Column(db.String(255), nullable=True)
     committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
     
+class Emplyee(db.Model):
+    id = db.Column(db.Integer)
+    lastName = db.Column(db.String(50), nullable=False)
+    firstName = db.Column(db.String(50), nullable=False)
+    companyName = db.Column(db.String(100))
+    visitorId = db.Column(db.String(15), nullable=False)
+    arrivingDate = db.Column(db.String(20))
+    arrivingTime = db.Column(db.String(20))
+    departingDate = db.Column(db.String(20))
+    departingTime = db.Column(db.String(20))
+    vehicleNo = db.Column(db.String(20))
+    visitorNo = db.Column(db.String(20), primary_key=True, nullable=False, autoincrement=False)
+    phoneNumber = db.Column(db.String(20))
+    emailAddress = db.Column(db.String(120))
+    requester = db.Column(db.String(50))
+    noOfVisitors = db.Column(db.Integer)
+    remarks = db.Column(db.String(255))
+    history = db.Column(db.String(255))
+    status = db.Column(db.String(20))
+    requestTime = db.Column(db.String(20))
+    approver = db.Column(db.String(50))
+    approvedTime = db.Column(db.String(20))
+    arrivalOfficer = db.Column(db.String(50))
+    arrivedTime = db.Column(db.String(20))
+    departureOfficer = db.Column(db.String(50))
+    departedTime = db.Column(db.String(20))
+    profilePhoto = db.Column(db.String(255), nullable=True)
+    committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
+    
 
 class ImageUploadForm(FlaskForm):
     profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
@@ -833,8 +862,104 @@ def profile():
     return render_template('profile.html', user=user)
 
 
+@app.route('/gatepass', methods=['GET', 'POST'])
+@login_required
+def gate_pass():
+    # visitor = Visitor.query.filter_by(visitorNo=visitor_id).first()
+
+    visitor_code = generate_visitorCode()
+
+    form = ImageUploadForm()
+
+    if request.method == 'POST':
+        # Get form data using request.form.get to avoid BadRequestKeyError
+        last_name = request.form.get('lastName', '')
+        first_name = request.form.get('firstName', '')
+        company_name = request.form.get('companyName', '')
+        visitor_id = request.form.get('VisitorId', '')
+        arriving_date = request.form.get('arrivingDate', '')
+        arriving_time = request.form.get('arrivingTime', '')
+        departing_date = request.form.get('departingDate', '')
+        departing_time = request.form.get('departingTime', '')
+        vehicle_no = request.form.get('vehicleNo', '')
+        visitor_no = request.form.get('visitorNo', '')
+        phone_number = request.form.get('phoneNumber', '')
+        email_address = request.form.get('emailAddress', '')
+        requester = request.form.get('requester', '')
+        noOfVisitors = request.form.get('noOfVisitors', '')
+        remarks = request.form.get('remarks', '')
+        history = request.form.get('remarks', '')
+        status = request.form.get('statusbtn', '')
+        request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        if not visitor_id:
+            # Render the template with an error message
+            return render_template('newvisitor.html', 
+                                   requester=current_user.username, 
+                                   visitorNo=visitor_code,
+                                   error_message='You must enter a Visitor ID')
+
+        pic = request.files['pic']
+        visitor_no = request.form.get('visitorNo', '')
+
+        if pic and visitor_no:
+            upload_folder = 'uploads'
+            os.makedirs(upload_folder, exist_ok=True)
+            
+            # Securely generate a new filename using the visitorNo value
+            original_extension = get_file_extension(pic.filename)
+            filename = secure_filename(f"{visitor_no}{original_extension}")
+            file_path = os.path.join(upload_folder, filename)
+            
+            pic.save(file_path)
+        else:
+            # Handle the case where no image is uploaded
+            # Save a blank or default image to the database
+            filename = 'none'
+
+        # filename = secure_filename(pic.filename)
+        
+        new_visitor = Visitor(
+            lastName=last_name,
+            firstName=first_name,
+            companyName=company_name,
+            visitorId=visitor_id,
+            arrivingDate=arriving_date,
+            arrivingTime=arriving_time,
+            departingDate=departing_date,
+            departingTime=departing_time,
+            vehicleNo=vehicle_no,
+            visitorNo=visitor_no,
+            phoneNumber=phone_number,
+            emailAddress=email_address,
+            requester=requester,
+            noOfVisitors=noOfVisitors,
+            remarks=remarks,
+            history=history,
+            status=status,
+            requestTime=request_time,
+            profilePhoto=filename,
+            committedDate=datetime.utcnow()  # Assuming profilePhoto is the file path or name
+        )
+
+        # Add the new visitor to the database
+        with app.app_context():
+            try:
+                db.session.add(new_visitor)
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                return f"Error committing to database: {e}"
+
+        return redirect(url_for('dashboard'))
+
+    return render_template('newvisitor.html',
+                            requester=current_user.username,
+                            visitorNo=visitor_code)
+
+
 
 if __name__ == "__main__":
-    app.run("192.168.1.208", port=5000,  debug=True)
+    app.run("192.168.1.4", port=5000,  debug=True)
 
 db.create_all()
