@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="../static/style.css">
+    <!-- <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' /> -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
+    <title>Gate Pass Form</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" type="text/css" href="//use.fontawesome.com/releases/v5.7.2/css/all.css">
+</head>
+
+<body class="gatePassPage">
+    <h1 class="gate-pass-title">Exit Permit</h1>
+    <form action="{{ url_for('gate_pass') }}" method="post" class="gate-pass-form" enctype="multipart/form-data">
+        <div class="main-form-container">
+            <div class="top-radio-boxes">
+                <div class="radio-boxes-container">
+                    <div class="grid-element">
+                        <label for="radio1">Dayaratne Holdings</label>
+                        <input type="radio" id="radio1" name="radio" class="radio" value="Dayaratne Holdings">
+                    </div>
+                    <div class="grid-element">
+                        <label for="radio2">Dayaratne Apperal</label>
+                        <input type="radio" id="radio2" name="radio" class="radio" value="Dayaratne Apperal">
+                    </div>
+                    <div class="grid-element">
+                        <label for="radio3">Pra Su King</label>
+                        <input type="radio" id="radio3" name="radio" class="radio" value="Pra Su King">
+                    </div>
+                    <div class="grid-element">
+                        <label for="radio4">Isuru International</label>
+                        <input type="radio" id="radio4" name="radio" class="radio" value="Isuru International">
+                    </div>
+                    <div class="grid-element">
+                        <label for="radio5">Isuru Lojistick</label>
+                        <input type="radio" id="radio5" name="radio" class="radio" value="Isuru Lopistick">
+                    </div>
+                    <div class="grid-element">
+                        <label for="radio6">V B T N Trading</label>
+                        <input type="radio" id="radio6" name="radio" class="radio" value="V B T N Trading">
+                    </div>
+                </div>
+            </div>
+            <div class="bottom-employee-datails">
+                <div class="name-id gate-pass-detail-block">
+                    <div class="employee-id gate-pass-input-container">
+                        <label for="employee-id">Emplyee ID</label>
+                        <input type="text" id="employeeId" name="employee-id" title="Employee ID">
+                    </div>
+                    <div class="employee-name gate-pass-input-container">
+                        <label for="employee-name">Employee Name</label>
+                        <input type="text" id="employeeName" name="employee-name" title="Employee name" readonly>
+                    </div>
+                </div>
+                <div class="time-period gate-pass-detail-block">
+                    <div class="employee-departing-time gate-pass-input-container">
+                        <label for="employee-departing-time">Departing Time</label>
+                        <input type="text" id="employeeDepartingTime" name="employee-departing-time" title="Employee daparting time">
+                    </div>
+                    <div class="employee-arrival-time gate-pass-input-container">
+                        <label for="employee-arrival-time">Arrival Time</label>
+                        <input type="text" id="employeeArrivalTime" name="employee-arrival-time" title="Employee time">
+                    </div>
+                </div>
+                <div class="date-vehicle gate-pass-detail-block">
+                    <div class="employee-departing-date gate-pass-input-container">
+                        <label for="employee-departing-date">Date</label>
+                        <input type="text" id="employeeDepartingDate" name="employee-departing-date" title="Employee departing date">
+                    </div>
+                    <div class="employee-vehicle-no gate-pass-input-container">
+                        <label for="employee-vehicle-no">Vehicle Number</label>
+                        <input type="text" id="employeeVehicleNo" name="employee-vehicle-no" title="Employee vehicle number">
+                    </div>
+                </div>
+                <div class="departing-reason gate-pass-detail-block">
+                    <div class="employee-departing-reason gate-pass-input-container">
+                        <label for="employee-departing-reason">Reason</label>
+                        <input type="text" id="employeeDepartingReason" name="employee-departing-reason" title="Departing reason">
+                    </div>
+                </div>
+                <div class="departing-remark gate-pass-detail-block">
+                    <div class="employee-departing-remark gate-pass-input-container">
+                        <label for="employee-departing-remark">Remark</label>
+                        <input type="text" id="employeeDepartingRemark" name="employee-departing-remark" title="Departing remark">
+                    </div>
+                </div>
+                <div class="officer-confirmed-by gate-pass-detail-block">
+                    <div class="employee-officer gate-pass-input-container">
+                        <label for="employee-officer">Authorized officer</label>
+                        <input type="text" id="employeeOfficer" name="employee-officer" title="Authorized officer" readonly>
+                    </div>
+                    <div class="employee-confirmed-by gate-pass-input-container">
+                        <label for="employee-confirmed-by">Confirmed By</label>
+                        <input type="text" id="employeeConfirmedBy" name="employee-confirmed-by" title="Confirmed by" readonly>
+                    </div>
+                </div>
+                <!-- <div class="sequence-number gate-pass-detail-block">
+                    <div class="employee-sequence-number gate-pass-input-container">
+                        <label for="employee-sequence-number">Sequence Number</label>
+                        <input type="text" id="employeeSequenceNumber" name="employee-sequence-number">
+                    </div>
+                </div> -->
+            </div>
+            <div class="control-buttons-container">
+                <button type="button" class="exit-form-control-btn accented" title="save" id="saveExitForm">Save</button>
+                <button type="button" class="exit-form-control-btn" title="cancel" id="cancelExitForm">Cancel</button>
+                <button type="button" class="exit-form-control-btn accented" title="approve" id="approveExitForm">Approve</button>
+                <button type="button" class="exit-form-control-btn accented" title="confirm" id="confirmExitForm">Confirm</button>
+                <button type="button" class="exit-form-control-btn" title="reject" id="rejectExitForm">Reject</button>
+                <button type="button" class="exit-form-control-btn accented" title="in" id="inExitForm">In</button>
+                <button type="button" class="exit-form-control-btn" title="out" id="outExitForm">Exit</button>
+            </div>
+        </div>
+    </form>
+</body>
+</html>
