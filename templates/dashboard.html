@@ -22,7 +22,7 @@
         <div class="tools">
             <div class="grid-container" id="dynamic-grid">
                 <!-- New Visitor -->
-                {% if current_user.level in ['Admin', 'Approver', 'Requester', 'Gate'] %}
+                {% if user_permissions.Create_Visitor %}
                     <div class="grid-item">
                         <span><i class="ph ph-plus-circle"></i></span>
                         <h3>New Visitor</h3>
@@ -31,16 +31,25 @@
                 {% endif %}
 
                 <!-- Edit Request -->
-                {% if current_user.level in ['Admin', 'Approver', 'Requester', 'Gate'] %}
+                {% if user_permissions.Edit_Visitor %}
                     <div class="grid-item">
                         <span><i class="ph ph-pencil-simple"></i></span>
                         <h3>Edit Request</h3>
                         <button type="button" id="showRequestList" onclick="openShowRequestList()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
+                
+                <!-- Approve Visitor -->
+                {% if user_permissions.Approve_Visitor %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-paper-plane-tilt"></i></span>
+                        <h3>Approve Visitor</h3>
+                        <button type="button" id="showToApproveList" onclick="openToApproveList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
 
                 <!-- Arrive Visitor -->
-                {% if current_user.level == 'Gate' %}
+                {% if user_permissions.In_Visitor %}
                     <div class="grid-item">
                         <span><i class="ph ph-arrow-circle-right"></i></span>
                         <h3>Arrive Visitor</h3>
@@ -49,7 +58,7 @@
                 {% endif %}
 
                 <!-- Depart Visitor -->
-                {% if current_user.level == 'Gate' %}
+                {% if user_permissions.Out_Visitor %}
                     <div class="grid-item">
                         <span><i class="ph ph-check-circle"></i></span>
                         <h3>Depart Visitor</h3>
@@ -57,25 +66,15 @@
                     </div>
                 {% endif %}
                 
-                <!-- Approve Visitor -->
-                {% if current_user.level == 'Admin' or current_user.level == 'Approver' %}
-                    <div class="grid-item">
-                        <span><i class="ph ph-paper-plane-tilt"></i></span>
-                        <h3>Approve Visitor</h3>
-                        <button type="button" id="showToApproveList" onclick="openToApproveList()"><i class="ph ph-arrow-right"></i></button>
-                    </div>
-                {% endif %}
+                <!-- Change Password -->
+                <div class="grid-item">
+                    <span><i class="ph ph-password"></i></span>
+                    <h3>Change Password</h3>
+                    <a href="{{ url_for('change_password') }}"><button type="button">Change</button></a>
+                </div>
 
-                {% if current_user.level == 'Admin' %}
-                    <div class="grid-item">
-                        <span><i class="ph ph-password"></i></span>
-                        <h3>Change Password</h3>
-                        <a href="{{ url_for('change_password') }}"><button type="button">Change</button></a>
-                    </div>
-                {% endif %}
-
-                <!-- Delete User -->
-                {% if current_user.level == 'Admin' %}
+                <!-- User Management -->
+                {% if user_permissions.Create_User %}
                     <div class="grid-item">
                         <span><i class="ph ph-user"></i></i></span>
                         <h3>User Management</h3>
@@ -84,20 +83,29 @@
                 {% endif %}
 
                 <!-- Reports -->
-                {% if current_user.level == 'Admin' %}
+                {% if user_permissions.Create_Reports %}
                     <div class="grid-item">
                         <span><i class="ph ph-scroll"></i></span>
                         <h3>Reports</h3>
-                        <button type="button" id="showReportButtons" onclick="openReports()"><i class="ph ph-arrow-right"></i></button>
+                        <button type="button" id="showReportButtons" onclick="openReports()" title="Open Reports Popup"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
 
                 <!-- Reports -->
-                {% if current_user.level in ['Admin', 'Approver', 'Requester', 'Gate'] %}
+                {% if user_permissions.Create_Visitor %}
                     <div class="grid-item">
                         <span><i class="ph ph-person"></i></span>
                         <h3>Visitors</h3>
                         <button type="button" id="showVisitorList" onclick="openVisitors()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Gate Pass -->
+                {% if user_permissions.Create_Gate_Pass %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-door-open"></i></span>
+                        <h3>Gate Pass Form</h3>
+                        <a href="{{ url_for('gate_pass') }}"><button type="button">Create</button></a>
                     </div>
                 {% endif %}
             </div>
@@ -444,6 +452,7 @@
             document.getElementById('contactMe').classList.remove('hide');
             document.getElementById('dashboardFooter').classList.remove('hide');
         }
+        
         function openShowApprovedList() {
             document.getElementById('pendingApprovaloverlay').classList.add('visible');
             document.getElementById('pendingApproval').classList.add('visible');

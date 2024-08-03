@@ -1,17 +1,17 @@
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
 
 :root {
-    --text-main:     #ffffff;
+    --text-main: #ffffff;
     --button-low-bg: #f7f7f7;
-    --table-row:     #f3f3f3;
-    --popup-bg:      #f1f8fe;
-    --button-bg:     #efefef;
-    --popup-border:  #dddddd;
-    --border:        #c8c8c8;
-    --sub-text:      #6d6d6d;
-    --alt-text:      #000000;
-    --accent:        #0078d4;
-    --highlight:     #00dfff;
+    --table-row: #f3f3f3;
+    --popup-bg: #f1f8fe;
+    --button-bg: #efefef;
+    --popup-border: #dddddd;
+    --border: #c8c8c8;
+    --sub-text: #6d6d6d;
+    --alt-text: #000000;
+    --accent: #0078d4;
+    --highlight: #00dfff;
 
     --border-radius-1: 8px;
 
@@ -23,7 +23,7 @@
 * {
     margin: 0;
     padding: 0;
-    font-family: 'DM Sans', sans-serif;
+    font-family: "DM Sans", sans-serif;
 }
 
 input[type="button"] {
@@ -95,7 +95,7 @@ body.gatePassPage {
 }
 
 .header-container {
-    height:100px;
+    height: 100px;
     width: 100%;
     overflow: hidden;
     display: flex;
@@ -114,11 +114,20 @@ body.gatePassPage {
     height: auto;
     display: flex;
     align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.register .twosections .sections-container {
+    width: 100%;
+    height: auto;
+    display: flex;
+    align-items: center;
     justify-content: space-evenly;
 }
 
 .register .section {
-    width:350px;
+    width: 350px;
 }
 
 .form-sections {
@@ -156,6 +165,10 @@ body.gatePassPage {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+select#level {
+    width: calc(100% - 10px) !important;
+}
+
 .login-input:focus {
     border-bottom: 2px solid var(--accent);
 }
@@ -174,6 +187,7 @@ body.gatePassPage {
     padding: 30px 0;
 }
 
+#showPermissionsList,
 .login-btn {
     display: inline-block;
     margin-top: 30px;
@@ -188,6 +202,13 @@ body.gatePassPage {
     color: var(--text-main);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+#showPermissionsList {
+    background-color: var(--button-low-bg);
+    border: 1px solid var(--border);
+    color: var(--alt-text);
+    margin-left: 100px;
 }
 
 .header-logo {
@@ -208,13 +229,13 @@ body.gatePassPage {
 .toolsAndPreview {
     height: calc(100vh - 300px);
     width: 100%;
-    display: flex; 
+    display: flex;
     justify-content: center;
     align-items: center;
 }
 
 .tools {
-    display: flex; 
+    display: flex;
     justify-content: center;
     align-items: center;
     width: 100%;
@@ -233,11 +254,11 @@ body.gatePassPage {
 .tools .grid-container .grid-item {
     width: 170px;
     height: fit-content;
-    background-color: var(--text)57;
+    background-color: var(--text) 57;
     margin: 0 10px;
     padding: 10px 0 20px 0;
     color: var(--accent);
-    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .13), 0 1px 1px 0 rgba(0, 0, 0, .11);
+    box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.13), 0 1px 1px 0 rgba(0, 0, 0, 0.11);
     border: 1px solid var(--border);
     border-radius: 10px;
     overflow: hidden;
@@ -313,6 +334,7 @@ body.gatePassPage {
     opacity: 0;
     background-color: rgba(0, 0, 0, 0.226);
     transition: opacity 0.3s ease-in-out;
+    -webkit-backdrop-filter: blur(2px);
     backdrop-filter: blur(2px);
 }
 
@@ -324,24 +346,106 @@ body.gatePassPage {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.014);
     z-index: 2;
     width: 300px;
-    height: fit-content;
-    max-height: calc(100vh - 30px); /* Set maximum height to 90% of the viewport height */
+    height: auto;
+    max-height: calc(
+        100vh - 30px
+    ); /* Set maximum height to 90% of the viewport height */
     overflow-y: auto;
     background: var(--popup-bg);
     border-radius: 10px;
     margin: 8px;
     padding: 0 15px 15px 15px;
     opacity: 0;
-    transition: all 1s;
     -webkit-transition: all 1s;
+    transition: all 1s;
     border: 1px solid var(--popup-border);
 }
+
+#permissionList {
+    width: 440px !important;
+    height: 350px !important;
+    top: calc(50% - 175px);
+    left: calc(50% - 220px);
+}
+
+#permissionList .popupHeader {
+    width: 440px !important;
+    font-size: 20px;
+    position: relative;
+}
+
+#permissionList .permission-list {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(7, 1fr);
+    grid-column-gap: 40px;
+    grid-row-gap: 10px;
+    font-size: 14px;
+}
+
+#permissionList .permission {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    height: 30px;
+}
+
+.radio,
+.check {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    border-radius: 4px;
+    cursor: pointer;
+    width: 16px !important;
+    height: 16px !important;
+    border: 1px solid var(--border);
+}
+
+.radio:checked {
+    padding: 5px 0 0 7.5px !important;
+}
+
+.check:checked {
+    padding: 1px 0 0 1.5px !important;
+    background-color: var(--accent);
+    border: 1px solid var(--accent) !important;
+    opacity: 1 !important;
+}
+
+.radio:checked::before,
+.check:checked::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f00c";
+    display: inline-block;
+    /* padding: 3px; */
+    margin-top: -7px;
+    margin-left: 1px;
+    font-size: 10px;
+    color: var(--text-main);
+    vertical-align: middle;
+    font-weight: 600;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* .radio[type="radio"]:checked::before {
+    font-family: "Font Awesome 5 Free";
+    content: "\f00c";
+    display: inline-block;
+    font-size: 12px;
+    color: var(--text-main);
+    vertical-align: middle;
+    font-weight: 400 !important;
+    -webkit-font-smoothing: antialiased;
+} */
 
 .popupHeader {
     height: 40px;
     width: 300px;
     padding-top: 5px;
-    display: flex; 
+    display: flex;
     font-size: var(--font-size-14);
     align-items: center;
     justify-content: space-between;
@@ -409,7 +513,7 @@ body.gatePassPage {
 }
 
 .popup .excelExportBtns button {
-    width: fit-content;
+    width: auto;
     height: auto;
     background: var(--button-low-bg);
     border: 1px solid var(--border);
@@ -548,8 +652,8 @@ body.gatePassPage {
     justify-content: space-between;
 }
 
-.visitdetails .left .enterDetail .visitorStatusUpdates{
-    width: fit-content;
+.visitdetails .left .enterDetail .visitorStatusUpdates {
+    width: auto;
 }
 
 .visitdetails .left .enterDetail .visitorStatusUpdates label {
@@ -649,7 +753,7 @@ body.gatePassPage {
     margin: 0 3px;
 }
 
-.right .visitor-photo .photo-controls input[type=file] {
+.right .visitor-photo .photo-controls input[type="file"] {
     position: absolute;
     font-size: 100px;
     right: 0;
@@ -694,7 +798,7 @@ body.gatePassPage {
     padding: 8px;
 }
 
-.footer .approveOrReject, 
+.footer .approveOrReject,
 .footer .saveOrCancel {
     width: 50%;
 }
@@ -717,7 +821,7 @@ body.gatePassPage {
     justify-content: flex-end;
 }
 
-.footer input  {
+.footer input {
     margin: 0 4px;
 }
 
@@ -770,9 +874,13 @@ body.gatePassPage {
     border: 1px solid (var(--sub-text) 0.7);
     border-radius: 10px;
     overflow: scroll;
-    overflow-y: auto; 
+    overflow-y: auto;
     overflow-x: auto;
-    table-layout: fixed; 
+    table-layout: fixed;
+}
+
+.user-list tr input[type="checkbox"]:checked {
+    padding: 0 0 0 0.5px;
 }
 
 .radio:checked::before,
@@ -799,7 +907,7 @@ body.gatePassPage {
 .user-list tbody {
     overflow: scroll;
     height: 150px;
-    overflow-y: auto; 
+    overflow-y: auto;
     scroll-behavior: smooth;
 }
 
@@ -824,7 +932,8 @@ body.gatePassPage {
     top: 0;
 }
 
-.user-list th, .user-list td {
+.user-list th,
+.user-list td {
     /* border: 1px solid #d47878; */
     border-top: hidden;
     border-bottom: hidden;
@@ -977,6 +1086,7 @@ body.gatePassPage {
 
 /* Initially hide the checkbox */
 .grid-element input[type="radio"],
+.radio,
 .user-list input[type="checkbox"] {
     -webkit-appearance: none;
     -moz-appearance: none;
@@ -986,9 +1096,9 @@ body.gatePassPage {
     border-radius: 4px;
     cursor: pointer;
     opacity: 0;
-  }
+}
 
-  /* .user-list input[type="checkbox"]:checked::before {
+/* .user-list input[type="checkbox"]:checked::before {
     content: '\2713';
     display: block;
     color: white;
@@ -1004,20 +1114,22 @@ body.gatePassPage {
 }
 
 .grid-element input[type="radio"]:checked,
+.radio:checked,
 .user-list tr input[type="checkbox"]:checked {
     opacity: 1;
     background-color: var(--accent);
-    border: 1px solid var(--accent);
+    border: 1px solid var(--accent) !important;
 }
 
 .grid-element input[type="radio"],
+.radio,
 .user-list input[type="checkbox"] {
     transform: scale(1.2);
     margin: 7px; /* Adjust the font size as needed */
 }
 
 .pwordchange-details {
-    width:300px;
+    width: 300px;
     height: fit-content;
 }
 
@@ -1190,8 +1302,12 @@ body.gatePassPage {
 
 .help-menu .panels .tabs .activeButton {
     /* Add your styles for the active button here */
-    background-color: var(--border); /* Change this to your desired active button background color */
-    color: var(--alt-text); /* Change this to your desired active button text color */
+    background-color: var(
+        --border
+    ); /* Change this to your desired active button background color */
+    color: var(
+        --alt-text
+    ); /* Change this to your desired active button text color */
 }
 
 .help-menu .panels .helpDetails {
@@ -1313,7 +1429,7 @@ body.gatePassPage {
 #cameraModal.visible {
     display: block;
 }
-  
+
 /* Center the modal content */
 .modal-content {
     display: flex;
@@ -1325,7 +1441,7 @@ body.gatePassPage {
     background-color: var(--text-main);
     border-radius: 5px;
 }
-  
+
 /* Style the capture button */
 .modal-content button {
     margin-top: 10px;
@@ -1378,6 +1494,10 @@ body.gatePassPage {
     display: none;
 }
 
+#dropdownOptions.hide {
+    display: none;
+}
+
 /* Add this to your existing CSS or in a separate file */
 .search-container {
     display: flex;
@@ -1421,7 +1541,7 @@ body.gatePassPage {
 .visitorsListDetail:first-child {
     flex: 1.2 !important;
     overflow: hidden;
-    white-space: nowrap; 
+    white-space: nowrap;
     text-overflow: ellipsis;
     margin: 0 !important;
 }
@@ -1606,8 +1726,8 @@ body.gatePassPage {
     justify-content: space-between;
 }
 
-
-.grid-element input[type="radio"] {
+.grid-element input[type="radio"],
+.radio {
     opacity: 1 !important;
 }
 
@@ -1687,7 +1807,7 @@ body.gatePassPage {
     .toolsAndPreview {
         height: fit-content;
     }
-    
+
     .tools .grid-container {
         display: grid;
         grid-template-columns: repeat(3, 170px);
@@ -1696,7 +1816,7 @@ body.gatePassPage {
     }
 }
 
-@media screen and (max-width: 920px) {    
+@media screen and (max-width: 920px) {
     .tools {
         padding-top: 150px;
         padding-bottom: 50px;
@@ -1722,21 +1842,21 @@ body.gatePassPage {
     .visitorForm .names,
     .visitdetails .left .container {
         height: 40px;
-        width: 100%
+        width: 100%;
     }
-    
+
     .visitorForm .visitordetails .names .lastname,
     .visitorForm .visitordetails .names .firstname,
     .visitorForm .visitordetails .names .company,
     .visitorForm .visitordetails .names .id {
         padding: 5px;
     }
-    
+
     .visitdetails .left .enterDetail {
         width: 100%;
         padding: 10px;
     }
-    
+
     .names label,
     .container label {
         padding: 6px 4px 0 0;
@@ -1745,11 +1865,11 @@ body.gatePassPage {
         width: 80px;
         font-weight: 400;
     }
-    
+
     .names label {
         width: 100px;
     }
-    
+
     .names input,
     .container input,
     .photo-controls input,
@@ -1768,20 +1888,20 @@ body.gatePassPage {
     .names input {
         width: calc(100% - 110px);
     }
-    
+
     .photo-controls #live {
         background-color: var(--accent);
         color: var(--text-main);
         transition: background-color 0.3s, box-shadow 0.3s;
         margin-top: auto;
     }
-    
+
     .buttons input,
     .footer input,
     .footer button {
         width: 70px;
     }
-    
+
     #statusbtn {
         width: fit-content;
         background-color: var(--accent);
@@ -1791,11 +1911,11 @@ body.gatePassPage {
         margin-top: auto;
         text-align: center;
     }
-    
+
     .btn-status {
         justify-content: flex-end;
     }
-    
+
     .right {
         width: calc(100% - 46px);
         height: fit-content;
@@ -1803,7 +1923,7 @@ body.gatePassPage {
         align-items: center;
         justify-content: center;
     }
-    
+
     .right .visitor-photo {
         height: fit-content;
         margin: 0;
@@ -1813,7 +1933,7 @@ body.gatePassPage {
         align-items: center;
         justify-content: center;
     }
-    
+
     .right .outside {
         width: 50%;
         height: 100px;
@@ -1825,14 +1945,14 @@ body.gatePassPage {
     .photo-wrapper {
         height: fit-content;
     }
-    
+
     .right .visitor-photo .photo-wrapper img {
         width: 100px;
         height: 100px;
         padding: 0;
         border-radius: 10px;
     }
-    
+
     .right .visitor-photo .photo-controls {
         width: 100%;
         height: fit-content;
@@ -1840,21 +1960,21 @@ body.gatePassPage {
         align-items: center;
         justify-content: center;
     }
-    
+
     .right .visitor-photo .photo-controls input {
         width: 50px;
         font-size: 10px;
         margin: 0 3px;
     }
-    
-    .right .visitor-photo .photo-controls input[type=file] {
+
+    .right .visitor-photo .photo-controls input[type="file"] {
         position: absolute;
         font-size: 100px;
         right: 0;
         top: 0;
         opacity: 0;
     }
-    
+
     .right .visitor-photo .photo-controls .file-upload-label {
         padding: 4px 10px;
         border: 1px solid var(--border);
@@ -1869,17 +1989,17 @@ body.gatePassPage {
         cursor: pointer;
         display: inline-block;
     }
-    
+
     .right .visitor-photo .photo-controls .file-upload-label:hover {
         background-color: var(--accent);
     }
-    
+
     .right .photo-wrapper img {
         width: 100px;
         height: 100px;
         border-radius: 10px;
     }
-    
+
     .footer {
         width: calc(100% - 32px);
         height: 70px;
@@ -1890,35 +2010,35 @@ body.gatePassPage {
         margin: 8px;
         padding: 8px;
     }
-    
-    .footer .approveOrReject, 
+
+    .footer .approveOrReject,
     .footer .saveOrCancel {
         width: 50%;
     }
-    
+
     .footer .approveOrReject {
         display: flex;
         align-items: center;
         justify-content: space;
     }
-    
+
     .footer .approveOrReject .accessed {
         background-color: var(--accent);
         color: var(--text-main);
         margin-top: auto;
     }
-    
+
     .footer .saveOrCancel {
         display: flex;
         align-items: center;
         justify-content: flex-end;
     }
-    
+
     .footer .saveOrCancel .btn-save {
         margin-top: 6px;
     }
-    
-    .footer input  {
+
+    .footer input {
         margin: 0 4px;
     }
 
@@ -1926,7 +2046,7 @@ body.gatePassPage {
         height: 550px;
         width: 100%;
     }
-    
+
     .tools .grid-container {
         display: grid;
         grid-template-columns: repeat(2, 170px);
@@ -1991,7 +2111,7 @@ body.gatePassPage {
         height: 550px;
         width: 100%;
     }
-    
+
     .tools .grid-container {
         display: grid;
         grid-template-columns: repeat(2, 170px);
@@ -2006,7 +2126,7 @@ body.gatePassPage {
         align-items: center;
         justify-content: space-between;
     }
-    
+
     .contactMe .contactInfo .socialLinks {
         width: 60px;
         display: flex;
@@ -2034,7 +2154,7 @@ body.gatePassPage {
     .dashboard-footer {
         margin-bottom: 60px;
     }
-    
+
     .contactMe .contactInfo {
         width: 60px;
         display: flex;
@@ -2091,7 +2211,7 @@ body.gatePassPage {
         max-height: calc(100vh - 140px);
         margin: 0;
     }
-    
+
     .popupHeader {
         width: calc(100% - 32px);
     }
@@ -2118,7 +2238,8 @@ body.gatePassPage {
         /* margin: 10px; */
         padding: 10px 0 20px 0;
         color: var(--accent);
-        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, .13), 0 1px 1px 0 rgba(0, 0, 0, .11);
+        box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.13),
+            0 1px 1px 0 rgba(0, 0, 0, 0.11);
         border: 1px solid var(--border);
         border-radius: 10px;
         overflow: hidden;
@@ -2150,7 +2271,7 @@ body.gatePassPage {
         width: 100%;
         font-size: var(--font-size-12);
     }
-    
+
     .gate-pass-input-container #employeeId,
     .gate-pass-input-container input {
         width: calc(100% - 16px) !important;

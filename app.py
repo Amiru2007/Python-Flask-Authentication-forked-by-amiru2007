@@ -4,7 +4,8 @@ from sqlalchemy import or_, func
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField, TelField
+from flask_wtf.csrf import CSRFProtect
+from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField, TelField, SelectMultipleField, FormField, BooleanField, FieldList
 from wtforms.validators import InputRequired, Length, ValidationError, EqualTo
 from flask_bcrypt import Bcrypt
 # from flask_migrate import Migrate
@@ -23,6 +24,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] =\
         'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SECRET_KEY'] = 'thisisasecretkey'
+csrf = CSRFProtect(app)
 db = SQLAlchemy(app)
 # migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
@@ -51,6 +53,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(80), nullable=False)
     telephoneNo = db.Column(db.String(80), nullable=False)
     level = db.Column(db.String(80), nullable=False)
+    permissions = db.relationship('Permissions', backref='user', uselist=False)
 
     def set_password(self, password):
         # Explicitly encode the password as bytes before hashing
@@ -91,36 +94,44 @@ class Visitor(db.Model):
     departedTime = db.Column(db.String(20))
     profilePhoto = db.Column(db.String(255), nullable=True)
     committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
-    
-class Emplyee(db.Model):
+
+class Permissions(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(20), db.ForeignKey('user.username'), nullable=False)
+
+    Create_Visitor = db.Column(db.Boolean, default=False)
+    Edit_Visitor = db.Column(db.Boolean, default=False)
+    Approve_Visitor = db.Column(db.Boolean, default=False)
+    In_Visitor = db.Column(db.Boolean, default=False)
+    Out_Visitor = db.Column(db.Boolean, default=False)
+
+    Create_Gate_Pass = db.Column(db.Boolean, default=False)
+    Edit_Gate_Pass = db.Column(db.Boolean, default=False)
+    Approve_Gate_Pass = db.Column(db.Boolean, default=False)
+    Confirmed_Gate_Pass = db.Column(db.Boolean, default=False)
+    In_Gate_Pass = db.Column(db.Boolean, default=False)
+    Out_Gate_Pass = db.Column(db.Boolean, default=False)
+
+    Create_User = db.Column(db.Boolean, default=False)
+    Delete_User = db.Column(db.Boolean, default=False)
+    Edit_User = db.Column(db.Boolean, default=False)
+
+    Create_Reports = db.Column(db.Boolean, default=False)
+
+class GatePass(db.Model):
     id = db.Column(db.Integer)
-    lastName = db.Column(db.String(50), nullable=False)
-    firstName = db.Column(db.String(50), nullable=False)
-    companyName = db.Column(db.String(100))
-    visitorId = db.Column(db.String(15), nullable=False)
-    arrivingDate = db.Column(db.String(20))
-    arrivingTime = db.Column(db.String(20))
-    departingDate = db.Column(db.String(20))
-    departingTime = db.Column(db.String(20))
-    vehicleNo = db.Column(db.String(20))
-    visitorNo = db.Column(db.String(20), primary_key=True, nullable=False, autoincrement=False)
-    phoneNumber = db.Column(db.String(20))
-    emailAddress = db.Column(db.String(120))
-    requester = db.Column(db.String(50))
-    noOfVisitors = db.Column(db.Integer)
-    remarks = db.Column(db.String(255))
-    history = db.Column(db.String(255))
-    status = db.Column(db.String(20))
-    requestTime = db.Column(db.String(20))
-    approver = db.Column(db.String(50))
-    approvedTime = db.Column(db.String(20))
-    arrivalOfficer = db.Column(db.String(50))
-    arrivedTime = db.Column(db.String(20))
-    departureOfficer = db.Column(db.String(50))
-    departedTime = db.Column(db.String(20))
-    profilePhoto = db.Column(db.String(255), nullable=True)
+    employeeId = db.Column(db.String(10), primary_key=True, nullable=False, autoincrement=False)
+    employeeName = db.Column(db.String(120), nullable=False)
+    employeeDepartingTime = db.Column(db.String(50))
+    employeeDepartingDate = db.Column(db.String(50))
+    employeeArrivalTime = db.Column(db.String(50))
+    employeeVehicleNo = db.Column(db.String(30))
+    employeeDepartingReason = db.Column(db.String(200))
+    employeeDepartingRemark = db.Column(db.String(200))
+    employeeOfficer = db.Column(db.String(120), nullable=False)
+    employeeConfirmedBy = db.Column(db.String(120), nullable=False)
+    employeeFormStatus = db.Column(db.String(20), nullable=False)
     committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
-    
 
 class ImageUploadForm(FlaskForm):
     profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
@@ -244,6 +255,23 @@ def generate_visitorCode():
     new_code = f'{today}{new_counter}'
     return new_code
 
+class PermissionsForm(FlaskForm):
+    Create_Visitor = BooleanField('Create Visitor')
+    Edit_Visitor = BooleanField('Edit Visitor')
+    Approve_Visitor = BooleanField('Approve Visitor')
+    In_Visitor = BooleanField('In Visitor')
+    Out_Visitor = BooleanField('Out Visitor')
+    Create_Gate_Pass = BooleanField('Create Gate Pass')
+    Edit_Gate_Pass = BooleanField('Edit Gate Pass')
+    Approve_Gate_Pass = BooleanField('Approve Gate Pass')
+    Confirmed_Gate_Pass = BooleanField('Confirmed Gate Pass')
+    In_Gate_Pass = BooleanField('In Gate Pass')
+    Out_Gate_Pass = BooleanField('Out Gate Pass')
+    Create_User = BooleanField('Create User')
+    Delete_User = BooleanField('Delete User')
+    Edit_User = BooleanField('Edit User')
+    Create_Reports = BooleanField('Create Reports')
+
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
                            InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
@@ -261,6 +289,13 @@ class RegisterForm(FlaskForm):
                              InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "Telephone Number"})
 
     level = SelectField('Level', choices=[('Admin', 'Admin'), ('Approver', 'Approver'), ('Requester', 'Requester'), ('Gate', 'Gate')])
+
+    # permissions = SelectMultipleField('Permissions', choices=[
+    #     ('permission1', 'Permission 1'),
+    #     ('permission2', 'Permission 2'),
+    #     ('permission3', 'Permission 3')
+    # ])
+    permissions = Permissions()
 
     submit = SubmitField('Register')
 
@@ -383,21 +418,25 @@ def dashboard():
     except Exception as e:
         return jsonify({'error': str(e)})
     
+    user_permissions = current_user.permissions
+    
     return render_template('dashboard.html',
                            pending_visitor_numbers=pending_visitors,
                         #    pending_visitor_requesters=pending_visitor_requesters_list,
                            approved_visitor_numbers=approved_visitors,
                            arrived_visitor_numbers=arrived_visitors,
                            request_list=request_list,
-                           visitors_list=visitors_list)
+                           visitors_list=visitors_list, user_permissions=user_permissions)
 
-@ app.route('/register', methods=['GET', 'POST'])
-@login_required
+# Register route
+@app.route('/register', methods=['GET', 'POST'])
+# @login_required
 def register():
     form = RegisterForm()
-
+    form2 = PermissionsForm()
+    print(form.permissions)  # Debug print to check if the permissions form is initialized
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data)
+        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
 
         # Check if the provided level is one of the allowed values
         allowed_levels = ['Admin', 'Approver', 'Requester', 'Gate']
@@ -414,13 +453,36 @@ def register():
             level=form.level.data
         )
 
+        # Create a new Permissions entry
+        permissions = Permissions(
+            username=new_user.username,
+            Create_Visitor=1 if form2.Create_Visitor.data else 0,
+            Edit_Visitor=1 if form2.Edit_Visitor.data else 0,
+            Approve_Visitor=1 if form2.Approve_Visitor.data else 0,
+            In_Visitor=1 if form2.In_Visitor.data else 0,
+            Out_Visitor=1 if form2.Out_Visitor.data else 0,
+            Create_Gate_Pass=1 if form2.Create_Gate_Pass.data else 0,
+            Edit_Gate_Pass=1 if form2.Edit_Gate_Pass.data else 0,
+            Approve_Gate_Pass=1 if form2.Approve_Gate_Pass.data else 0,
+            Confirmed_Gate_Pass=1 if form2.Confirmed_Gate_Pass.data else 0,
+            In_Gate_Pass=1 if form2.In_Gate_Pass.data else 0,
+            Out_Gate_Pass=1 if form2.Out_Gate_Pass.data else 0,
+            Create_User=1 if form2.Create_User.data else 0,
+            Delete_User=1 if form2.Delete_User.data else 0,
+            Edit_User=1 if form2.Edit_User.data else 0,
+            Create_Reports=1 if form2.Create_Reports.data else 0
+        )
+
         with app.app_context():
             db.session.add(new_user)
+            db.session.add(permissions)
             db.session.commit()
         flash('Account created successfully', 'success')
         return redirect(url_for('all_users'))
+        pass
 
-    return render_template('register.html', form=form)
+    return render_template('register.html', form=form, form2=form2)
+
 
 @app.route('/arrive_visitor', methods=['POST'])
 @login_required
@@ -863,89 +925,75 @@ def profile():
 
 
 @app.route('/gatepass', methods=['GET', 'POST'])
-@login_required
+# @login_required
 def gate_pass():
     # visitor = Visitor.query.filter_by(visitorNo=visitor_id).first()
 
-    visitor_code = generate_visitorCode()
+    # visitor_code = generate_visitorCode()
 
-    form = ImageUploadForm()
+    # form = ImageUploadForm()
 
     if request.method == 'POST':
         # Get form data using request.form.get to avoid BadRequestKeyError
-        last_name = request.form.get('lastName', '')
-        first_name = request.form.get('firstName', '')
-        company_name = request.form.get('companyName', '')
-        visitor_id = request.form.get('VisitorId', '')
-        arriving_date = request.form.get('arrivingDate', '')
-        arriving_time = request.form.get('arrivingTime', '')
-        departing_date = request.form.get('departingDate', '')
-        departing_time = request.form.get('departingTime', '')
-        vehicle_no = request.form.get('vehicleNo', '')
-        visitor_no = request.form.get('visitorNo', '')
-        phone_number = request.form.get('phoneNumber', '')
-        email_address = request.form.get('emailAddress', '')
-        requester = request.form.get('requester', '')
-        noOfVisitors = request.form.get('noOfVisitors', '')
-        remarks = request.form.get('remarks', '')
-        history = request.form.get('remarks', '')
-        status = request.form.get('statusbtn', '')
+        employee_id = request.form.get('employeeId', '')
+        employee_name = request.form.get('employeeName', '')
+        employee_departing_time = request.form.get('employeeDepartingTime', '')
+        employee_departing_date = request.form.get('employeeDepartingDate', '')
+        employee_arrival_time = request.form.get('employeeArrivalTime', '')
+        employee_vehicle_no = request.form.get('employeeVehicleNo', '')
+        employee_departing_reason = request.form.get('employeeDepartingReason', '')
+        employee_departing_remark = request.form.get('employeeDepartingRemark', '')
+        employee_officer = request.form.get('employeeOfficer', '')
+        employee_confirmed_by = request.form.get('employeeConfirmedBy', '')
+        employee_status = 'Pending'
         request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
-        if not visitor_id:
+        if not employee_id:
             # Render the template with an error message
-            return render_template('newvisitor.html', 
-                                   requester=current_user.username, 
-                                   visitorNo=visitor_code,
-                                   error_message='You must enter a Visitor ID')
+            return render_template('gatePass.html', 
+                                #    requester=current_user.username, 
+                                #    visitorNo=visitor_code,
+                                   error_message='You must enter a Employee ID')
 
-        pic = request.files['pic']
-        visitor_no = request.form.get('visitorNo', '')
+        # pic = request.files['pic']
+        # visitor_no = request.form.get('visitorNo', '')
 
-        if pic and visitor_no:
-            upload_folder = 'uploads'
-            os.makedirs(upload_folder, exist_ok=True)
+        # if pic and visitor_no:
+        #     upload_folder = 'uploads'
+        #     os.makedirs(upload_folder, exist_ok=True)
             
-            # Securely generate a new filename using the visitorNo value
-            original_extension = get_file_extension(pic.filename)
-            filename = secure_filename(f"{visitor_no}{original_extension}")
-            file_path = os.path.join(upload_folder, filename)
+        #     # Securely generate a new filename using the visitorNo value
+        #     original_extension = get_file_extension(pic.filename)
+        #     filename = secure_filename(f"{visitor_no}{original_extension}")
+        #     file_path = os.path.join(upload_folder, filename)
             
-            pic.save(file_path)
-        else:
-            # Handle the case where no image is uploaded
-            # Save a blank or default image to the database
-            filename = 'none'
+        #     pic.save(file_path)
+        # else:
+        #     # Handle the case where no image is uploaded
+        #     # Save a blank or default image to the database
+        #     filename = 'none'
 
         # filename = secure_filename(pic.filename)
         
-        new_visitor = Visitor(
-            lastName=last_name,
-            firstName=first_name,
-            companyName=company_name,
-            visitorId=visitor_id,
-            arrivingDate=arriving_date,
-            arrivingTime=arriving_time,
-            departingDate=departing_date,
-            departingTime=departing_time,
-            vehicleNo=vehicle_no,
-            visitorNo=visitor_no,
-            phoneNumber=phone_number,
-            emailAddress=email_address,
-            requester=requester,
-            noOfVisitors=noOfVisitors,
-            remarks=remarks,
-            history=history,
-            status=status,
-            requestTime=request_time,
-            profilePhoto=filename,
+        gate_pass = GatePass(
+            employeeId=employee_id,
+            employeeName=employee_name,
+            employeeDepartingTime=employee_departing_time,
+            employeeDepartingDate=employee_departing_date,
+            employeeArrivalTime=employee_arrival_time,
+            employeeVehicleNo=employee_vehicle_no,
+            employeeDepartingReason=employee_departing_reason,
+            employeeDepartingRemark=employee_departing_remark,
+            employeeOfficer=employee_officer,
+            employeeConfirmedBy=employee_confirmed_by,
+            employeeFormStatus=employee_status,
             committedDate=datetime.utcnow()  # Assuming profilePhoto is the file path or name
         )
 
         # Add the new visitor to the database
         with app.app_context():
             try:
-                db.session.add(new_visitor)
+                db.session.add(gate_pass)
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
@@ -953,9 +1001,7 @@ def gate_pass():
 
         return redirect(url_for('dashboard'))
 
-    return render_template('newvisitor.html',
-                            requester=current_user.username,
-                            visitorNo=visitor_code)
+    return render_template('gatePass.html')
 
 
 
