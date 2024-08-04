@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
+    <title>Dashboard</title>
+</head>
+<body class="dashboard">
+    <div class="header-logo">
+        <img class="logo-image" src="{{ url_for('static', filename='logo.png') }}" alt="Dayartne Holdings Logo">
+    </div>
+    <div class="toolsAndPreview">
+        <div class="tools">
+            <div class="grid-container" id="dynamic-grid">
+                {% if user_permissions.Create_Visitor %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-plus-circle"></i></span>
+                        <h3>New Visitor</h3>
+                        <a href="{{ url_for('new_visitor') }}"><button type="button">Create</button></a>
+                    </div>
+                {% endif %}
+                {% if user_permissions.Edit_Visitor %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-pencil-simple"></i></span>
+                        <h3>Edit Request</h3>
+                        <button type="button" id="showRequestList">1234567890</button>
+                    </div>
+                {% endif %}
+                {% if user_permissions.Approve_Visitor %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-arrow-circle-right"></i></span>
+                        <h3>Arrive Visitor</h3>
+                        <button type="button" id="showApprovedList">wertyyuoi</button>
+                    </div>
+                {% endif %}
+                <!-- Add more checks for other permissions as needed -->
+            </div>
+        </div>
+    </div>
+</body>
+</html>

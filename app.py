@@ -24,7 +24,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] =\
         'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SECRET_KEY'] = 'thisisasecretkey'
-csrf = CSRFProtect(app)
+# csrf = CSRFProtect(app)
 db = SQLAlchemy(app)
 # migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
@@ -95,6 +95,15 @@ class Visitor(db.Model):
     profilePhoto = db.Column(db.String(255), nullable=True)
     committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
 
+class EmployeeData(db.Model):
+    __tablename__ = 'employee_data'
+    id = db.Column(db.Integer, primary_key=True)
+    employeeNo = db.Column(db.String(10), nullable=False, unique=True)
+    nameWithInitials = db.Column(db.String(120), nullable=False, unique=True)
+
+    def __repr__(self):
+        return f"<EmployeeData {self.employeeNo}>"
+
 class Permissions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(20), db.ForeignKey('user.username'), nullable=False)
@@ -120,8 +129,9 @@ class Permissions(db.Model):
 
 class GatePass(db.Model):
     id = db.Column(db.Integer)
-    employeeId = db.Column(db.String(10), primary_key=True, nullable=False, autoincrement=False)
+    employeeNo = db.Column(db.String(10), primary_key=True, nullable=False, autoincrement=False)
     employeeName = db.Column(db.String(120), nullable=False)
+    employeeCompany = db.Column(db.String(120), nullable=False)
     employeeDepartingTime = db.Column(db.String(50))
     employeeDepartingDate = db.Column(db.String(50))
     employeeArrivalTime = db.Column(db.String(50))
@@ -132,6 +142,7 @@ class GatePass(db.Model):
     employeeConfirmedBy = db.Column(db.String(120), nullable=False)
     employeeFormStatus = db.Column(db.String(20), nullable=False)
     committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
+    gatePassRequester = db.Column(db.String(80), nullable=False)
 
 class ImageUploadForm(FlaskForm):
     profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
@@ -141,6 +152,14 @@ def allowed_file(filename):
 
 def get_file_extension(filename):
     return os.path.splitext(filename)[1]
+
+@app.after_request
+def add_cache_control(response):
+    if request.endpoint == 'static':
+        response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+        response.headers['Pragma'] = 'no-cache'
+        response.headers['Expires'] = '0'
+    return response
 
 # Route for the form
 @app.route('/newvisitor', methods=['GET', 'POST'])
@@ -413,6 +432,8 @@ def dashboard():
         # Query visitors added within the last 14 days
         visitors_list = Visitor.query.filter(Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
 
+        pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending').all()
+        
         # arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
 
     except Exception as e:
@@ -426,7 +447,8 @@ def dashboard():
                            approved_visitor_numbers=approved_visitors,
                            arrived_visitor_numbers=arrived_visitors,
                            request_list=request_list,
-                           visitors_list=visitors_list, user_permissions=user_permissions)
+                           visitors_list=visitors_list, user_permissions=user_permissions,
+                           pending_gate_pass=pending_gate_pass)
 
 # Register route
 @app.route('/register', methods=['GET', 'POST'])
@@ -925,18 +947,20 @@ def profile():
 
 
 @app.route('/gatepass', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def gate_pass():
-    # visitor = Visitor.query.filter_by(visitorNo=visitor_id).first()
-
+    
+    employee_list = EmployeeData.query.filter().all()
     # visitor_code = generate_visitorCode()
 
     # form = ImageUploadForm()
 
     if request.method == 'POST':
+        print("Form submitted")
         # Get form data using request.form.get to avoid BadRequestKeyError
-        employee_id = request.form.get('employeeId', '')
+        employee_no = request.form.get('employeeNo', '')
         employee_name = request.form.get('employeeName', '')
+        employee_company = request.form.get('employeeCompany', '')
         employee_departing_time = request.form.get('employeeDepartingTime', '')
         employee_departing_date = request.form.get('employeeDepartingDate', '')
         employee_arrival_time = request.form.get('employeeArrivalTime', '')
@@ -946,9 +970,13 @@ def gate_pass():
         employee_officer = request.form.get('employeeOfficer', '')
         employee_confirmed_by = request.form.get('employeeConfirmedBy', '')
         employee_status = 'Pending'
-        request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        gatePassRequester = current_user.username
+        # Print form data
+        print(f"Employee ID: {employee_no}")
+        print(f"Employee Name: {employee_name}")
+        # request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
-        if not employee_id:
+        if not employee_no:
             # Render the template with an error message
             return render_template('gatePass.html', 
                                 #    requester=current_user.username, 
@@ -975,9 +1003,10 @@ def gate_pass():
 
         # filename = secure_filename(pic.filename)
         
-        gate_pass = GatePass(
-            employeeId=employee_id,
+        gatepass = GatePass(
+            employeeNo=employee_no,
             employeeName=employee_name,
+            employeeCompany=employee_company,
             employeeDepartingTime=employee_departing_time,
             employeeDepartingDate=employee_departing_date,
             employeeArrivalTime=employee_arrival_time,
@@ -987,13 +1016,14 @@ def gate_pass():
             employeeOfficer=employee_officer,
             employeeConfirmedBy=employee_confirmed_by,
             employeeFormStatus=employee_status,
-            committedDate=datetime.utcnow()  # Assuming profilePhoto is the file path or name
+            committedDate=datetime.utcnow(),
+            gatePassRequester=gatePassRequester
         )
 
         # Add the new visitor to the database
         with app.app_context():
             try:
-                db.session.add(gate_pass)
+                db.session.add(gatepass)
                 db.session.commit()
             except Exception as e:
                 db.session.rollback()
@@ -1001,10 +1031,37 @@ def gate_pass():
 
         return redirect(url_for('dashboard'))
 
-    return render_template('gatePass.html')
+    return render_template('gatePass.html', employee_list=employee_list)
 
+@app.route('/approve_gatepass', methods=['POST'])
+@login_required
+def approve_gatepass():
+    employeeNo = request.form.get('employeeNo')
+    employee = GatePass.query.filter_by(employeeNo=employeeNo).first()
 
+    if employee:
+        # Access the value of the clicked button from the form data
+        clicked_button_value = request.form.get('changeStatus')
 
+        # Your logic based on the clicked button value
+        if clicked_button_value == 'Approve':
+            employee.employeeFormStatus = 'Approved'
+            employee.employeeOfficer = current_user.username
+
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+        
+        elif clicked_button_value == 'Reject':
+            employee.employeeFormStatus = 'Rejected'
+            employee.employeeOfficer = current_user.username
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+    
+        return render_template('pendingGatePass.html', employee=employee)
+
+    else:
+        return jsonify({'error': 'Visitor not found'}), 404
+    
 if __name__ == "__main__":
     app.run("192.168.1.4", port=5000,  debug=True)
 

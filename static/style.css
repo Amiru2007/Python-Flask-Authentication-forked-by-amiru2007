@@ -397,7 +397,6 @@ select#level {
     -webkit-appearance: none;
     -moz-appearance: none;
     appearance: none;
-    border-radius: 4px;
     cursor: pointer;
     width: 16px !important;
     height: 16px !important;
@@ -429,17 +428,6 @@ select#level {
     font-weight: 600;
     -webkit-font-smoothing: antialiased;
 }
-
-/* .radio[type="radio"]:checked::before {
-    font-family: "Font Awesome 5 Free";
-    content: "\f00c";
-    display: inline-block;
-    font-size: 12px;
-    color: var(--text-main);
-    vertical-align: middle;
-    font-weight: 400 !important;
-    -webkit-font-smoothing: antialiased;
-} */
 
 .popupHeader {
     height: 40px;
@@ -1779,13 +1767,28 @@ select#level {
     width: 100px !important;
 }
 
+.employee-id .dropdown-content {
+    height: 200px !important;
+    overflow: hidden !important;
+    overflow-y: auto !important;
+}
+
 .control-buttons-container {
     width: 100%;
     height: auto;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     padding: 30px 0 10px 0;
+}
+
+.employee-status {
+    flex: none !important;
+    width: calc(50% - 40px);
+}
+
+.button-container {
+    margin-right: 10px;
 }
 
 .control-buttons-container .exit-form-control-btn {

@@ -108,6 +108,15 @@
                         <a href="{{ url_for('gate_pass') }}"><button type="button">Create</button></a>
                     </div>
                 {% endif %}
+
+                <!-- Gate Pass -->
+                {% if user_permissions.Create_Gate_Pass %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-door-open"></i></span>
+                        <h3>Approve Gate Pass Form</h3>
+                        <button type="button" id="showGatePassRequestList" onclick="openRequestGatePassList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
             </div>
         </div>
         <div class="overlay" id="requestListoverlay" onclick="closeShowRequestList()"></div>
@@ -294,6 +303,23 @@
                 </div>
                 <input type="submit" class="exportVisitorExcel" id="exportVisitorExcel" value="Export">
             </form>
+        </div>
+        <div class="overlay" id="requestGatePassListOverlay" onclick="closeRequestGatePassList()"></div>
+        <div class="popup" id="requestGatePassList">
+            <div class="popupHeader">
+                <h3>Approved Visitor List</h3>
+                <button onclick="closeRequestGatePassList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for employee in pending_gate_pass %}
+                    <li>
+                        <form method="post" action="{{ url_for('approve_gatepass') }}">
+                            <input type="hidden" name="employeeNo" value="{{ employee.employeeNo }}">
+                            <button type="submit">{{ employee.employeeNo }}</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
         </div>
         <div class="overlay" id="helpMenuOverlay" onclick="closeHelp()"></div>
         <div class="popup help-menu" id="helpMenu">
@@ -535,6 +561,20 @@
         function closeVisitors() {
             document.getElementById('visitorsOverlay').classList.remove('visible');
             document.getElementById('visitorsList').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
+        }
+
+        function openRequestGatePassList() {
+            document.getElementById('requestGatePassListOverlay').classList.add('visible');
+            document.getElementById('requestGatePassList').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
+        }
+
+        function closeRequestGatePassList() {
+            document.getElementById('requestGatePassListOverlay').classList.remove('visible');
+            document.getElementById('requestGatePassList').classList.remove('visible');
             document.getElementById('contactMe').classList.remove('hide');
             document.getElementById('dashboardFooter').classList.remove('hide');
         }
