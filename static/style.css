@@ -1806,6 +1806,19 @@ select#level {
     color: var(--text-main);
 }
 
+span.secondary-icon {
+    font-size: 20px !important;
+}
+
+span.secondary-icon i {
+    background: white;
+    border-radius: 50%;
+    padding: 2px;
+    margin-left: -43px;
+    margin-bottom: -13px;
+    background: white;
+}
+
 @media screen and (max-width: 1360px) {
     .toolsAndPreview {
         height: fit-content;

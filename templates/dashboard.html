@@ -103,7 +103,12 @@
                 <!-- Gate Pass -->
                 {% if user_permissions.Create_Gate_Pass %}
                     <div class="grid-item">
-                        <span><i class="ph ph-door-open"></i></span>
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-plus-circle"></i>
+                            </span>
+                        </div>
                         <h3>Gate Pass Form</h3>
                         <a href="{{ url_for('gate_pass') }}"><button type="button">Create</button></a>
                     </div>
@@ -112,7 +117,12 @@
                 <!-- Gate Pass -->
                 {% if user_permissions.Approve_Gate_Pass %}
                     <div class="grid-item">
-                        <span><i class="ph ph-door-open"></i></span>
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-warning-circle"></i>
+                            </span>
+                        </div>
                         <h3>Gate Pass Requests</h3>
                         <button type="button" id="showGatePassRequestList" onclick="openRequestGatePassList()"><i class="ph ph-arrow-right"></i></button>
                     </div>
@@ -121,25 +131,40 @@
                 <!-- Gate Pass -->
                 {% if user_permissions.Confirmed_Gate_Pass %}
                     <div class="grid-item">
-                        <span><i class="ph ph-door-open"></i></span>
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-check-circle"></i>
+                            </span>
+                        </div>
                         <h3>Confirm Gate Pass</h3>
                         <button type="button" id="showGatePassApprovedList" onclick="openApprovedGatePassList()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
 
                 <!-- Gate Pass -->
-                {% if user_permissions.Confirmed_Gate_Pass %}
+                {% if user_permissions.Out_Gate_Pass %}
                     <div class="grid-item">
-                        <span><i class="ph ph-door-open"></i></span>
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-arrow-circle-right"></i>
+                            </span>
+                        </div>
                         <h3>Gate Pass Out</h3>
                         <button type="button" id="showGatePassConfirmedList" onclick="openConfirmedGatePassList()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
 
                 <!-- Gate Pass -->
-                {% if user_permissions.Confirmed_Gate_Pass %}
+                {% if user_permissions.In_Gate_Pass %}
                     <div class="grid-item">
-                        <span><i class="ph ph-door-open"></i></span>
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-arrow-circle-left"></i>
+                            </span>
+                        </div>
                         <h3>Gate Pass In</h3>
                         <button type="button" id="showGatePassDepartedList" onclick="openDepartedGatePassList()"><i class="ph ph-arrow-right"></i></button>
                     </div>
