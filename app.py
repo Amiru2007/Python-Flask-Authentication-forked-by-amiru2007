@@ -129,6 +129,7 @@ class Permissions(db.Model):
 
 class GatePass(db.Model):
     id = db.Column(db.Integer)
+    gatePassId = db.Column(db.String(20))
     employeeNo = db.Column(db.String(10), primary_key=True, nullable=False, autoincrement=False)
     employeeName = db.Column(db.String(120), nullable=False)
     employeeCompany = db.Column(db.String(120), nullable=False)
@@ -141,6 +142,8 @@ class GatePass(db.Model):
     employeeOfficer = db.Column(db.String(120), nullable=False)
     employeeConfirmedBy = db.Column(db.String(120), nullable=False)
     employeeFormStatus = db.Column(db.String(20), nullable=False)
+    employeeOutMark = db.Column(db.String(80))
+    employeeInMark = db.Column(db.String(80))
     committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
     gatePassRequester = db.Column(db.String(80), nullable=False)
 
@@ -432,7 +435,13 @@ def dashboard():
         # Query visitors added within the last 14 days
         visitors_list = Visitor.query.filter(Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
 
-        pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending').all()
+        pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester == current_user.username).all()
+        
+        approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved', GatePass.gatePassRequester == current_user.username).all()
+        
+        confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed', GatePass.gatePassRequester == current_user.username).all()
+        
+        departed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester == current_user.username).all()
         
         # arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
 
@@ -448,7 +457,10 @@ def dashboard():
                            arrived_visitor_numbers=arrived_visitors,
                            request_list=request_list,
                            visitors_list=visitors_list, user_permissions=user_permissions,
-                           pending_gate_pass=pending_gate_pass)
+                           pending_gate_pass=pending_gate_pass,
+                           approved_gate_pass=approved_gate_pass,
+                           confirmed_gate_pass=confirmed_gate_pass,
+                           departed_gate_pass=departed_gate_pass)
 
 # Register route
 @app.route('/register', methods=['GET', 'POST'])
@@ -952,9 +964,8 @@ def gate_pass():
     
     employee_list = EmployeeData.query.filter().all()
     # visitor_code = generate_visitorCode()
-
+    gate_pass_code = generate_visitorCode()
     # form = ImageUploadForm()
-
     if request.method == 'POST':
         print("Form submitted")
         # Get form data using request.form.get to avoid BadRequestKeyError
@@ -971,6 +982,7 @@ def gate_pass():
         employee_confirmed_by = request.form.get('employeeConfirmedBy', '')
         employee_status = 'Pending'
         gatePassRequester = current_user.username
+        gatePassId = gate_pass_code
         # Print form data
         print(f"Employee ID: {employee_no}")
         print(f"Employee Name: {employee_name}")
@@ -1017,7 +1029,8 @@ def gate_pass():
             employeeConfirmedBy=employee_confirmed_by,
             employeeFormStatus=employee_status,
             committedDate=datetime.utcnow(),
-            gatePassRequester=gatePassRequester
+            gatePassRequester=gatePassRequester,
+            gatePassId=gatePassId
         )
 
         # Add the new visitor to the database
@@ -1033,15 +1046,35 @@ def gate_pass():
 
     return render_template('gatePass.html', employee_list=employee_list)
 
+def generate_gatePassId():
+    # Get the latest code from the database for the current date
+    today_gate_pass = datetime.now().strftime('%Y%m%d')
+    latest_gate_pass = GatePass.query.filter(GatePass.employeeNo.like(f'{today_gate_pass}%')).order_by(GatePass.employeeNo.desc()).first()
+
+    if latest_gate_pass:
+        # Increment the counter for the current date
+        current_gate_pass_counter = int(latest_gate_pass.employeeNo[-4:])
+        gate_pass_counter = str(current_gate_pass_counter + 1).zfill(4)
+    else:
+        # If it's a new day, start with '0001'
+        gate_pass_counter = '0001'
+
+    # Combine the date and counter to create the new code
+    gate_pass_code = f'{today_gate_pass}{gate_pass_counter}'
+    return gate_pass_code
+
 @app.route('/approve_gatepass', methods=['POST'])
 @login_required
 def approve_gatepass():
     employeeNo = request.form.get('employeeNo')
+    employeeFormStatus = request.form.get('employeeFormStatus')
     employee = GatePass.query.filter_by(employeeNo=employeeNo).first()
 
     if employee:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
+        print(clicked_button_value)
+        status = employeeFormStatus
 
         # Your logic based on the clicked button value
         if clicked_button_value == 'Approve':
@@ -1050,15 +1083,39 @@ def approve_gatepass():
 
             db.session.commit()
             return redirect(url_for('dashboard'))
-        
+            
         elif clicked_button_value == 'Reject':
             employee.employeeFormStatus = 'Rejected'
             employee.employeeOfficer = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
-    
-        return render_template('pendingGatePass.html', employee=employee)
-
+            
+        elif clicked_button_value == 'Confirm':
+            employee.employeeFormStatus = 'Confirmed'
+            employee.employeeConfirmedBy = current_user.username
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+            
+        elif clicked_button_value == 'Reject-confirm':
+            employee.employeeFormStatus = 'Confirm Rejected'
+            employee.employeeConfirmedBy = current_user.username
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+            
+        elif clicked_button_value == 'Out':
+            employee.employeeFormStatus = 'Out'
+            employee.employeeOutMark = current_user.username
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+            
+        elif clicked_button_value == 'In':
+            employee.employeeFormStatus = 'In'
+            employee.employeeInMark = current_user.username
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+            
+        return render_template('pendingGatePass.html', employee=employee, status=status)
+        
     else:
         return jsonify({'error': 'Visitor not found'}), 404
     

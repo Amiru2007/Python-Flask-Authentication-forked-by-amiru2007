@@ -20,29 +20,29 @@
                 <div class="radio-boxes-container">
                     <div class="grid-element">
                         <label for="radio1">Dayaratne Holdings</label>
-                        <input type="radio" id="radio1" name="company" class="radio" value="Dayaratne Holdings" onclick="setCompany('Dayaratne Holdings')">
+                        <input type="radio" id="radio1" name="company" class="radio" value="Dayaratne Holdings" onclick="setCompany('Dayaratne Holdings')" disabled>
                     </div>
                     <div class="grid-element">
                         <label for="radio2">Dayaratne Apperal</label>
-                        <input type="radio" id="radio2" name="company" class="radio" value="Dayaratne Apperal" onclick="setCompany('Dayaratne Apperal')">
+                        <input type="radio" id="radio2" name="company" class="radio" value="Dayaratne Apperal" onclick="setCompany('Dayaratne Apperal')" disabled>
                     </div>
                     <div class="grid-element">
                         <label for="radio3">Pra Su King</label>
-                        <input type="radio" id="radio3" name="company" class="radio" value="Pra Su King" onclick="setCompany('Pra Su King')">
+                        <input type="radio" id="radio3" name="company" class="radio" value="Pra Su King" onclick="setCompany('Pra Su King')" disabled>
                     </div>
                     <div class="grid-element">
                         <label for="radio4">Isuru International</label>
-                        <input type="radio" id="radio4" name="company" class="radio" value="Isuru International" onclick="setCompany('Isuru International')">
+                        <input type="radio" id="radio4" name="company" class="radio" value="Isuru International" onclick="setCompany('Isuru International')" disabled>
                     </div>
                     <div class="grid-element">
                         <label for="radio5">Isuru Lojistick</label>
-                        <input type="radio" id="radio5" name="company" class="radio" value="Isuru Lojistick" onclick="setCompany('Isuru Lojistick')">
+                        <input type="radio" id="radio5" name="company" class="radio" value="Isuru Lojistick" onclick="setCompany('Isuru Lojistick')" disabled>
                     </div>
                     <div class="grid-element">
                         <label for="radio6">V B T N Trading</label>
-                        <input type="radio" id="radio6" name="company" class="radio" value="V B T N Trading" onclick="setCompany('V B T N Trading')">
+                        <input type="radio" id="radio6" name="company" class="radio" value="V B T N Trading" onclick="setCompany('V B T N Trading')" disabled>
                     </div>
-                    <input type="hidden" name="employeeCompany" id="employeeCompany">
+                    <input type="hidden" name="employeeCompany" id="employeeCompany" value="{{ employee.employeeCompany }}">
                 </div>
             </div>
             <div class="bottom-employee-datails">
@@ -50,11 +50,8 @@
                     <div class="employee-id gate-pass-input-container">
                         <label for="employeeNo">Emplyee ID</label>
                         <div class="dropdown">
-                            <input type="text" id="employeeNo" name="employeeNo" title="Employee ID" readonly>
+                            <input type="text" id="employeeNo" name="employeeNo" title="Employee ID" value="{{ employee.employeeNo }}" readonly>
                             <!-- <input type="text" id="remarks" name="remarks"> -->
-                            <div class="dropdown-content" id="dropdownOptions">
-                                <div>{{ employee.employeeNo }}</div>
-                            </div>
                         </div>
                     </div>
                     <div class="employee-name gate-pass-input-container">
@@ -69,29 +66,29 @@
                     </div>
                     <div class="employee-arrival-time gate-pass-input-container">
                         <label for="employeeArrivalTime">Arrival Time</label>
-                        <input type="time" id="employeeArrivalTime" name="employeeArrivalTime" title="Employee time">
+                        <input type="time" id="employeeArrivalTime" name="employeeArrivalTime" value="{{ employee.employeeArrivalTime }}" title="Employee time" readonly>
                     </div>
                 </div>
                 <div class="date-vehicle gate-pass-detail-block">
                     <div class="employee-departing-date gate-pass-input-container">
                         <label for="employeeDepartingDate">Date</label>
-                        <input type="date" id="employeeDepartingDate" name="employeeDepartingDate" title="Employee departing date">
+                        <input type="date" id="employeeDepartingDate" name="employeeDepartingDate" value="{{ employee.employeeDepartingDate }}" title="Employee departing date" readonly>
                     </div>
                     <div class="employee-vehicle-no gate-pass-input-container">
                         <label for="employeeVehicleNo">Vehicle Number</label>
-                        <input type="text" id="employeeVehicleNo" name="employeeVehicleNo" title="Employee vehicle number">
+                        <input type="text" id="employeeVehicleNo" name="employeeVehicleNo" value="{{ employee.employeeVehicleNo }}" title="Employee vehicle number" readonly>
                     </div>
                 </div>
                 <div class="departing-reason gate-pass-detail-block">
                     <div class="employee-departing-reason gate-pass-input-container">
                         <label for="employeeDepartingReason">Reason</label>
-                        <input type="text" id="employeeDepartingReason" name="employeeDepartingReason" title="Departing reason">
+                        <input type="text" id="employeeDepartingReason" name="employeeDepartingReason" value="{{ employee.employeeDepartingReason }}" title="Departing reason" readonly>
                     </div>
                 </div>
                 <div class="departing-remark gate-pass-detail-block">
                     <div class="employee-departing-remark gate-pass-input-container">
                         <label for="employeeDepartingRemark">Remark</label>
-                        <input type="text" id="employeeDepartingRemark" name="employeeDepartingRemark" title="Departing remark">
+                        <input type="text" id="employeeDepartingRemark" name="employeeDepartingRemark" value="{{ employee.employeeDepartingRemark }}" title="Departing remark" readonly>
                     </div>
                 </div>
                 <div class="officer-confirmed-by gate-pass-detail-block">
@@ -114,46 +111,42 @@
             <div class="control-buttons-container">
                 <div class="employee-status gate-pass-input-container">
                     <label for="employee-status">Status</label>
-                    <input type="text" id="employeeStatus" name="employee-status" title="Status" readonly>
+                    <input type="text" id="employeeStatus" name="employee-status" title="Status" value="{{ employee.employeeFormStatus }}" readonly>
                 </div>
                 <div class="button-container">
-                    <a href="{{ url_for('dashboard') }}"><button type="button" class="exit-form-control-btn" title="cancel" id="cancelExitForm">Cancel</button></a>
-                    <button type="submit" class="exit-form-control-btn accented" title="save" id="saveExitForm">Save</button>
-                    <!-- <button type="button" class="exit-form-control-btn accented" title="approve" id="approveExitForm">Approve</button>
-                    <button type="button" class="exit-form-control-btn accented" title="confirm" id="confirmExitForm">Confirm</button>
-                    <button type="button" class="exit-form-control-btn" title="reject" id="rejectExitForm">Reject</button>
-                    <button type="button" class="exit-form-control-btn accented" title="in" id="inExitForm">In</button>
-                    <button type="button" class="exit-form-control-btn" title="out" id="outExitForm">Exit</button> -->
+                    <input type="hidden" name="employeeNo" value="{{ employee.employeeNo }}">
+                    {% if status == 'Pending' %}
+                        <a href="{{ url_for('dashboard') }}"><button type="submit" class="exit-form-control-btn" title="reject" name="changeStatus" value="Reject">Reject</button></a>
+                        <a href="{{ url_for('dashboard') }}"><button type="submit" class="exit-form-control-btn accented" title="approve" name="changeStatus" value="Approve">Approve</button></a>
+                    {% elif status == 'Approved' %}
+                        <a href="{{ url_for('dashboard') }}"><button type="submit" class="exit-form-control-btn" title="reject" name="changeStatus" value="Reject-confirm">Reject</button></a>
+                        <a href="{{ url_for('dashboard') }}"><button type="submit" class="exit-form-control-btn accented" title="confirm" name="changeStatus" value="Confirm">Confirm</button></a>
+                    {% elif status == 'Confirmed' %}
+                    <a href="{{ url_for('dashboard') }}"><button type="button" class="exit-form-control-btn" title="cancel" id="cancelExitForm-confirm">Cancel</button></a>
+                        <a href="{{ url_for('dashboard') }}"><button type="submit" class="exit-form-control-btn accented" title="out" name="changeStatus" value="Out">Out</button></a>
+                    {% elif status == 'Out' %}
+                    <a href="{{ url_for('dashboard') }}"><button type="button" class="exit-form-control-btn" title="cancel" id="cancelExitForm-depart">Cancel</button></a>
+                        <a href="{{ url_for('dashboard') }}"><button type="submit" class="exit-form-control-btn accented" title="in" name="changeStatus" value="In">In</button></a>
+                    {% endif %}
                 </div>
             </div>
         </div>
     </form>
     <script>
-        function setCompany(company) {
-            document.getElementById('employeeCompany').value = company;
-        }
-
         document.addEventListener("DOMContentLoaded", function() {
-            const dropdown = document.querySelector(".dropdown");
-            const inputID = document.getElementById("employeeNo");
-            const inputName = document.getElementById("employeeName");
-            const dropdownContent = document.querySelector(".dropdown-content");
-
-            dropdown.addEventListener("click", function() {
-                dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
-            });
-
-            function selectOption(employeeNo) {
-                inputID.value = employeeNo;
-                inputName.value = document.getElementById(`employeeName_${employeeNo}`).value;
-                dropdownContent.style.display = "none";
-            }
-
-            window.selectOption = selectOption;
-
-            document.addEventListener("click", function(event) {
-                if (!dropdown.contains(event.target) && dropdownContent.style.display === "block") {
-                    dropdownContent.style.display = "none";
+            // Get the value of the hidden input tag
+            var employeeCompany = document.getElementById('employeeCompany').value;
+    
+            // Get all radio buttons
+            var radioButtons = document.querySelectorAll('input[name="company"]');
+    
+            // Loop through the radio buttons to find the one that matches the hidden input value
+            radioButtons.forEach(function(radio) {
+                if (radio.value === employeeCompany) {
+                    // Enable the radio button
+                    radio.disabled = false;
+                    // Check the radio button
+                    radio.checked = true;
                 }
             });
         });

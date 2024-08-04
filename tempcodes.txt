@@ -256,3 +256,7 @@ CREATE TABLE visitor (
             # Reset file pointer after reading
             pic.seek(0)
             filename = secure_filename(pic.filename)
+
+
+
+<input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

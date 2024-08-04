@@ -110,11 +110,38 @@
                 {% endif %}
 
                 <!-- Gate Pass -->
-                {% if user_permissions.Create_Gate_Pass %}
+                {% if user_permissions.Approve_Gate_Pass %}
                     <div class="grid-item">
                         <span><i class="ph ph-door-open"></i></span>
-                        <h3>Approve Gate Pass Form</h3>
+                        <h3>Gate Pass Requests</h3>
                         <button type="button" id="showGatePassRequestList" onclick="openRequestGatePassList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Gate Pass -->
+                {% if user_permissions.Confirmed_Gate_Pass %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-door-open"></i></span>
+                        <h3>Confirm Gate Pass</h3>
+                        <button type="button" id="showGatePassApprovedList" onclick="openApprovedGatePassList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Gate Pass -->
+                {% if user_permissions.Confirmed_Gate_Pass %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-door-open"></i></span>
+                        <h3>Gate Pass Out</h3>
+                        <button type="button" id="showGatePassConfirmedList" onclick="openConfirmedGatePassList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Gate Pass -->
+                {% if user_permissions.Confirmed_Gate_Pass %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-door-open"></i></span>
+                        <h3>Gate Pass In</h3>
+                        <button type="button" id="showGatePassDepartedList" onclick="openDepartedGatePassList()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
             </div>
@@ -307,7 +334,7 @@
         <div class="overlay" id="requestGatePassListOverlay" onclick="closeRequestGatePassList()"></div>
         <div class="popup" id="requestGatePassList">
             <div class="popupHeader">
-                <h3>Approved Visitor List</h3>
+                <h3>Gate Pass Requests</h3>
                 <button onclick="closeRequestGatePassList()"><i class="ph ph-x"></i></button>
             </div>
             <ul class="toApprove">
@@ -315,7 +342,110 @@
                     <li>
                         <form method="post" action="{{ url_for('approve_gatepass') }}">
                             <input type="hidden" name="employeeNo" value="{{ employee.employeeNo }}">
-                            <button type="submit">{{ employee.employeeNo }}</button>
+                            <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
+                                {% if employee.employeeName %}
+                                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                {% if employee.employeeDepartingTime %}
+                                    <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="approveGatePassListOverlay" onclick="closeApprovedGatePassList()"></div>
+        <div class="popup" id="approveGatePassList">
+            <div class="popupHeader">
+                <h3>Gate Pass Requests</h3>
+                <button onclick="closeApprovedGatePassList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for employee in approved_gate_pass %}
+                    <li>
+                        <form method="post" action="{{ url_for('approve_gatepass') }}">
+                            <input type="hidden" name="employeeNo" value="{{ employee.employeeNo }}">
+                            <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
+                                {% if employee.employeeName %}
+                                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                {% if employee.employeeDepartingTime %}
+                                    <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="confirmedGatePassListOverlay" onclick="closeConfirmedGatePassList()"></div>
+        <div class="popup" id="confirmedGatePassList">
+            <div class="popupHeader">
+                <h3>Gate Pass Requests</h3>
+                <button onclick="closeConfirmedGatePassList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for employee in confirmed_gate_pass %}
+                    <li>
+                        <form method="post" action="{{ url_for('approve_gatepass') }}">
+                            <input type="hidden" name="employeeNo" value="{{ employee.employeeNo }}">
+                            <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
+                                {% if employee.employeeName %}
+                                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                {% if employee.employeeDepartingTime %}
+                                    <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="departedGatePassListOverlay" onclick="closeDepartedGatePassList()"></div>
+        <div class="popup" id="departedGatePassList">
+            <div class="popupHeader">
+                <h3>Gate Pass Requests</h3>
+                <button onclick="closeDepartedGatePassList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for employee in departed_gate_pass %}
+                    <li>
+                        <form method="post" action="{{ url_for('approve_gatepass') }}">
+                            <input type="hidden" name="employeeNo" value="{{ employee.employeeNo }}">
+                            <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
+                                {% if employee.employeeName %}
+                                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                {% if employee.employeeDepartingTime %}
+                                    <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                            </button>
                         </form>
                     </li>
                 {% endfor %}
@@ -575,6 +705,48 @@
         function closeRequestGatePassList() {
             document.getElementById('requestGatePassListOverlay').classList.remove('visible');
             document.getElementById('requestGatePassList').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
+        }
+
+        function openApprovedGatePassList() {
+            document.getElementById('approveGatePassListOverlay').classList.add('visible');
+            document.getElementById('approveGatePassList').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
+        }
+
+        function closeApprovedGatePassList() {
+            document.getElementById('approveGatePassListOverlay').classList.remove('visible');
+            document.getElementById('approveGatePassList').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
+        }
+
+        function openConfirmedGatePassList() {
+            document.getElementById('confirmedGatePassListOverlay').classList.add('visible');
+            document.getElementById('confirmedGatePassList').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
+        }
+
+        function closeConfirmedGatePassList() {
+            document.getElementById('confirmedGatePassListOverlay').classList.remove('visible');
+            document.getElementById('confirmedGatePassList').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
+        }
+
+        function openDepartedGatePassList() {
+            document.getElementById('departedGatePassListOverlay').classList.add('visible');
+            document.getElementById('departedGatePassList').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
+        }
+
+        function closeDepartedGatePassList() {
+            document.getElementById('departedGatePassListOverlay').classList.remove('visible');
+            document.getElementById('departedGatePassList').classList.remove('visible');
             document.getElementById('contactMe').classList.remove('hide');
             document.getElementById('dashboardFooter').classList.remove('hide');
         }
