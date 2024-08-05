@@ -34,7 +34,7 @@
                 {% if user_permissions.Edit_Visitor %}
                     <div class="grid-item">
                         <span><i class="ph ph-pencil-simple"></i></span>
-                        <h3>Edit Request</h3>
+                        <h3>Edit Visitor</h3>
                         <button type="button" id="showRequestList" onclick="openShowRequestList()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
@@ -95,7 +95,7 @@
                 {% if user_permissions.Create_Visitor %}
                     <div class="grid-item">
                         <span><i class="ph ph-person"></i></span>
-                        <h3>Visitors</h3>
+                        <h3>Recent Visitors</h3>
                         <button type="button" id="showVisitorList" onclick="openVisitors()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
@@ -123,7 +123,7 @@
                                 <i class="ph-bold ph-warning-circle"></i>
                             </span>
                         </div>
-                        <h3>Gate Pass Requests</h3>
+                        <h3>Approve Gate Pass</h3>
                         <button type="button" id="showGatePassRequestList" onclick="openRequestGatePassList()"><i class="ph ph-arrow-right"></i></button>
                     </div>
                 {% endif %}
@@ -167,6 +167,29 @@
                         </div>
                         <h3>Gate Pass In</h3>
                         <button type="button" id="showGatePassDepartedList" onclick="openDepartedGatePassList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Employee Management -->
+                {% if user_permissions.Create_User %}
+                    <div class="grid-item">
+                        <span><i class="ph ph-identification-badge"></i></span>
+                        <h3>Employee Management</h3>
+                        <a href="{{ url_for('all_employees') }}"><button type="button">Manage</button></a>
+                    </div>
+                {% endif %}
+
+                <!-- Gate Pass -->
+                {% if requests_reminder %}
+                    <div class="requests-reminder" id="reminder">
+                        <div class="text-container">
+                            <h3>Reminder</h3>
+                            <p class="reminder-message">There are pending exit permit requests.</p>
+                        </div>
+                        <div class="nav-btn-container">
+                            <button type="button" id="showGatePassRequestList2" onclick="openRequestGatePassList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
+                            <button type="button" onclick="closeReminder()"><i class="ph-fill ph-x-circle"></i></button>
+                        </div>
                     </div>
                 {% endif %}
             </div>
@@ -326,7 +349,7 @@
                 <button onclick="closeReports()"><i class="ph ph-x"></i></button>
             </div>
             <div class="reportButtonsContainer">
-                <form action="/export_excel_user" method="POST" class="excelExportBtns">
+                <form action="/export_excel/user" method="POST" class="excelExportBtns">
                     <span><i class="ph ph-user-list"></i></span>
                     <h5>User Report</h5>
                     <button type="submit">Export</button>
@@ -334,6 +357,16 @@
                 <div class="excelExportBtns" onclick="openVisitorReport()">
                     <span><i class="ph ph-user-square"></i></span>
                     <h5>Visitor Reports</h5>
+                    <button type="button">Create</button>
+                </div>
+                <div class="excelExportBtns" onclick="openEmployeeGatePassReport()">
+                    <span><i class="ph ph-door"></i></span>
+                    <h5>Gate Pass Search</h5>
+                    <button type="button">Create</button>
+                </div>
+                <div class="excelExportBtns" onclick="openGatePassListReport()">
+                    <span><i class="ph ph-door"></i></span>
+                    <h5>Gate Pass List</h5>
                     <button type="button">Create</button>
                 </div>
             </div>
@@ -344,7 +377,7 @@
                 <h3>Set Duration</h3>
                 <button onclick="closeVisitorReport()"><i class="ph ph-x"></i></button>
             </div>
-            <form action="/export_excel_visitor" method="POST" class="excelExportVisitorBtns">
+            <form action="/export_excel/visitor" method="POST" class="excelExportVisitorBtns">
                 <div class="startDate excelTimeDuration">
                     <label for="startDate">Start Date</label>
                     <input type="date" id="startDate" name="startDate">
@@ -354,6 +387,46 @@
                     <input type="date" id="endDate" name="endDate">
                 </div>
                 <input type="submit" class="exportVisitorExcel" id="exportVisitorExcel" value="Export">
+            </form>
+        </div>
+        <div class="overlay" id="gatePassReportOverlay" onclick="closeEmployeeGatePassReport()"></div>
+        <div class="popup" id="gatePassReportButtons">
+            <div class="popupHeader" style="position: relative; width: 100%;">
+                <h3>Set Duration For Employee</h3>
+                <button onclick="closeGatePassReport()"><i class="ph ph-x"></i></button>
+            </div>
+            <form action="/export_excel/employee_gate_pass" method="POST" class="excelExportVisitorBtns">
+                <div class="employeeNoForReport excelTimeDuration">
+                    <label for="reportEmployeeNo">Employee Number</label>
+                    <input type="text" id="reportEmployeeNo" name="reportEmployeeNo">
+                </div>
+                <div class="startDate excelTimeDuration">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" name="startDate">
+                </div>
+                <div class="endDate excelTimeDuration">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" name="endDate">
+                </div>
+                <input type="submit" class="exportVisitorExcel" id="exportEmployeeGatePassExcel" value="Export">
+            </form>
+        </div>
+        <div class="overlay" id="gatePassListReportOverlay" onclick="closeGatePassListReport()"></div>
+        <div class="popup" id="gatePassListReportButtons">
+            <div class="popupHeader" style="position: relative; width: 100%;">
+                <h3>Set Duration (Gate Pass List)</h3>
+                <button onclick="closeGatePassListReport()"><i class="ph ph-x"></i></button>
+            </div>
+            <form action="/export_excel/gate_pass_list" method="POST" class="excelExportVisitorBtns">
+                <div class="startDate excelTimeDuration">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" name="startDate">
+                </div>
+                <div class="endDate excelTimeDuration">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" name="endDate">
+                </div>
+                <input type="submit" class="exportVisitorExcel" id="exportGatePassListExcel" value="Export">
             </form>
         </div>
         <div class="overlay" id="requestGatePassListOverlay" onclick="closeRequestGatePassList()"></div>
@@ -366,7 +439,7 @@
                 {% for employee in pending_gate_pass %}
                     <li>
                         <form method="post" action="{{ url_for('approve_gatepass') }}">
-                            <input type="hidden" name="employeeNo" value="{{ employee.employeeNo }}">
+                            <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
                             <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
                             <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
                                 <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
@@ -706,6 +779,38 @@
             document.getElementById('dashboardFooter').classList.remove('hide');
         }
 
+        function openEmployeeGatePassReport() {
+            document.getElementById('reportOverlay').classList.remove('visible');
+            document.getElementById('reportButtons').classList.remove('visible');
+            document.getElementById('gatePassReportOverlay').classList.add('visible');
+            document.getElementById('gatePassReportButtons').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
+        }
+
+        function closeEmployeeGatePassReport() {
+            document.getElementById('gatePassReportOverlay').classList.remove('visible');
+            document.getElementById('gatePassReportButtons').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
+        }
+
+        function openGatePassListReport() {
+            document.getElementById('reportOverlay').classList.remove('visible');
+            document.getElementById('reportButtons').classList.remove('visible');
+            document.getElementById('gatePassListReportOverlay').classList.add('visible');
+            document.getElementById('gatePassListReportButtons').classList.add('visible');
+            document.getElementById('contactMe').classList.add('hide');
+            document.getElementById('dashboardFooter').classList.add('hide');
+        }
+
+        function closeGatePassListReport() {
+            document.getElementById('gatePassListReportOverlay').classList.remove('visible');
+            document.getElementById('gatePassListReportButtons').classList.remove('visible');
+            document.getElementById('contactMe').classList.remove('hide');
+            document.getElementById('dashboardFooter').classList.remove('hide');
+        }
+
         function openVisitors() {
             document.getElementById('visitorsOverlay').classList.add('visible');
             document.getElementById('visitorsList').classList.add('visible');
@@ -725,6 +830,7 @@
             document.getElementById('requestGatePassList').classList.add('visible');
             document.getElementById('contactMe').classList.add('hide');
             document.getElementById('dashboardFooter').classList.add('hide');
+            document.getElementById('reminder').style.display = 'none';
         }
 
         function closeRequestGatePassList() {
@@ -774,6 +880,16 @@
             document.getElementById('departedGatePassList').classList.remove('visible');
             document.getElementById('contactMe').classList.remove('hide');
             document.getElementById('dashboardFooter').classList.remove('hide');
+        }
+
+        window.onload = function() {
+            setTimeout(function() {
+                document.getElementById('reminder').classList.add('show');
+            }, 2000);
+        };
+
+        function closeReminder() {
+            document.getElementById('reminder').classList.remove('show');
         }
 
         function openHelp() {

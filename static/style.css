@@ -245,17 +245,20 @@ select#level {
 }
 
 .tools .grid-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(6, 130px);
+    grid-template-rows: repeat(3, 170px);
+    gap: 20px;
+    /* justify-content: center;
+    align-items: center; */
     height: fit-content;
 }
 
 .tools .grid-container .grid-item {
-    width: 170px;
-    height: fit-content;
+    width: 130px;
+    height: 140px;
     background-color: var(--text) 57;
-    margin: 0 10px;
+    /* margin: 10px 0; */
     padding: 10px 0 20px 0;
     color: var(--accent);
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.13), 0 1px 1px 0 rgba(0, 0, 0, 0.11);
@@ -265,7 +268,7 @@ select#level {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
     text-align: center;
 }
 
@@ -275,7 +278,7 @@ select#level {
 } */
 
 .tools .grid-container .grid-item span {
-    font-size: 50px;
+    font-size: 40px;
     padding: 0 8px 0 8px;
 }
 
@@ -358,7 +361,7 @@ select#level {
     opacity: 0;
     -webkit-transition: all 1s;
     transition: all 1s;
-    border: 1px solid var(--popup-border);
+    border: 2px solid var(--text-main);
 }
 
 #permissionList {
@@ -471,7 +474,7 @@ select#level {
 
 #reportButtons {
     width: 250px;
-    height: 200px;
+    height: 225px;
 }
 
 .popup .excelExportBtns {
@@ -1819,6 +1822,68 @@ span.secondary-icon i {
     background: white;
 }
 
+.requests-reminder {
+    width: 320px;
+    height: auto;
+    background: var(--popup-bg);
+    position: fixed;
+    bottom: 32px;
+    right: 8px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    border: 2px solid var(--text-main);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    /* display: none; */
+    opacity: 0;
+    z-index: 99999;
+    box-shadow: 3px 3px 10px rgba(50, 50, 50, 0.144);
+    transform: translateX(330px); /* Initial position for transition */
+    transition: opacity 0.5s ease, transform 0.5s ease, visibility 0.5s;
+    visibility: hidden;
+}
+
+.requests-reminder.show {
+    opacity: 1; /* Show notification */
+    transform: translateX(0); /* Move to final position */
+    visibility: visible;
+}
+
+.requests-reminder h3 {
+    font-size: 16px;
+    color: var(--alt-text);
+}
+
+.requests-reminder p {
+    font-size: 12px;
+    color: var(--sub-text);
+}
+
+.requests-reminder button {
+    margin-top: 2px;
+    font-size: 25px;
+    background: transparent;
+    border-radius: 50%;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    margin-left: 10px;
+}
+
+.nav-btn-container {
+    width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
 @media screen and (max-width: 1360px) {
     .toolsAndPreview {
         height: fit-content;
@@ -1826,9 +1891,9 @@ span.secondary-icon i {
 
     .tools .grid-container {
         display: grid;
-        grid-template-columns: repeat(3, 170px);
+        grid-template-columns: repeat(4, 130px);
         grid-template-rows: repeat(3, 170px);
-        gap: 30px;
+        gap: 20px;
     }
 }
 

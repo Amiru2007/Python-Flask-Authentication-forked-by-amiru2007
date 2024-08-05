@@ -95,14 +95,14 @@ class Visitor(db.Model):
     profilePhoto = db.Column(db.String(255), nullable=True)
     committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
 
-class EmployeeData(db.Model):
+class Employee(db.Model):
     __tablename__ = 'employee_data'
     id = db.Column(db.Integer, primary_key=True)
     employeeNo = db.Column(db.String(10), nullable=False, unique=True)
     nameWithInitials = db.Column(db.String(120), nullable=False, unique=True)
 
     def __repr__(self):
-        return f"<EmployeeData {self.employeeNo}>"
+        return f"<Employee {self.employeeNo}>"
 
 class Permissions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -128,9 +128,9 @@ class Permissions(db.Model):
     Create_Reports = db.Column(db.Boolean, default=False)
 
 class GatePass(db.Model):
-    id = db.Column(db.Integer)
-    gatePassId = db.Column(db.String(20))
-    employeeNo = db.Column(db.String(10), primary_key=True, nullable=False, autoincrement=False)
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    gatePassId = db.Column(db.String(20), nullable=False, unique=True)
+    employeeNo = db.Column(db.String(10), nullable=False)
     employeeName = db.Column(db.String(120), nullable=False)
     employeeCompany = db.Column(db.String(120), nullable=False)
     employeeDepartingTime = db.Column(db.String(50))
@@ -329,6 +329,15 @@ class RegisterForm(FlaskForm):
                 'That username already exists. Please choose a different one.')
 
 
+class EmployeeForm(FlaskForm):
+    employeeNo = StringField(validators=[
+                           InputRequired(), Length(min=2, max=20)], render_kw={"placeholder": "Employee Number"})
+
+    nameWithInitials = StringField(validators=[
+                             InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Name with initials"})
+
+    submit = SubmitField('Create')
+
 class ChangePasswordForm(FlaskForm):
     new_password = PasswordField(validators=[
         InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "New Password"})
@@ -435,15 +444,20 @@ def dashboard():
         # Query visitors added within the last 14 days
         visitors_list = Visitor.query.filter(Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
 
-        pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester == current_user.username).all()
+        pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester != current_user.username).all()
         
-        approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved', GatePass.gatePassRequester == current_user.username).all()
+        approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved', GatePass.gatePassRequester != current_user.username).all()
         
-        confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed', GatePass.gatePassRequester == current_user.username).all()
+        confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed', GatePass.gatePassRequester != current_user.username).all()
         
-        departed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester == current_user.username).all()
+        departed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester != current_user.username).all()
         
         # arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
+        requests_reminder = False
+
+        if pending_gate_pass:
+            requests_reminder = True
+
 
     except Exception as e:
         return jsonify({'error': str(e)})
@@ -460,7 +474,8 @@ def dashboard():
                            pending_gate_pass=pending_gate_pass,
                            approved_gate_pass=approved_gate_pass,
                            confirmed_gate_pass=confirmed_gate_pass,
-                           departed_gate_pass=departed_gate_pass)
+                           departed_gate_pass=departed_gate_pass,
+                           requests_reminder=requests_reminder)
 
 # Register route
 @app.route('/register', methods=['GET', 'POST'])
@@ -766,6 +781,73 @@ def get_user_by_username(username):
     if user:
         return render_template('editUser.html', user=user)
     else:
+        return "User not found", 404    
+    
+# Register route
+@app.route('/new_employee', methods=['GET', 'POST'])
+# @login_required
+def new_employee():
+    form = EmployeeForm()
+    
+    if form.validate_on_submit():
+        new_employee = Employee(
+            employeeNo=form.employeeNo.data,
+            nameWithInitials=form.nameWithInitials.data
+        )
+
+        with app.app_context():
+            db.session.add(new_employee)
+            db.session.commit()
+
+        flash('Account created successfully', 'success')
+        return redirect(url_for('all_employees'))
+        pass
+
+    return render_template('newEmployee.html', form=form)
+
+@app.route('/all_employees', methods=['GET', 'POST'])
+@login_required
+def all_employees():
+    page = request.args.get('page', 1, type=int)
+    rows_per_page = request.args.get('rows_per_page', 7, type=int)
+    
+    if request.method == 'POST':
+        # if 'delete_selected' in request.form:
+        #     selected_ids = request.form.getlist('user_checkbox')
+        #     selected_ids = [user_id for user_id in selected_ids if int(user_id) != current_user.id]
+        #     User.query.filter(User.id.in_(selected_ids)).delete(synchronize_session=False)
+        #     db.session.commit()
+        #     return redirect(url_for('all_users'))
+        
+        search_query = request.form.get('search_query')
+        if search_query:
+            employee_pagination = Employee.query.filter(
+                Employee.nameWithInitials.contains(search_query),
+                Employee.id != current_user.id
+            ).paginate(page=page, per_page=rows_per_page)
+        else:
+            employee_pagination = Employee.query.filter(Employee.id != current_user.id).paginate(page=page, per_page=rows_per_page)
+    else:
+        employee_pagination = Employee.query.filter(Employee.id != current_user.id).paginate(page=page, per_page=rows_per_page)
+    
+    return render_template('allEmployees.html', employee_pagination=employee_pagination)
+
+def get_filtered_users(search_query):
+    # Assuming you have a method to filter users based on a search query
+    return Employee.query.filter(
+        (Employee.id.like(f'%{search_query}%')) |
+        (Employee.employeeNo.like(f'%{search_query}%')) |
+        (Employee.nameWithInitials.like(f'%{search_query}%'))
+    ).all()
+
+@app.route('/get_employee_by_number/<employeeNo>', methods=['GET'])
+@login_required
+def get_employee_by_number(employeeNo):
+    employee = Employee.query.filter_by(employeeNo=employeeNo).first()
+
+    if employee:
+        return render_template('editUser.html', employee=employee)
+    else:
         return "User not found", 404
 
 @app.route('/update_user', methods=['POST'])
@@ -805,7 +887,7 @@ def update_user():
 
     return "Invalid request", 400
 
-@app.route('/export_excel_user', methods=['POST'])
+@app.route('/export_excel/user', methods=['POST'])
 def export_excel_user():
     # Fetch data from the database
     data = User.query.all()
@@ -856,7 +938,7 @@ def export_excel_user():
         download_name='users.xlsx'
     )
 
-@app.route('/export_excel_visitor', methods=['POST'])
+@app.route('/export_excel/visitor', methods=['POST'])
 def export_excel_visitor():
     # Get start and end dates from the form
     start_date = request.form.get('startDate')
@@ -935,6 +1017,163 @@ def export_excel_visitor():
         download_name='visitor_records.xlsx'
     )
 
+@app.route('/export_excel/employee_gate_pass', methods=['POST'])
+def export_excel_employee_gate_pass():
+    # Get start and end dates from the form
+    employee_no = request.form.get('reportEmployeeNo')
+    start_date = request.form.get('startDate')
+    end_date = request.form.get('endDate')
+
+    # Convert start and end dates to datetime objects
+    start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
+    end_datetime = datetime.strptime(end_date, '%Y-%m-%d')
+
+    # Fetch visitor data from the database based on the committed date range
+    data = GatePass.query.filter(
+        GatePass.employeeNo == employee_no,
+        db.func.date(GatePass.committedDate) >= start_datetime.date(),
+        db.func.date(GatePass.committedDate) <= end_datetime.date()
+    ).all()
+
+    # Create an Excel workbook and add a worksheet
+    wb = openpyxl.Workbook()
+    ws = wb.active
+
+    # Define headers to be included in the worksheet (consistent with the User model)
+    headers = [
+        'id', 'employeeNo', 'employeeName', 'employeeCompany', 'employeeDepartingTime', 'employeeDepartingDate', 'employeeArrivalTime',
+        'employeeVehicleNo', 'employeeDepartingReason', 'employeeDepartingRemark', 'employeeOfficer',
+        'employeeConfirmedBy', 'employeeFormStatus', 'employeeOutMark', 'employeeInMark', 'gatePassRequester'
+    ]
+
+    # Write headers to the worksheet
+    ws.append(headers)
+
+    # Write data to the worksheet
+    for row in data:
+        ws.append([
+            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime('%Y-%m-%d %H:%M:%S')
+            for field in headers
+        ])
+
+    # Create a table range
+    table = Table(displayName="EmployeeGatePassTable", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+
+    # Add a TableStyleInfo to the table
+    style = TableStyleInfo(
+        name="TableStyleMedium9", showFirstColumn=False,
+        showLastColumn=False, showRowStripes=True, showColumnStripes=True
+    )
+    
+    table.tableStyleInfo = style
+
+    # Add the table to the worksheet
+    ws.add_table(table)
+
+    # Adjust cell width to fit content
+    for column in ws.columns:
+        max_length = 0
+        column = [cell for cell in column]
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column[0].column_letter].width = adjusted_width
+
+    # Save the workbook to BytesIO object
+    excel_data = BytesIO()
+    wb.save(excel_data)
+    excel_data.seek(0)
+
+    # Return the Excel file as a downloadable attachment
+    return send_file(
+        excel_data,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name='employee_gate_pass_records.xlsx'
+    )
+
+
+@app.route('/export_excel/gate_pass_list', methods=['POST'])
+def export_excel_gate_pass_list():
+    # Get start and end dates from the form
+    start_date = request.form.get('startDate')
+    end_date = request.form.get('endDate')
+
+    # Convert start and end dates to datetime objects
+    start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
+    end_datetime = datetime.strptime(end_date, '%Y-%m-%d')
+
+    # Fetch visitor data from the database based on the committed date range
+    data = GatePass.query.filter(
+        db.func.date(GatePass.committedDate) >= start_datetime.date(),
+        db.func.date(GatePass.committedDate) <= end_datetime.date()
+    ).all()
+
+    # Create an Excel workbook and add a worksheet
+    wb = openpyxl.Workbook()
+    ws = wb.active
+
+    # Define headers to be included in the worksheet (consistent with the User model)
+    headers = [
+        'id', 'employeeNo', 'employeeName', 'employeeCompany', 'employeeDepartingTime', 'employeeDepartingDate', 'employeeArrivalTime',
+        'employeeVehicleNo', 'employeeDepartingReason', 'employeeDepartingRemark', 'employeeOfficer',
+        'employeeConfirmedBy', 'employeeFormStatus', 'employeeOutMark', 'employeeInMark', 'gatePassRequester'
+    ]
+
+    # Write headers to the worksheet
+    ws.append(headers)
+
+    # Write data to the worksheet
+    for row in data:
+        ws.append([
+            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime('%Y-%m-%d %H:%M:%S')
+            for field in headers
+        ])
+
+    # Create a table range
+    table = Table(displayName="EmployeeGatePassTable", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+
+    # Add a TableStyleInfo to the table
+    style = TableStyleInfo(
+        name="TableStyleMedium9", showFirstColumn=False,
+        showLastColumn=False, showRowStripes=True, showColumnStripes=True
+    )
+    
+    table.tableStyleInfo = style
+
+    # Add the table to the worksheet
+    ws.add_table(table)
+
+    # Adjust cell width to fit content
+    for column in ws.columns:
+        max_length = 0
+        column = [cell for cell in column]
+        for cell in column:
+            try:
+                if len(str(cell.value)) > max_length:
+                    max_length = len(cell.value)
+            except:
+                pass
+        adjusted_width = (max_length + 2)
+        ws.column_dimensions[column[0].column_letter].width = adjusted_width
+
+    # Save the workbook to BytesIO object
+    excel_data = BytesIO()
+    wb.save(excel_data)
+    excel_data.seek(0)
+
+    # Return the Excel file as a downloadable attachment
+    return send_file(
+        excel_data,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name='gate_pass_list_records.xlsx'
+    )
+
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -962,9 +1201,9 @@ def profile():
 @login_required
 def gate_pass():
     
-    employee_list = EmployeeData.query.filter().all()
+    employee_list = Employee.query.filter().all()
     # visitor_code = generate_visitorCode()
-    gate_pass_code = generate_visitorCode()
+    gate_pass_code = generate_gatePassId()
     # form = ImageUploadForm()
     if request.method == 'POST':
         print("Form submitted")
@@ -1046,29 +1285,36 @@ def gate_pass():
 
     return render_template('gatePass.html', employee_list=employee_list)
 
+
 def generate_gatePassId():
-    # Get the latest code from the database for the current date
+    # Get the current date in YYYYMMDD format
     today_gate_pass = datetime.now().strftime('%Y%m%d')
-    latest_gate_pass = GatePass.query.filter(GatePass.employeeNo.like(f'{today_gate_pass}%')).order_by(GatePass.employeeNo.desc()).first()
+
+    # Query the latest gate pass for the current date
+    latest_gate_pass = GatePass.query.filter(
+        GatePass.gatePassId.like(f'{today_gate_pass}%')
+    ).order_by(
+        GatePass.gatePassId.desc()
+    ).first()
 
     if latest_gate_pass:
-        # Increment the counter for the current date
-        current_gate_pass_counter = int(latest_gate_pass.employeeNo[-4:])
+        # Extract and increment the counter part of the gate pass ID
+        current_gate_pass_counter = int(latest_gate_pass.gatePassId[-4:])
         gate_pass_counter = str(current_gate_pass_counter + 1).zfill(4)
     else:
-        # If it's a new day, start with '0001'
+        # If no gate pass is found for the current date, start the counter at '0001'
         gate_pass_counter = '0001'
 
-    # Combine the date and counter to create the new code
+    # Combine the date and the counter to form the new gate pass ID
     gate_pass_code = f'{today_gate_pass}{gate_pass_counter}'
     return gate_pass_code
 
 @app.route('/approve_gatepass', methods=['POST'])
 @login_required
 def approve_gatepass():
-    employeeNo = request.form.get('employeeNo')
+    gatePassId = request.form.get('gatePassId')
     employeeFormStatus = request.form.get('employeeFormStatus')
-    employee = GatePass.query.filter_by(employeeNo=employeeNo).first()
+    employee = GatePass.query.filter_by(gatePassId=gatePassId).first()
 
     if employee:
         # Access the value of the clicked button from the form data

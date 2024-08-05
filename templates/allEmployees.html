@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>All Employees</title>
+</head>
+<body>
+    <div class="user-list">
+        <form action="{{ url_for('all_employees') }}" method="post">
+            <div class="mainTableHeader">
+                <div class="leftControls">
+                    <a href="{{ url_for('dashboard') }}">
+                        <button type="button" class="goBack">
+                            <span><i class="ph-bold ph-arrow-left"></i></span>
+                        </button>
+                    </a>
+                    <h1>All Employees</h1>
+                </div>
+                <div class="operatingTools">
+                    <div class="searchContainer">
+                        <input type="text" id="searchInput" name="search_query" placeholder="Search..." value="{{ search_query }}">
+                        <button type="submit"><i class="ph-bold ph-magnifying-glass"></i></button>
+                    </div>
+                    <button type="submit" class="deleteUser" name="delete_selected" onclick="return confirmDelete()">
+                        <span><i class="ph-bold ph-trash"></i> Inactive</span>
+                    </button>
+                    <a href="{{ url_for('new_employee') }}">
+                        <button type="button" class="createUser">
+                            <span><i class="ph-bold ph-plus-circle"></i> Create</span>
+                        </button>
+                    </a>
+                </div>
+            </div>
+            <div class="outerContainer">
+                <div class="table-container">
+                    <table>
+                        <thead class="tableHeadRow"> 
+                            <tr>
+                                <th><input type="checkbox" class="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th> <!-- Add an empty header for checkboxes -->
+                                <th style="text-align: center;">#</th>
+                                <!-- <th>ID</th> -->
+                                <th>Employee Number</th>
+                                <th>Name with initials</th>
+                            </tr>
+                        </thead> 
+                        <tbody>
+                            {% for employee in employee_pagination.items %}
+                            <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_employee_by_number', employeeNo=employee.employeeNo) }}';">
+                                <td>
+                                    <input type="checkbox" class="checkbox" name="employee_checkbox" value="{{ employee.id }}" {% if employee.id == current_user.id %} disabled {% endif %}>
+                                </td>
+                                <td style="text-align: center;">
+                                    {% set row_number = (employee_pagination.page - 1) * employee_pagination.per_page + loop.index %}
+                                    {{ row_number }}
+                                </td>  <!-- Display the row number -->
+                                <td>{{ employee.employeeNo }}</td>
+                                <td>{{ employee.nameWithInitials }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </form>
+        <div class="pagination">
+            {% if employee_pagination.has_prev %}
+                <a href="{{ url_for('all_employees', page=employee_pagination.prev_num) }}" class="pagination-btn pagination-controls"><i class="ph ph-arrow-left"></i></a>
+            {% endif %}
+            {% for page_num in employee_pagination.iter_pages() %}
+                {% if page_num %}
+                    {% if page_num == employee_pagination.page %}
+                        <p class="pagination-btn pagination-current">{{ page_num }}</p>
+                    {% else %}
+                        <a href="{{ url_for('all_employees', page=page_num) }}" class="pagination-btn">{{ page_num }}</a>
+                    {% endif %}
+                {% else %}
+                    <span>...</span>
+                {% endif %}
+            {% endfor %}
+            <div class="pagination-container">
+                <input type="text" id="pageNumberInput" placeholder="Enter page number...">
+                <button type="button" onclick="gotoPage()"><i class="ph ph-arrow-elbow-down-left"></i></button>
+            </div>
+            {% if employee_pagination.has_next %}
+                <a href="{{ url_for('all_employees', page=employee_pagination.next_num) }}" class="pagination-btn pagination-controls"><i class="ph ph-arrow-right"></i></a>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            document.querySelector('form').addEventListener('submit', function (event) {
+                event.preventDefault();
+                fetch(this.action, {
+                    method: this.method,
+                    body: new FormData(this),
+                })
+                .then(response => response.text())
+                .then(html => {
+                    document.querySelector('.user-list').innerHTML = html;
+                });
+            });
+    
+            const searchInput = document.getElementById('searchInput');
+            const tableCells = document.querySelectorAll('.user-list td');
+    
+            searchInput.addEventListener('input', function () {
+                const searchText = this.value.trim().toLowerCase();
+    
+                tableCells.forEach(cell => {
+                    const textContent = cell.textContent.trim().toLowerCase();
+                    const highlightedText = textContent.replace(new RegExp(searchText, 'gi'), match => `<span class="highlight">${match}</span>`);
+                    cell.innerHTML = highlightedText;
+                });
+            });
+        });
+    
+        function toggleCheckboxes(masterCheckbox) {
+            const checkboxes = document.querySelectorAll('tbody input[name="user_checkbox"]');
+            checkboxes.forEach(checkbox => {
+                if (!isAdminRow(checkbox)) {
+                    checkbox.checked = masterCheckbox.checked;
+                    setCheckboxName(checkbox);
+                }
+            });
+        }
+
+        function isAdminRow(checkbox) {
+            const row = checkbox.closest('tr');
+            const levelCell = row.querySelector('td:last-child');
+            return levelCell && levelCell.textContent.trim().toLowerCase() === 'admin';
+        }
+
+        function setCheckboxName(checkbox) {
+            const row = checkbox.closest('tr');
+            const levelCell = row.querySelector('td:last-child');
+            
+            if (levelCell && levelCell.textContent.trim().toLowerCase() === 'admin') {
+                checkbox.setAttribute('name', 'AdminCheckbox');
+            } else {
+                checkbox.setAttribute('name', 'user_checkbox');
+            }
+        }
+
+        function confirmDelete() {
+            return confirm("Are you sure you want to delete the selected user(s)?");
+        }
+
+        function gotoPage() {
+            var pageNumber = document.getElementById('pageNumberInput').value;
+            
+            // Ensure the page number is valid and within bounds
+            if (pageNumber && pageNumber > 0 && pageNumber <= {{ employee_pagination.pages }}) {
+                window.location.href = "{{ url_for('all_employees') }}?page=" + pageNumber;
+            }
+        }
+
+        // Allow pressing enter to submit the page number
+        document.getElementById('pageNumberInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                gotoPage();
+            }
+        });
+    </script>    
+</body>
+</html>
