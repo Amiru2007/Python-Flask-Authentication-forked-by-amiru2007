@@ -453,10 +453,16 @@ def dashboard():
         departed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester != current_user.username).all()
         
         # arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
-        requests_reminder = False
+        gate_pass_requests_reminder = False
+        # arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
+        visitor_requests_reminder = False
 
         if pending_gate_pass:
-            requests_reminder = True
+            gate_pass_requests_reminder = True
+        
+        if pending_visitors:
+            visitor_requests_reminder = True
+            print(visitor_requests_reminder)
 
 
     except Exception as e:
@@ -475,7 +481,8 @@ def dashboard():
                            approved_gate_pass=approved_gate_pass,
                            confirmed_gate_pass=confirmed_gate_pass,
                            departed_gate_pass=departed_gate_pass,
-                           requests_reminder=requests_reminder)
+                           gate_pass_requests_reminder=gate_pass_requests_reminder,
+                           visitor_requests_reminder=visitor_requests_reminder)
 
 # Register route
 @app.route('/register', methods=['GET', 'POST'])
@@ -740,7 +747,7 @@ def logout():
 @login_required
 def all_users():
     page = request.args.get('page', 1, type=int)
-    rows_per_page = request.args.get('rows_per_page', 7, type=int)
+    rows_per_page = request.args.get('rows_per_page', 10, type=int)
     
     if request.method == 'POST':
         if 'delete_selected' in request.form:
@@ -809,7 +816,7 @@ def new_employee():
 @login_required
 def all_employees():
     page = request.args.get('page', 1, type=int)
-    rows_per_page = request.args.get('rows_per_page', 7, type=int)
+    rows_per_page = request.args.get('rows_per_page', 10, type=int)
     
     if request.method == 'POST':
         # if 'delete_selected' in request.form:

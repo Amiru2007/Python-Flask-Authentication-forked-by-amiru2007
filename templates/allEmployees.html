@@ -121,35 +121,34 @@
         });
     
         function toggleCheckboxes(masterCheckbox) {
-            const checkboxes = document.querySelectorAll('tbody input[name="user_checkbox"]');
+            const checkboxes = document.querySelectorAll('tbody input[name="employee_checkbox"]');
             checkboxes.forEach(checkbox => {
-                if (!isAdminRow(checkbox)) {
-                    checkbox.checked = masterCheckbox.checked;
-                    setCheckboxName(checkbox);
-                }
+                checkbox.checked = masterCheckbox.checked;
+                setCheckboxName(checkbox);
             });
         }
 
-        function isAdminRow(checkbox) {
-            const row = checkbox.closest('tr');
-            const levelCell = row.querySelector('td:last-child');
-            return levelCell && levelCell.textContent.trim().toLowerCase() === 'admin';
-        }
+        // function isAdminRow(checkbox) {
+        //     const row = checkbox.closest('tr');
+        //     const levelCell = row.querySelector('td:last-child');
+        //     return levelCell && levelCell.textContent.trim().toLowerCase() === 'admin';
+        // }
 
         function setCheckboxName(checkbox) {
             const row = checkbox.closest('tr');
-            const levelCell = row.querySelector('td:last-child');
-            
-            if (levelCell && levelCell.textContent.trim().toLowerCase() === 'admin') {
-                checkbox.setAttribute('name', 'AdminCheckbox');
-            } else {
-                checkbox.setAttribute('name', 'user_checkbox');
-            }
+            checkbox.setAttribute('name', 'employee_checkbox');
         }
 
         function confirmDelete() {
-            return confirm("Are you sure you want to delete the selected user(s)?");
+            return confirm("Are you sure you want to delete the selected employee(s)?");
         }
+
+        // Allow pressing enter to submit the page number
+        document.getElementById('pageNumberInput').addEventListener('keyup', function(event) {
+            if (event.key === 'Enter') {
+                gotoPage();
+            }
+        });
 
         function gotoPage() {
             var pageNumber = document.getElementById('pageNumberInput').value;
@@ -159,13 +158,6 @@
                 window.location.href = "{{ url_for('all_employees') }}?page=" + pageNumber;
             }
         }
-
-        // Allow pressing enter to submit the page number
-        document.getElementById('pageNumberInput').addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                gotoPage();
-            }
-        });
     </script>    
 </body>
 </html>
