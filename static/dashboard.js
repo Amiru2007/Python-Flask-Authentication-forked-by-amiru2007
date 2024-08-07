@@ -17,6 +17,11 @@ function openShowApprovedList() {
     document.getElementById('pendingApproval').classList.add('visible');
     document.getElementById('contactMe').classList.add('hide');
     document.getElementById('dashboardFooter').classList.add('hide');
+    document.getElementById('gatePassReminder').classList.remove('show');
+    document.getElementById('visitorReminder').classList.remove('show');
+    document.getElementById('gatePassGateReminder').classList.remove('show');
+    document.getElementById('visitorGateReminder').classList.remove('show');
+    document.getElementById('approvedGatePassReminder').classList.remove('show');
 }
 
 function closeShowApprovedList() {
@@ -33,6 +38,9 @@ function openToApproveList() {
     document.getElementById('dashboardFooter').classList.add('hide');
     document.getElementById('gatePassReminder').classList.remove('show');
     document.getElementById('visitorReminder').classList.remove('show');
+    document.getElementById('gatePassGateReminder').classList.remove('show');
+    document.getElementById('visitorGateReminder').classList.remove('show');
+    document.getElementById('approvedGatePassReminder').classList.remove('show');
 }
 
 function closeToApproveList() {
@@ -139,6 +147,9 @@ function openRequestGatePassList() {
     document.getElementById('dashboardFooter').classList.add('hide');
     document.getElementById('gatePassReminder').classList.remove('show');
     document.getElementById('visitorReminder').classList.remove('show');
+    document.getElementById('gatePassGateReminder').classList.remove('show');
+    document.getElementById('visitorGateReminder').classList.remove('show');
+    document.getElementById('approvedGatePassReminder').classList.remove('show');
 }
 
 function closeRequestGatePassList() {
@@ -167,6 +178,11 @@ function openConfirmedGatePassList() {
     document.getElementById('confirmedGatePassList').classList.add('visible');
     document.getElementById('contactMe').classList.add('hide');
     document.getElementById('dashboardFooter').classList.add('hide');
+    document.getElementById('gatePassReminder').classList.remove('show');
+    document.getElementById('visitorReminder').classList.remove('show');
+    document.getElementById('gatePassGateReminder').classList.remove('show');
+    document.getElementById('visitorGateReminder').classList.remove('show');
+    document.getElementById('approvedGatePassReminder').classList.remove('show');
 }
 
 function closeConfirmedGatePassList() {
@@ -191,35 +207,66 @@ function closeDepartedGatePassList() {
 }
 
 window.onload = function() {
-    // Show visitor reminder if it exists
-    if (document.getElementById('visitorReminder')) {
-        setTimeout(function() {
-            document.getElementById('visitorReminder').classList.add('show');
-        }, 2000);
-    }
+    let reminders = [
+        'visitorReminder',
+        'gatePassReminder',
+        'visitorGateReminder',
+        'gatePassGateReminder',
+        'approvedGatePassReminder'
+    ];
 
-    // Show gate pass reminder if it exists
-    if (document.getElementById('gatePassReminder')) {
-        // Check if visitor reminder exists and adjust position accordingly
-        if (document.getElementById('visitorReminder')) {
-            document.getElementById('gatePassReminder').style.bottom = '100px';
-        }
+    let visibleReminders = reminders.filter(id => document.getElementById(id));
+
+    visibleReminders.forEach((id, index) => {
         setTimeout(function() {
-            document.getElementById('gatePassReminder').classList.add('show');
+            document.getElementById(id).classList.add('show');
+            document.getElementById(id).style.bottom = `${32 + index * 65}px`;
         }, 2000);
-    }
+    });
 };
 
+function closeReminder(id) {
+    document.getElementById(id).classList.remove('show');
+    adjustReminderPositions();
+}
+
+function adjustReminderPositions() {
+    let reminders = [
+        'visitorReminder',
+        'gatePassReminder',
+        'visitorGateReminder',
+        'gatePassGateReminder',
+        'approvedGatePassReminder'
+    ];
+
+    let visibleReminders = reminders.filter(id => {
+        let element = document.getElementById(id);
+        return element && element.classList.contains('show');
+    });
+
+    visibleReminders.forEach((id, index) => {
+        document.getElementById(id).style.bottom = `${32 + index * 80}px`;
+    });
+}
+
 function closeVisitorReminder() {
-    document.getElementById('visitorReminder').classList.remove('show');
-    // Adjust gate pass reminder position if visitor reminder is closed
-    if (document.getElementById('gatePassReminder')) {
-        document.getElementById('gatePassReminder').style.bottom = '32px';
-    }
+    closeReminder('visitorReminder');
 }
 
 function closeGatePassReminder() {
-    document.getElementById('gatePassReminder').classList.remove('show');
+    closeReminder('gatePassReminder');
+}
+
+function closeVisitorGateReminder() {
+    closeReminder('visitorGateReminder');
+}
+
+function closeGatePassGateReminder() {
+    closeReminder('gatePassGateReminder');
+}
+
+function closeApprovedGatePassReminder() {
+    closeReminder('approvedGatePassReminder');
 }
 
 function openHelp() {

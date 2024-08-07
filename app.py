@@ -425,6 +425,12 @@ def login():
     #         print(f"User {form.username.data} not found")  # Debug statement
     # return render_template('login.html', form=form)
 
+def has_permission(permission_name):
+    user_permissions = Permissions.query.filter_by(username=current_user.username).first()
+    if user_permissions and getattr(user_permissions, permission_name, False):
+        return True
+    return False
+
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
@@ -437,12 +443,11 @@ def dashboard():
         arrived_visitors = Visitor.query.filter(Visitor.status == 'Arrived').all()
 
         request_list = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester == current_user.username).all()
-        
         # Calculate the date 14 days ago
         fourteen_days_ago = datetime.utcnow() - timedelta(days=14)
-        
         # Query visitors added within the last 14 days
         visitors_list = Visitor.query.filter(Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
+
 
         pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester != current_user.username).all()
         
@@ -452,17 +457,27 @@ def dashboard():
         
         departed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester != current_user.username).all()
         
-        # arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
+        
         gate_pass_requests_reminder = False
-        # arrived_visitor_numbers_list = [number.visitorNo for number in arrived_visitor_numbers]
         visitor_requests_reminder = False
+        gate_pass_gate_reminder = False
+        visitor_gate_reminder = False
+        approved_gate_pass_reminder = False
 
-        if pending_gate_pass:
+        if pending_gate_pass and has_permission('Approve_Gate_Pass'):
             gate_pass_requests_reminder = True
         
-        if pending_visitors:
+        if pending_visitors and has_permission('Approve_Visitor'):
             visitor_requests_reminder = True
-            print(visitor_requests_reminder)
+
+        if approved_gate_pass and has_permission('Confirmed_Gate_Pass'):
+            gate_pass_gate_reminder = True
+        
+        if approved_visitors and has_permission('In_Visitor'):
+            visitor_gate_reminder = True
+
+        if confirmed_gate_pass and has_permission('Out_Gate_Pass'):
+            approved_gate_pass_reminder = True
 
 
     except Exception as e:
@@ -482,7 +497,10 @@ def dashboard():
                            confirmed_gate_pass=confirmed_gate_pass,
                            departed_gate_pass=departed_gate_pass,
                            gate_pass_requests_reminder=gate_pass_requests_reminder,
-                           visitor_requests_reminder=visitor_requests_reminder)
+                           visitor_requests_reminder=visitor_requests_reminder,
+                           gate_pass_gate_reminder=gate_pass_gate_reminder,
+                           visitor_gate_reminder=visitor_gate_reminder,
+                           approved_gate_pass_reminder=approved_gate_pass_reminder)
 
 # Register route
 @app.route('/register', methods=['GET', 'POST'])

@@ -705,6 +705,48 @@
         </div>
     </div>
     {% endif %}
+
+    <!-- Visitor Gate Reminder -->
+    {% if visitor_gate_reminder %}
+    <div class="requests-reminder" id="visitorGateReminder">
+        <div class="text-container">
+            <h3>Reminder</h3>
+            <p class="reminder-message">There are approved visitor requests.</p>
+        </div>
+        <div class="nav-btn-container">
+            <button type="button" id="showAnotherRequestList2" onclick="openShowApprovedList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
+            <button type="button" onclick="closeVisitorGateReminder()"><i class="ph-fill ph-x-circle"></i></button>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Gate Pass Gate Reminder -->
+    {% if gate_pass_gate_reminder %}
+    <div class="requests-reminder" id="gatePassGateReminder">
+        <div class="text-container">
+            <h3>Reminder</h3>
+            <p class="reminder-message">There are confirmed exit permits.</p>
+        </div>
+        <div class="nav-btn-container">
+            <button type="button" id="showAnotherRequestList1" onclick="openConfirmedGatePassList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
+            <button type="button" onclick="closeGatePassGateReminder()"><i class="ph-fill ph-x-circle"></i></button>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Gate Pass Gate Reminder -->
+    {% if approved_gate_pass_reminder %}
+    <div class="requests-reminder" id="approvedGatePassReminder">
+        <div class="text-container">
+            <h3>Reminder</h3>
+            <p class="reminder-message">There are Approved exit permits.</p>
+        </div>
+        <div class="nav-btn-container">
+            <button type="button" id="showAnotherRequestList1" onclick="openConfirmedGatePassList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
+            <button type="button" onclick="closeApprovedGatePassReminder()"><i class="ph-fill ph-x-circle"></i></button>
+        </div>
+    </div>
+    {% endif %}
     <script src="{{ url_for('static', filename='dashboard.js')}}"></script>
 </body>
 </html>
