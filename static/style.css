@@ -51,6 +51,7 @@ body {
     background-attachment: fixed;
 }
 
+body.dashboard,
 body.login,
 body.register,
 body.gatePassPage {
@@ -61,6 +62,7 @@ body.gatePassPage {
     margin: 0 !important;
 }
 
+body.dashboard,
 body.login,
 body.gatePassPage {
     flex-direction: column;
@@ -218,6 +220,7 @@ select#level {
     display: flex;
     align-items: center;
     justify-content: center;
+    margin-top: 200px;
 }
 
 .logo-image {
@@ -228,6 +231,7 @@ select#level {
 
 .toolsAndPreview {
     height: calc(100vh - 300px);
+    min-height: 700px;
     width: 100%;
     display: flex;
     justify-content: center;
