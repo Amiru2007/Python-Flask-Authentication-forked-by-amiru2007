@@ -67,7 +67,7 @@
             <div class="overlay" id="permissionPopupOverlay" onclick="closePermissionsList()"></div>
             <div class="popup" id="permissionList">
                 <div class="popupHeader">
-                    <h3>Approved Visitor List</h3>
+                    <h3>Permissions</h3>
                     <button type="button" onclick="closePermissionsList()" title="close permission list"><i class="ph ph-x"></i></button>
                 </div>
                 <div class="permission-list" id="permissionsList">
@@ -109,6 +109,9 @@
                     </div>
                     <div class="permission">
                         {{ form2.Create_Reports.label }} {{ form2.Create_Reports(class="check") }}
+                    </div>
+                    <div class="permission">
+                        {{ form2.hod.label }} {{ form2.hod(class="check") }}
                     </div>
                 </div>
             </div>

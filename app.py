@@ -53,6 +53,7 @@ class User(db.Model, UserMixin):
     name = db.Column(db.String(80), nullable=False)
     telephoneNo = db.Column(db.String(80), nullable=False)
     level = db.Column(db.String(80), nullable=False)
+    status = db.Column(db.Boolean, default=True)
     permissions = db.relationship('Permissions', backref='user', uselist=False)
 
     def set_password(self, password):
@@ -96,10 +97,11 @@ class Visitor(db.Model):
     committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
 
 class Employee(db.Model):
-    __tablename__ = 'employee_data'
+    __tablename__ = 'Employee'
     id = db.Column(db.Integer, primary_key=True)
     employeeNo = db.Column(db.String(10), nullable=False, unique=True)
     nameWithInitials = db.Column(db.String(120), nullable=False, unique=True)
+    status = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
         return f"<Employee {self.employeeNo}>"
@@ -126,6 +128,8 @@ class Permissions(db.Model):
     Edit_User = db.Column(db.Boolean, default=False)
 
     Create_Reports = db.Column(db.Boolean, default=False)
+
+    hod = db.Column(db.Boolean, default=False)
 
 class GatePass(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -293,6 +297,7 @@ class PermissionsForm(FlaskForm):
     Delete_User = BooleanField('Delete User')
     Edit_User = BooleanField('Edit User')
     Create_Reports = BooleanField('Create Reports')
+    hod = BooleanField('HOD')
 
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
@@ -403,10 +408,13 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(username=form.username.data).first()
         if user and user.check_password(form.password.data):
-            login_user(user)
-            return redirect(url_for('dashboard'))
+            if user.status:  # Check if user status is active
+                login_user(user)
+                return redirect(url_for('dashboard'))
+            else:
+                flash('Your account is not activated. Please contact support or check your email for activation instructions.', 'warning')
         else:
-            flash('Invalid username or password')
+            flash('Invalid username or password', 'danger')
     return render_template('login.html', form=form)
     # form = LoginForm()
     # if form.validate_on_submit():
@@ -508,7 +516,7 @@ def dashboard():
 def register():
     form = RegisterForm()
     form2 = PermissionsForm()
-    print(form.permissions)  # Debug print to check if the permissions form is initialized
+    
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
 
@@ -524,7 +532,8 @@ def register():
             email=form.email.data,
             name=form.name.data,
             telephoneNo=form.telephoneNo.data,
-            level=form.level.data
+            level=form.level.data,
+            status=1
         )
 
         # Create a new Permissions entry
@@ -544,7 +553,8 @@ def register():
             Create_User=1 if form2.Create_User.data else 0,
             Delete_User=1 if form2.Delete_User.data else 0,
             Edit_User=1 if form2.Edit_User.data else 0,
-            Create_Reports=1 if form2.Create_Reports.data else 0
+            Create_Reports=1 if form2.Create_Reports.data else 0,
+            hod=1 if form2.hod.data else 0
         )
 
         with app.app_context():
@@ -766,27 +776,56 @@ def logout():
 def all_users():
     page = request.args.get('page', 1, type=int)
     rows_per_page = request.args.get('rows_per_page', 10, type=int)
-    
+    status = request.args.get('status', 'active')  # Get status from query parameters
+
     if request.method == 'POST':
-        if 'delete_selected' in request.form:
+        # Handle deactivating selected users
+        if 'deactivate_selected' in request.form:
             selected_ids = request.form.getlist('user_checkbox')
             selected_ids = [user_id for user_id in selected_ids if int(user_id) != current_user.id]
-            User.query.filter(User.id.in_(selected_ids)).delete(synchronize_session=False)
-            db.session.commit()
-            return redirect(url_for('all_users'))
-        
+            if selected_ids:
+                User.query.filter(User.id.in_(selected_ids)).update({'status': False}, synchronize_session=False)
+                db.session.commit()
+                flash(f'{len(selected_ids)} users marked as inactive.', 'success')
+            else:
+                flash('No users selected.', 'warning')
+
+        # Handle activating selected users
+        if 'activate_selected' in request.form:
+            selected_ids = request.form.getlist('user_checkbox')
+            selected_ids = [user_id for user_id in selected_ids if int(user_id) != current_user.id]
+            if selected_ids:
+                User.query.filter(User.id.in_(selected_ids)).update({'status': True}, synchronize_session=False)
+                db.session.commit()
+                flash(f'{len(selected_ids)} users marked as active.', 'success')
+            else:
+                flash('No users selected.', 'warning')
+
         search_query = request.form.get('search_query')
         if search_query:
             users_pagination = User.query.filter(
                 User.username.contains(search_query),
+                User.status == (status == 'active'),
                 User.id != current_user.id
             ).paginate(page=page, per_page=rows_per_page)
         else:
-            users_pagination = User.query.filter(User.id != current_user.id).paginate(page=page, per_page=rows_per_page)
+            users_pagination = User.query.filter(
+                User.status == (status == 'active'),
+                User.id != current_user.id
+            ).paginate(page=page, per_page=rows_per_page)
     else:
-        users_pagination = User.query.filter(User.id != current_user.id).paginate(page=page, per_page=rows_per_page)
-    
-    return render_template('allUsers.html', users_pagination=users_pagination)
+        users_pagination = User.query.filter(
+            User.status == (status == 'active'),
+            User.id != current_user.id
+        ).paginate(page=page, per_page=rows_per_page)
+
+    # Determine button text based on current status
+    toggle_button_text = 'Show Inactive' if status == 'active' else 'Show Active'
+
+    return render_template('allUsers.html',
+                           users_pagination=users_pagination,
+                           current_status=status,
+                           toggle_button_text=toggle_button_text)
 
 def get_filtered_users(search_query):
     # Assuming you have a method to filter users based on a search query
@@ -797,17 +836,6 @@ def get_filtered_users(search_query):
         (User.telephoneNo.like(f'%{search_query}%')) |
         (User.level.like(f'%{search_query}%'))
     ).all()
-
-@app.route('/get_user_by_username/<username>', methods=['GET'])
-@login_required
-def get_user_by_username(username):
-    user = User.query.filter_by(username=username).first()
-
-    if user:
-        return render_template('editUser.html', user=user)
-    else:
-        return "User not found", 404    
-    
 # Register route
 @app.route('/new_employee', methods=['GET', 'POST'])
 # @login_required
@@ -817,7 +845,8 @@ def new_employee():
     if form.validate_on_submit():
         new_employee = Employee(
             employeeNo=form.employeeNo.data,
-            nameWithInitials=form.nameWithInitials.data
+            nameWithInitials=form.nameWithInitials.data,
+            status=1
         )
 
         with app.app_context():
@@ -835,27 +864,63 @@ def new_employee():
 def all_employees():
     page = request.args.get('page', 1, type=int)
     rows_per_page = request.args.get('rows_per_page', 10, type=int)
-    
+    status = request.args.get('status', 'active')  # Get status from query parameters
+
     if request.method == 'POST':
-        # if 'delete_selected' in request.form:
-        #     selected_ids = request.form.getlist('user_checkbox')
-        #     selected_ids = [user_id for user_id in selected_ids if int(user_id) != current_user.id]
-        #     User.query.filter(User.id.in_(selected_ids)).delete(synchronize_session=False)
-        #     db.session.commit()
-        #     return redirect(url_for('all_users'))
-        
-        search_query = request.form.get('search_query')
-        if search_query:
+        if 'deactivate_selected' in request.form:
+            employee_ids = request.form.getlist('employee_checkbox')
+            if employee_ids:
+                employees = Employee.query.filter(Employee.id.in_(employee_ids)).all()
+                for employee in employees:
+                    employee.status = False
+                db.session.commit()
+                flash(f'{len(employees)} employees marked as inactive.', 'success')
+            else:
+                flash('No employees selected.', 'warning')
+
+        if 'activate_selected' in request.form:
+            employee_ids = request.form.getlist('employee_checkbox')
+            if employee_ids:
+                employees = Employee.query.filter(Employee.id.in_(employee_ids)).all()
+                for employee in employees:
+                    employee.status = True
+                db.session.commit()
+                flash(f'{len(employees)} employees marked as active.', 'success')
+            else:
+                flash('No employees selected.', 'warning')
+
+    search_query = request.form.get('search_query')
+    if search_query:
+        if status == 'active':
             employee_pagination = Employee.query.filter(
                 Employee.nameWithInitials.contains(search_query),
+                Employee.status == True,
                 Employee.id != current_user.id
             ).paginate(page=page, per_page=rows_per_page)
         else:
-            employee_pagination = Employee.query.filter(Employee.id != current_user.id).paginate(page=page, per_page=rows_per_page)
+            employee_pagination = Employee.query.filter(
+                Employee.nameWithInitials.contains(search_query),
+                Employee.status == False,
+                Employee.id != current_user.id
+            ).paginate(page=page, per_page=rows_per_page)
     else:
-        employee_pagination = Employee.query.filter(Employee.id != current_user.id).paginate(page=page, per_page=rows_per_page)
-    
-    return render_template('allEmployees.html', employee_pagination=employee_pagination)
+        if status == 'active':
+            employee_pagination = Employee.query.filter(
+                Employee.status == True,
+                Employee.id != current_user.id
+            ).paginate(page=page, per_page=rows_per_page)
+        else:
+            employee_pagination = Employee.query.filter(
+                Employee.status == False,
+                Employee.id != current_user.id
+            ).paginate(page=page, per_page=rows_per_page)
+
+    toggle_button_text = 'Show Inactive' if status == 'active' else 'Show Active'
+
+    return render_template('allEmployees.html', 
+                           employee_pagination=employee_pagination,
+                           current_status=status,
+                           toggle_button_text=toggle_button_text)
 
 def get_filtered_users(search_query):
     # Assuming you have a method to filter users based on a search query
@@ -864,20 +929,42 @@ def get_filtered_users(search_query):
         (Employee.employeeNo.like(f'%{search_query}%')) |
         (Employee.nameWithInitials.like(f'%{search_query}%'))
     ).all()
+    
+@app.route('/update_employee', methods=['POST'])
+@login_required
+def update_employee():
+    if request.method == 'POST':
+        employeeNo = request.form.get('employeeNo')
+        nameWithInitials = request.form.get('nameWithInitials')
 
-@app.route('/get_employee_by_number/<employeeNo>', methods=['GET'])
+        employee = Employee.query.filter_by(employeeNo=employeeNo).first()
+
+        if employee:
+            employee.employeeNo = employeeNo
+            employee.nameWithInitials = nameWithInitials
+
+            db.session.commit()
+
+            return redirect(url_for('all_employees'))
+        else:
+            return "Employee not found", 404
+
+    return "Invalid request", 400
+
+@app.route('/edit/employee/<employeeNo>', methods=['GET'])
 @login_required
 def get_employee_by_number(employeeNo):
     employee = Employee.query.filter_by(employeeNo=employeeNo).first()
 
     if employee:
-        return render_template('editUser.html', employee=employee)
+        return render_template('editEmployee.html', employee=employee)
     else:
         return "User not found", 404
 
 @app.route('/update_user', methods=['POST'])
 @login_required
 def update_user():
+
     if request.method == 'POST':
         # Get the form data
         username = request.form.get('username')
@@ -901,8 +988,31 @@ def update_user():
             user.name = name
             user.telephoneNo = telephoneNo
             user.level = level
+            
+            # Handle permissions
+            permissions = Permissions.query.filter_by(username=username).first()
+            if not permissions:
+                permissions = Permissions(username=username)
 
-            # Commit the changes to the database
+            permissions.Create_Visitor = 1 if request.form.get('Create_Visitor') else 0
+            permissions.Edit_Visitor = 1 if request.form.get('Edit_Visitor') else 0
+            permissions.Approve_Visitor = 1 if request.form.get('Approve_Visitor') else 0
+            permissions.In_Visitor = 1 if request.form.get('In_Visitor') else 0
+            permissions.Out_Visitor = 1 if request.form.get('Out_Visitor') else 0
+            permissions.Create_Gate_Pass = 1 if request.form.get('Create_Gate_Pass') else 0
+            permissions.Edit_Gate_Pass = 1 if request.form.get('Edit_Gate_Pass') else 0
+            permissions.Approve_Gate_Pass = 1 if request.form.get('Approve_Gate_Pass') else 0
+            permissions.Confirmed_Gate_Pass = 1 if request.form.get('Confirmed_Gate_Pass') else 0
+            permissions.In_Gate_Pass = 1 if request.form.get('In_Gate_Pass') else 0
+            permissions.Out_Gate_Pass = 1 if request.form.get('Out_Gate_Pass') else 0
+            permissions.Create_User = 1 if request.form.get('Create_User') else 0
+            permissions.Delete_User = 1 if request.form.get('Delete_User') else 0
+            permissions.Edit_User = 1 if request.form.get('Edit_User') else 0
+            permissions.Create_Reports = 1 if request.form.get('Create_Reports') else 0
+            permissions.hod = 1 if request.form.get('hod') else 0
+            
+            # Add or update permissions entry
+            db.session.add(permissions)
             db.session.commit()
 
             # Redirect to a success page or any other appropriate action
@@ -912,6 +1022,20 @@ def update_user():
 
     return "Invalid request", 400
 
+
+@app.route('/edit/user/<username>', methods=['GET'])
+@login_required
+def get_user_by_username(username):
+    user = User.query.filter_by(username=username).first()
+    permissions = Permissions.query.filter_by(username=username).first()
+
+    if user:
+        # Initialize the form and set the initial data based on the current permissions
+        form2 = PermissionsForm(obj=permissions)
+        return render_template('editUser.html', user=user, form2=form2)
+    else:
+        return "User not found", 404
+    
 @app.route('/export_excel/user', methods=['POST'])
 def export_excel_user():
     # Fetch data from the database

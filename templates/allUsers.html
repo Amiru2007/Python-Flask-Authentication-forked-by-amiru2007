@@ -26,9 +26,18 @@
                         <input type="text" id="searchInput" name="search_query" placeholder="Search..." value="{{ search_query }}">
                         <button type="submit"><i class="ph-bold ph-magnifying-glass"></i></button>
                     </div>
-                    <button type="submit" class="deleteUser" name="delete_selected" onclick="return confirmDelete()">
-                        <span><i class="ph-bold ph-trash"></i></span> Delete User
+                    <button type="button" id="toggleStatusButton" onclick="toggleStatus()">
+                        <span id="toggleButtonText">{{ toggle_button_text }}</span>
                     </button>
+                    {% if current_status == 'active' %}
+                    <button type="submit" name="deactivate_selected" class="deactivate" onclick="return confirm('Are you sure you want to deactivate the selected users?')">
+                        <span><i class="ph-bold ph-trash"></i> Deactivate</span>
+                    </button>
+                    {% elif current_status == 'inactive' %}
+                    <button type="submit" name="activate_selected" class="activate" onclick="return confirm('Are you sure you want to activate the selected users?')">
+                        <span><i class="ph-bold ph-check"></i> Activate</span>
+                    </button>
+                    {% endif %}
                     <a href="{{ url_for('register') }}">
                         <button type="button" class="createUser">
                             <span><i class="ph-bold ph-plus-circle"></i> Create</span>
@@ -41,14 +50,14 @@
                     <table>
                         <thead class="tableHeadRow"> 
                             <tr>
-                                <th><input type="checkbox" class="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th> <!-- Add an empty header for checkboxes -->
+                                <th><input type="checkbox" class="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th>
                                 <th style="text-align: center;">#</th>
-                                <!-- <th>ID</th> -->
                                 <th>Username</th>
                                 <th>Email</th>
                                 <th>Name</th>
                                 <th>Telephone No</th>
                                 <th>Level</th>
+                                <th>Status</th>
                             </tr>
                         </thead> 
                         <tbody>
@@ -60,13 +69,13 @@
                                 <td style="text-align: center;">
                                     {% set row_number = (users_pagination.page - 1) * users_pagination.per_page + loop.index %}
                                     {{ row_number }}
-                                </td>  <!-- Display the row number -->
-                                <!-- <td>{{ user.id }}</td> -->
+                                </td>
                                 <td>{{ user.username }}</td>
                                 <td>{{ user.email }}</td>
                                 <td>{{ user.name }}</td>
                                 <td>{{ user.telephoneNo }}</td>
                                 <td>{{ user.level }}</td>
+                                <td>{{ 'Active' if user.status else 'Inactive' }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
@@ -76,14 +85,14 @@
         </form>
         <div class="pagination">
             {% if users_pagination.has_prev %}
-                <a href="{{ url_for('all_users', page=users_pagination.prev_num) }}" class="pagination-btn pagination-controls"><i class="ph ph-arrow-left"></i></a>
+                <a href="{{ url_for('all_users', page=users_pagination.prev_num, status=current_status) }}" class="pagination-btn pagination-controls"><i class="ph ph-arrow-left"></i></a>
             {% endif %}
             {% for page_num in users_pagination.iter_pages() %}
                 {% if page_num %}
                     {% if page_num == users_pagination.page %}
                         <p class="pagination-btn pagination-current">{{ page_num }}</p>
                     {% else %}
-                        <a href="{{ url_for('all_users', page=page_num) }}" class="pagination-btn">{{ page_num }}</a>
+                        <a href="{{ url_for('all_users', page=page_num, status=current_status) }}" class="pagination-btn">{{ page_num }}</a>
                     {% endif %}
                 {% else %}
                     <span>...</span>
@@ -94,85 +103,45 @@
                 <button type="button" onclick="gotoPage()"><i class="ph ph-arrow-elbow-down-left"></i></button>
             </div>
             {% if users_pagination.has_next %}
-                <a href="{{ url_for('all_users', page=users_pagination.next_num) }}" class="pagination-btn pagination-controls"><i class="ph ph-arrow-right"></i></a>
+                <a href="{{ url_for('all_users', page=users_pagination.next_num, status=current_status) }}" class="pagination-btn pagination-controls"><i class="ph ph-arrow-right"></i></a>
             {% endif %}
         </div>
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            document.querySelector('form').addEventListener('submit', function (event) {
-                event.preventDefault();
-                fetch(this.action, {
-                    method: this.method,
-                    body: new FormData(this),
-                })
-                .then(response => response.text())
-                .then(html => {
-                    document.querySelector('.user-list').innerHTML = html;
-                });
-            });
-    
-            const searchInput = document.getElementById('searchInput');
-            const tableCells = document.querySelectorAll('.user-list td');
-    
-            searchInput.addEventListener('input', function () {
-                const searchText = this.value.trim().toLowerCase();
-    
-                tableCells.forEach(cell => {
-                    const textContent = cell.textContent.trim().toLowerCase();
-                    const highlightedText = textContent.replace(new RegExp(searchText, 'gi'), match => `<span class="highlight">${match}</span>`);
-                    cell.innerHTML = highlightedText;
-                });
-            });
+            const currentStatus = "{{ current_status }}";
+            const toggleButtonText = document.getElementById('toggleButtonText');
+            
+            // Set initial button text based on the current status
+            toggleButtonText.textContent = currentStatus === 'active' ? 'Show Inactive' : 'Show Active';
         });
-    
+
         function toggleCheckboxes(masterCheckbox) {
             const checkboxes = document.querySelectorAll('tbody input[name="user_checkbox"]');
             checkboxes.forEach(checkbox => {
-                if (!isAdminRow(checkbox)) {
-                    checkbox.checked = masterCheckbox.checked;
-                    setCheckboxName(checkbox);
-                }
+                checkbox.checked = masterCheckbox.checked;
             });
         }
 
-        function isAdminRow(checkbox) {
-            const row = checkbox.closest('tr');
-            const levelCell = row.querySelector('td:last-child');
-            return levelCell && levelCell.textContent.trim().toLowerCase() === 'admin';
+        function toggleStatus() {
+            const currentStatus = "{{ current_status }}";
+            const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+            window.location.href = "{{ url_for('all_users') }}?status=" + newStatus;
         }
 
-        function setCheckboxName(checkbox) {
-            const row = checkbox.closest('tr');
-            const levelCell = row.querySelector('td:last-child');
-            
-            if (levelCell && levelCell.textContent.trim().toLowerCase() === 'admin') {
-                checkbox.setAttribute('name', 'AdminCheckbox');
-            } else {
-                checkbox.setAttribute('name', 'user_checkbox');
-            }
-        }
-
-        function confirmDelete() {
-            return confirm("Are you sure you want to delete the selected users?");
-        }
-
-        function gotoPage() {
-            var pageNumber = document.getElementById('pageNumberInput').value;
-            
-            // Ensure the page number is valid and within bounds
-            if (pageNumber && pageNumber > 0 && pageNumber <= {{ users_pagination.pages }}) {
-                window.location.href = "{{ url_for('all_users') }}?page=" + pageNumber;
-            }
-        }
-
-        // Allow pressing enter to submit the page number
         document.getElementById('pageNumberInput').addEventListener('keyup', function(event) {
             if (event.key === 'Enter') {
                 gotoPage();
             }
         });
+
+        function gotoPage() {
+            var pageNumber = document.getElementById('pageNumberInput').value;
+            if (pageNumber && pageNumber > 0 && pageNumber <= {{ users_pagination.pages }}) {
+                window.location.href = "{{ url_for('all_users') }}?page=" + pageNumber + "&status={{ current_status }}";
+            }
+        }
     </script>    
 </body>
 </html>
