@@ -110,38 +110,97 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const currentStatus = "{{ current_status }}";
-            const toggleButtonText = document.getElementById('toggleButtonText');
-            
-            // Set initial button text based on the current status
-            toggleButtonText.textContent = currentStatus === 'active' ? 'Show Inactive' : 'Show Active';
-        });
+            function initializeEventListeners() {
+                // Handle toggle status button
+                const currentStatus = "{{ current_status }}";
+                const toggleButtonText = document.getElementById('toggleButtonText');
+                toggleButtonText.textContent = currentStatus === 'active' ? 'Show Inactive' : 'Show Active';
 
-        function toggleCheckboxes(masterCheckbox) {
-            const checkboxes = document.querySelectorAll('tbody input[name="user_checkbox"]');
-            checkboxes.forEach(checkbox => {
-                checkbox.checked = masterCheckbox.checked;
+                document.getElementById('toggleStatusButton').addEventListener('click', toggleStatus);
+
+                // Handle checkboxes
+                const masterCheckbox = document.getElementById('masterCheckbox');
+                if (masterCheckbox) {
+                    masterCheckbox.addEventListener('click', function() {
+                        toggleCheckboxes(masterCheckbox);
+                    });
+                }
+
+                // Specific event listener for the deactivate/activate button
+                document.querySelectorAll('button[name="deactivate_selected"], button[name="activate_selected"]').forEach(button => {
+                    button.addEventListener('click', function(event) {
+                        if (!confirm(this.innerText.includes('Deactivate') 
+                            ? 'Are you sure you want to deactivate the selected users?' 
+                            : 'Are you sure you want to activate the selected users?')) {
+                            event.preventDefault();
+                        }
+                    });
+                });
+            }
+
+            // Initial call to set up event listeners
+            initializeEventListeners();
+
+            // Handle form submission for search only
+            document.querySelector('form').addEventListener('submit', function (event) {
+                const isSearchButton = event.submitter && event.submitter.matches('[type="submit"]:not([name])');
+                if (isSearchButton) {
+                    event.preventDefault();
+                    fetch(this.action, {
+                        method: this.method,
+                        body: new FormData(this),
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        document.querySelector('.user-list').innerHTML = html;
+                        // Reinitialize event listeners after updating content
+                        initializeEventListeners();
+                    });
+                }
             });
-        }
 
-        function toggleStatus() {
-            const currentStatus = "{{ current_status }}";
-            const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
-            window.location.href = "{{ url_for('all_users') }}?status=" + newStatus;
-        }
+            // Handle search input
+            const searchInput = document.getElementById('searchInput');
+            searchInput.addEventListener('input', function () {
+                const searchText = this.value.trim().toLowerCase();
+                const tableCells = document.querySelectorAll('.user-list td');
+                tableCells.forEach(cell => {
+                    const textContent = cell.textContent.trim().toLowerCase();
+                    const highlightedText = textContent.replace(new RegExp(searchText, 'gi'), match => `<span class="highlight">${match}</span>`);
+                    cell.innerHTML = highlightedText;
+                });
+            });
 
-        document.getElementById('pageNumberInput').addEventListener('keyup', function(event) {
-            if (event.key === 'Enter') {
-                gotoPage();
+            // Function to toggle status
+            function toggleStatus() {
+                const currentStatus = "{{ current_status }}";
+                const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+                window.location.href = "{{ url_for('all_users') }}?status=" + newStatus;
+            }
+
+            // Function to toggle all checkboxes
+            function toggleCheckboxes(masterCheckbox) {
+                const checkboxes = document.querySelectorAll('tbody input[name="user_checkbox"]');
+                checkboxes.forEach(checkbox => {
+                    checkbox.checked = masterCheckbox.checked;
+                });
+            }
+
+            // Handle page navigation via input
+            document.getElementById('pageNumberInput').addEventListener('keyup', function(event) {
+                if (event.key === 'Enter') {
+                    gotoPage();
+                }
+            });
+
+            function gotoPage() {
+                var pageNumber = document.getElementById('pageNumberInput').value;
+                if (pageNumber && pageNumber > 0 && pageNumber <= {{ users_pagination.pages }}) {
+                    window.location.href = "{{ url_for('all_users') }}?page=" + pageNumber + "&status={{ current_status }}";
+                }
             }
         });
 
-        function gotoPage() {
-            var pageNumber = document.getElementById('pageNumberInput').value;
-            if (pageNumber && pageNumber > 0 && pageNumber <= {{ users_pagination.pages }}) {
-                window.location.href = "{{ url_for('all_users') }}?page=" + pageNumber + "&status={{ current_status }}";
-            }
-        }
     </script>    
 </body>
 </html>

@@ -1819,7 +1819,7 @@ span.secondary-icon i {
 }
 
 .requests-reminder {
-    width: 320px;
+    width: 380px;
     height: auto;
     background: var(--popup-bg);
     position: fixed;
@@ -1847,12 +1847,12 @@ span.secondary-icon i {
 }
 
 .requests-reminder h3 {
-    font-size: 16px;
+    font-size: 17px;
     color: var(--alt-text);
 }
 
 .requests-reminder p {
-    font-size: 12px;
+    font-size: 16px;
     color: var(--sub-text);
 }
 

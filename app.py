@@ -456,12 +456,18 @@ def dashboard():
         # Query visitors added within the last 14 days
         visitors_list = Visitor.query.filter(Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
 
-
-        pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester != current_user.username).all()
-        
-        approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved', GatePass.gatePassRequester != current_user.username).all()
-        
-        confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed', GatePass.gatePassRequester != current_user.username).all()
+        if has_permission('hod'):
+            pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending').all()
+            
+            approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved').all()
+            
+            confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed').all()
+        else:
+            pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester != current_user.username).all()
+            
+            approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved', GatePass.gatePassRequester != current_user.username).all()
+            
+            confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed', GatePass.gatePassRequester != current_user.username).all()
         
         departed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester != current_user.username).all()
         
@@ -836,6 +842,7 @@ def get_filtered_users(search_query):
         (User.telephoneNo.like(f'%{search_query}%')) |
         (User.level.like(f'%{search_query}%'))
     ).all()
+
 # Register route
 @app.route('/new_employee', methods=['GET', 'POST'])
 # @login_required
@@ -922,10 +929,9 @@ def all_employees():
                            current_status=status,
                            toggle_button_text=toggle_button_text)
 
-def get_filtered_users(search_query):
+def get_filtered_employees(search_query):
     # Assuming you have a method to filter users based on a search query
     return Employee.query.filter(
-        (Employee.id.like(f'%{search_query}%')) |
         (Employee.employeeNo.like(f'%{search_query}%')) |
         (Employee.nameWithInitials.like(f'%{search_query}%'))
     ).all()
