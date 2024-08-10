@@ -10,7 +10,7 @@
     <title>All Users</title>
 </head>
 <body bgcolor="#f3f3f3">
-    <div class="user-list">
+    <div class="user-list" aria-label="All Users">
         <form action="{{ url_for('all_users') }}" method="post">
             <div class="mainTableHeader">
                 <div class="leftControls">
@@ -19,7 +19,11 @@
                             <span><i class="ph-bold ph-arrow-left"></i></span>
                         </button>
                     </a>
-                    <h1>All Users</h1>
+                    {% if current_status == 'active' %}
+                        <h1>Active Users</h1>
+                    {% elif current_status == 'inactive' %}
+                        <h1>Inactive Users</h1>
+                    {% endif %}
                 </div>
                 <div class="operatingTools">
                     <div class="searchContainer">
@@ -47,10 +51,10 @@
             </div>
             <div class="outerContainer">
                 <div class="table-container">
-                    <table>
+                    <table cellspacing="0" cellpadding="0">
                         <thead class="tableHeadRow"> 
                             <tr>
-                                <th><input type="checkbox" class="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th>
+                                <th style="text-align: center;"><input type="checkbox" class="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th>
                                 <th style="text-align: center;">#</th>
                                 <th>Username</th>
                                 <th>Email</th>
@@ -63,7 +67,7 @@
                         <tbody>
                             {% for user in users_pagination.items %}
                             <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_user_by_username', username=user.username) }}';">
-                                <td>
+                                <td style="text-align: center;">
                                     <input type="checkbox" class="checkbox" name="user_checkbox" value="{{ user.id }}" {% if user.id == current_user.id %} disabled {% endif %}>
                                 </td>
                                 <td style="text-align: center;">

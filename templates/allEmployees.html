@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="../static/style.css"> -->
     <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
     <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -10,7 +11,7 @@
     <title>All Employees</title>
 </head>
 <body>
-    <div class="user-list">
+    <div class="user-list" aria-label="All Employees">
         <form action="{{ url_for('all_employees') }}" method="post">
             <div class="mainTableHeader">
                 <div class="leftControls">
@@ -51,10 +52,10 @@
             </div>
             <div class="outerContainer">
                 <div class="table-container">
-                    <table>
+                    <table cellspacing="0" cellpadding="0">
                         <thead class="tableHeadRow"> 
                             <tr>
-                                <th><input type="checkbox" class="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th>
+                                <th style="text-align: center;" class="checkboxcolumn"><input type="checkbox" class="checkbox" id="masterCheckbox" onclick="toggleCheckboxes(this)"></th>
                                 <th style="text-align: center;">#</th>
                                 <th>Employee Number</th>
                                 <th>Name with initials</th>
@@ -64,7 +65,7 @@
                         <tbody>
                             {% for employee in employee_pagination.items %}
                             <tr style="cursor: pointer;" onclick="if(event.target.tagName !== 'INPUT') window.location='{{ url_for('get_employee_by_number', employeeNo=employee.employeeNo) }}';">
-                                <td>
+                                <td style="text-align: center;">
                                     <input type="checkbox" class="checkbox" name="employee_checkbox" value="{{ employee.id }}" {% if employee.id == current_user.id %} disabled {% endif %}>
                                 </td>
                                 <td style="text-align: center;">
