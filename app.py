@@ -1377,9 +1377,8 @@ def gate_pass():
         employee_status = 'Pending'
         gatePassRequester = current_user.username
         gatePassId = gate_pass_code
+        print(gatePassId)
         # Print form data
-        print(f"Employee ID: {employee_no}")
-        print(f"Employee Name: {employee_name}")
         # request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
         if not employee_no:
@@ -1469,9 +1468,9 @@ def generate_gatePassId():
 def approve_gatepass():
     gatePassId = request.form.get('gatePassId')
     employeeFormStatus = request.form.get('employeeFormStatus')
-    employee = GatePass.query.filter_by(gatePassId=gatePassId).first()
+    gatePassForm = GatePass.query.filter_by(gatePassId=gatePassId).first()
 
-    if employee:
+    if gatePassForm:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
         print(clicked_button_value)
@@ -1479,43 +1478,43 @@ def approve_gatepass():
 
         # Your logic based on the clicked button value
         if clicked_button_value == 'Approve':
-            employee.employeeFormStatus = 'Approved'
-            employee.employeeOfficer = current_user.username
+            gatePassForm.employeeFormStatus = 'Approved'
+            gatePassForm.employeeOfficer = current_user.username
 
             db.session.commit()
             return redirect(url_for('dashboard'))
             
         elif clicked_button_value == 'Reject':
-            employee.employeeFormStatus = 'Rejected'
-            employee.employeeOfficer = current_user.username
+            gatePassForm.employeeFormStatus = 'Rejected'
+            gatePassForm.employeeOfficer = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
             
         elif clicked_button_value == 'Confirm':
-            employee.employeeFormStatus = 'Confirmed'
-            employee.employeeConfirmedBy = current_user.username
+            gatePassForm.employeeFormStatus = 'Confirmed'
+            gatePassForm.employeeConfirmedBy = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
             
         elif clicked_button_value == 'Reject-confirm':
-            employee.employeeFormStatus = 'Confirm Rejected'
-            employee.employeeConfirmedBy = current_user.username
+            gatePassForm.employeeFormStatus = 'Confirm Rejected'
+            gatePassForm.employeeConfirmedBy = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
             
         elif clicked_button_value == 'Out':
-            employee.employeeFormStatus = 'Out'
-            employee.employeeOutMark = current_user.username
+            gatePassForm.employeeFormStatus = 'Out'
+            gatePassForm.employeeOutMark = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
             
         elif clicked_button_value == 'In':
-            employee.employeeFormStatus = 'In'
-            employee.employeeInMark = current_user.username
+            gatePassForm.employeeFormStatus = 'In'
+            gatePassForm.employeeInMark = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
             
-        return render_template('pendingGatePass.html', employee=employee, status=status)
+        return render_template('pendingGatePass.html', gatePassForm=gatePassForm, status=status)
         
     else:
         return jsonify({'error': 'Visitor not found'}), 404

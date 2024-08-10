@@ -455,7 +455,7 @@
                 {% for employee in approved_gate_pass %}
                     <li>
                         <form method="post" action="{{ url_for('approve_gatepass') }}">
-                            <input type="hidden" name="employeeNo" value="{{ employee.employeeNo }}">
+                            <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
                             <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
                             <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
                                 <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
@@ -485,7 +485,7 @@
                 {% for employee in confirmed_gate_pass %}
                     <li>
                         <form method="post" action="{{ url_for('approve_gatepass') }}">
-                            <input type="hidden" name="employeeNo" value="{{ employee.employeeNo }}">
+                            <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
                             <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
                             <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
                                 <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
@@ -515,7 +515,7 @@
                 {% for employee in departed_gate_pass %}
                     <li>
                         <form method="post" action="{{ url_for('approve_gatepass') }}">
-                            <input type="hidden" name="employeeNo" value="{{ employee.employeeNo }}">
+                            <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
                             <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
                             <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
                                 <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
