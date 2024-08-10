@@ -479,7 +479,7 @@ select#level {
 
 #reportButtons {
     width: 250px;
-    height: 225px;
+    height: auto;
 }
 
 .popup .excelExportBtns {
