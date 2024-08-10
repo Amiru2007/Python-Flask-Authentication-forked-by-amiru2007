@@ -1517,7 +1517,7 @@ def approve_gatepass():
         return render_template('pendingGatePass.html', gatePassForm=gatePassForm, status=status)
         
     else:
-        return jsonify({'error': 'Visitor not found'}), 404
+        return jsonify({'error': 'Employee not found'}), 404
     
 if __name__ == "__main__":
     app.run("192.168.1.4", port=5000,  debug=True)
