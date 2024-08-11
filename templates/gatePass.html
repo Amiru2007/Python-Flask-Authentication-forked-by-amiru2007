@@ -48,10 +48,9 @@
             <div class="bottom-employee-datails">
                 <div class="name-id gate-pass-detail-block">
                     <div class="employee-id gate-pass-input-container">
-                        <label for="employeeNo">Emplyee ID</label>
+                        <label for="employeeNo">Employee ID</label>
                         <div class="dropdown">
-                            <input type="text" id="employeeNo" name="employeeNo" title="Employee ID">
-                            <!-- <input type="text" id="remarks" name="remarks"> -->
+                            <input type="text" id="employeeNo" name="employeeNo" title="Employee ID" onkeyup="filterDropdown()" placeholder="Search Employee ID">
                             <div class="dropdown-content" id="dropdownOptions">
                                 {% for employee in employee_list %}
                                     <input type="hidden" id="employeeName_{{ employee.employeeNo }}" value="{{ employee.nameWithInitials }}">
@@ -143,6 +142,7 @@
             const inputID = document.getElementById("employeeNo");
             const inputName = document.getElementById("employeeName");
             const dropdownContent = document.querySelector(".dropdown-content");
+            const options = dropdownContent.querySelectorAll(".option");
 
             dropdown.addEventListener("click", function() {
                 dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
@@ -161,6 +161,23 @@
                     dropdownContent.style.display = "none";
                 }
             });
+
+            // Function to filter dropdown options based on input
+            window.filterDropdown = function() {
+                const filter = inputID.value.toUpperCase();
+                let count = 0;
+                options.forEach(option => {
+                    const textValue = option.textContent || option.innerText;
+                    if (textValue.toUpperCase().indexOf(filter) > -1) {
+                        option.style.display = "";
+                        count++;
+                    } else {
+                        option.style.display = "none";
+                    }
+                });
+
+                dropdownContent.style.display = count > 0 ? "block" : "none";
+            }
         });
     </script>
 </body>

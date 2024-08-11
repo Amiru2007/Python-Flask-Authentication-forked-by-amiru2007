@@ -94,11 +94,11 @@
                 <div class="officer-confirmed-by gate-pass-detail-block">
                     <div class="employee-officer gate-pass-input-container">
                         <label for="employeeOfficer">Authorized officer</label>
-                        <input type="text" id="employeeOfficer" name="employeeOfficer" title="Authorized officer" readonly>
+                        <input type="text" id="employeeOfficer" name="employeeOfficer" value="{{ gatePassForm.employeeOfficer }}" title="Authorized officer" readonly>
                     </div>
                     <div class="employee-confirmed-by gate-pass-input-container">
                         <label for="employee-confirmed-by">Confirmed By</label>
-                        <input type="text" id="employeeConfirmedBy" name="employee-confirmed-by" title="Confirmed by" readonly>
+                        <input type="text" id="employeeConfirmedBy" name="employee-confirmed-by" value="{{ gatePassForm.employeeConfirmedBy }}" title="Confirmed by" readonly>
                     </div>
                 </div>
                 <!-- <div class="sequence-number gate-pass-detail-block">

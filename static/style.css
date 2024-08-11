@@ -1494,6 +1494,8 @@ select#level {
     margin-top: 3px;
     border: 1px solid var(--border);
     width: 100%;
+    max-height: 200px; /* Maximum height when multiple items are visible */
+    overflow-y: auto; 
 }
 
 .option {
@@ -1798,7 +1800,7 @@ select#level {
 }
 
 .employee-id .dropdown-content {
-    height: 200px !important;
+    height: auto !important;
     overflow: hidden !important;
     overflow-y: auto !important;
 }
