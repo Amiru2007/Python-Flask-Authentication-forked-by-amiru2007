@@ -3,6 +3,11 @@ function openShowRequestList() {
     document.getElementById('requestList').classList.add('visible');
     document.getElementById('contactMe').classList.add('hide');
     document.getElementById('dashboardFooter').classList.add('hide');
+    document.getElementById('gatePassReminder').classList.remove('show');
+    document.getElementById('visitorReminder').classList.remove('show');
+    document.getElementById('gatePassGateReminder').classList.remove('show');
+    document.getElementById('visitorGateReminder').classList.remove('show');
+    document.getElementById('approvedGatePassReminder').classList.remove('show');
 }
 
 function closeShowRequestList() {
@@ -41,6 +46,11 @@ function openToApproveList() {
     document.getElementById('gatePassGateReminder').classList.remove('show');
     document.getElementById('visitorGateReminder').classList.remove('show');
     document.getElementById('approvedGatePassReminder').classList.remove('show');
+    document.getElementById('gatePassReminder').classList.remove('show');
+    document.getElementById('visitorReminder').classList.remove('show');
+    document.getElementById('gatePassGateReminder').classList.remove('show');
+    document.getElementById('visitorGateReminder').classList.remove('show');
+    document.getElementById('approvedGatePassReminder').classList.remove('show');
 }
 
 function closeToApproveList() {
@@ -55,6 +65,11 @@ function openArrivedList() {
     document.getElementById('arrivedVisitors').classList.add('visible');
     document.getElementById('contactMe').classList.add('hide');
     document.getElementById('dashboardFooter').classList.add('hide');
+    document.getElementById('gatePassReminder').classList.remove('show');
+    document.getElementById('visitorReminder').classList.remove('show');
+    document.getElementById('gatePassGateReminder').classList.remove('show');
+    document.getElementById('visitorGateReminder').classList.remove('show');
+    document.getElementById('approvedGatePassReminder').classList.remove('show');
 }
 
 function closeArrivedList() {
@@ -69,6 +84,11 @@ function openReports() {
     document.getElementById('reportButtons').classList.add('visible');
     document.getElementById('contactMe').classList.add('hide');
     document.getElementById('dashboardFooter').classList.add('hide');
+    document.getElementById('gatePassReminder').classList.remove('show');
+    document.getElementById('visitorReminder').classList.remove('show');
+    document.getElementById('gatePassGateReminder').classList.remove('show');
+    document.getElementById('visitorGateReminder').classList.remove('show');
+    document.getElementById('approvedGatePassReminder').classList.remove('show');
 }
 
 function closeReports() {
@@ -131,6 +151,11 @@ function openVisitors() {
     document.getElementById('visitorsList').classList.add('visible');
     document.getElementById('contactMe').classList.add('hide');
     document.getElementById('dashboardFooter').classList.add('hide');
+    document.getElementById('gatePassReminder').classList.remove('show');
+    document.getElementById('visitorReminder').classList.remove('show');
+    document.getElementById('gatePassGateReminder').classList.remove('show');
+    document.getElementById('visitorGateReminder').classList.remove('show');
+    document.getElementById('approvedGatePassReminder').classList.remove('show');
 }
 
 function closeVisitors() {
@@ -159,11 +184,35 @@ function closeRequestGatePassList() {
     document.getElementById('dashboardFooter').classList.remove('hide');
 }
 
+function openEditGatePassList() {
+    document.getElementById('editGatePassListOverlay').classList.add('visible');
+    document.getElementById('editGatePassList').classList.add('visible');
+    document.getElementById('contactMe').classList.add('hide');
+    document.getElementById('dashboardFooter').classList.add('hide');
+    document.getElementById('gatePassReminder').classList.remove('show');
+    document.getElementById('visitorReminder').classList.remove('show');
+    document.getElementById('gatePassGateReminder').classList.remove('show');
+    document.getElementById('visitorGateReminder').classList.remove('show');
+    document.getElementById('approvedGatePassReminder').classList.remove('show');
+}
+
+function closeEditGatePassList() {
+    document.getElementById('editGatePassListOverlay').classList.remove('visible');
+    document.getElementById('editGatePassList').classList.remove('visible');
+    document.getElementById('contactMe').classList.remove('hide');
+    document.getElementById('dashboardFooter').classList.remove('hide');
+}
+
 function openApprovedGatePassList() {
     document.getElementById('approveGatePassListOverlay').classList.add('visible');
     document.getElementById('approveGatePassList').classList.add('visible');
     document.getElementById('contactMe').classList.add('hide');
     document.getElementById('dashboardFooter').classList.add('hide');
+    document.getElementById('gatePassReminder').classList.remove('show');
+    document.getElementById('visitorReminder').classList.remove('show');
+    document.getElementById('gatePassGateReminder').classList.remove('show');
+    document.getElementById('visitorGateReminder').classList.remove('show');
+    document.getElementById('approvedGatePassReminder').classList.remove('show');
 }
 
 function closeApprovedGatePassList() {
@@ -197,6 +246,11 @@ function openDepartedGatePassList() {
     document.getElementById('departedGatePassList').classList.add('visible');
     document.getElementById('contactMe').classList.add('hide');
     document.getElementById('dashboardFooter').classList.add('hide');
+    document.getElementById('gatePassReminder').classList.remove('show');
+    document.getElementById('visitorReminder').classList.remove('show');
+    document.getElementById('gatePassGateReminder').classList.remove('show');
+    document.getElementById('visitorGateReminder').classList.remove('show');
+    document.getElementById('approvedGatePassReminder').classList.remove('show');
 }
 
 function closeDepartedGatePassList() {

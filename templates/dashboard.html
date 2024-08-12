@@ -115,6 +115,20 @@
                 {% endif %}
 
                 <!-- Gate Pass -->
+                {% if user_permissions.Edit_Gate_Pass %}
+                    <div class="grid-item">
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-pencil"></i>
+                            </span>
+                        </div>
+                        <h3>Edit Gate Pass</h3>
+                        <button type="button" id="showGatePassRequestList" onclick="openEditGatePassList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Gate Pass -->
                 {% if user_permissions.Approve_Gate_Pass %}
                     <div class="grid-item">
                         <div class="icon-container">
@@ -425,6 +439,36 @@
                 {% for employee in pending_gate_pass %}
                     <li>
                         <form method="post" action="{{ url_for('approve_gatepass') }}">
+                            <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
+                            <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
+                                {% if employee.employeeName %}
+                                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                {% if employee.employeeDepartingTime %}
+                                    <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="editGatePassListOverlay" onclick="closeEditGatePassList()"></div>
+        <div class="popup" id="editGatePassList">
+            <div class="popupHeader">
+                <h3>Edit Gate Pass</h3>
+                <button onclick="closeEditGatePassList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for employee in edit_gate_pass %}
+                    <li>
+                        <form method="post" action="{{ url_for('edit_gatepass') }}">
                             <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
                             <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
                             <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">

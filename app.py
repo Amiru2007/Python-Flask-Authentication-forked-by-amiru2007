@@ -455,6 +455,7 @@ def dashboard():
         fourteen_days_ago = datetime.utcnow() - timedelta(days=14)
         # Query visitors added within the last 14 days
         visitors_list = Visitor.query.filter(Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
+            
 
         if has_permission('hod'):
             pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending').all()
@@ -470,7 +471,9 @@ def dashboard():
             confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed', GatePass.gatePassRequester != current_user.username).all()
         
         departed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester != current_user.username).all()
-        
+
+        edit_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester == current_user.username).all()
+
         
         gate_pass_requests_reminder = False
         visitor_requests_reminder = False
@@ -507,6 +510,7 @@ def dashboard():
                            request_list=request_list,
                            visitors_list=visitors_list, user_permissions=user_permissions,
                            pending_gate_pass=pending_gate_pass,
+                           edit_gate_pass=edit_gate_pass,
                            approved_gate_pass=approved_gate_pass,
                            confirmed_gate_pass=confirmed_gate_pass,
                            departed_gate_pass=departed_gate_pass,
@@ -1439,7 +1443,6 @@ def gate_pass():
 
     return render_template('gatePass.html', employee_list=employee_list)
 
-
 def generate_gatePassId():
     # Get the current date in YYYYMMDD format
     today_gate_pass = datetime.now().strftime('%Y%m%d')
@@ -1518,8 +1521,38 @@ def approve_gatepass():
         
     else:
         return jsonify({'error': 'Employee not found'}), 404
-    
+
+@app.route('/edit_gatepass', methods=['POST'])
+@login_required
+def edit_gatepass():
+    gatePassId = request.form.get('gatePassId')
+    gatePassForm = GatePass.query.filter_by(gatePassId=gatePassId).first()
+    print(gatePassForm)
+
+    if gatePassForm:
+        # Access the value of the clicked button from the form data
+        clicked_button_value = request.form.get('changeStatus')
+        print(clicked_button_value)
+
+        # Your logic based on the clicked button value
+        if clicked_button_value == 'Save':
+            gatePassForm.employeeCompany = request.form.get('employeeCompany')
+            gatePassForm.employeeDepartingTime = request.form.get('employeeDepartingTime')
+            gatePassForm.employeeDepartingDate = request.form.get('employeeDepartingDate')
+            gatePassForm.employeeArrivalTime = request.form.get('employeeArrivalTime')
+            gatePassForm.employeeVehicleNo = request.form.get('employeeVehicleNo')
+            gatePassForm.employeeDepartingReason = request.form.get('employeeDepartingReason')
+            gatePassForm.employeeDepartingRemark = request.form.get('employeeDepartingRemark')
+
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+        
+        return render_template('editGatePass.html', gatePassForm=gatePassForm)
+
+    else:
+        return jsonify({'error': 'Employee not found', 'gatePassId': gatePassForm}), 404
+
 if __name__ == "__main__":
-    app.run("192.168.1.208", port=5000,  debug=True)
+    app.run(port=5000,  debug=True)
 
 db.create_all()
