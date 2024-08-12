@@ -1520,6 +1520,6 @@ def approve_gatepass():
         return jsonify({'error': 'Employee not found'}), 404
     
 if __name__ == "__main__":
-    app.run(port=5000,  debug=True)
+    app.run("192.168.1.208", port=5000,  debug=True)
 
 db.create_all()
