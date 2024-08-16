@@ -192,6 +192,20 @@
                         <a href="{{ url_for('all_employees') }}"><button type="button">Manage</button></a>
                     </div>
                 {% endif %}
+
+                <!-- Reports -->
+                {% if user_permissions.Create_Gate_Pass %}
+                    <div class="grid-item">
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-person"></i>
+                            </span>
+                        </div>
+                        <h3>Recent Gate Passes</h3>
+                        <button type="button" id="showGatePassFormList" onclick="openGatePassForms()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
             </div>
         </div>
         <div class="overlay" id="requestListoverlay" onclick="closeShowRequestList()"></div>
@@ -314,6 +328,63 @@
                             </div>
                             <div class="detail-box-row">
                                 <span>Status:</span><span> {{ visitor.status }} </span>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}            
+            </ul>            
+        </div>
+        <div class="overlay" id="gatePassFormsOverlay" onclick="closeGatePassForms()"></div>
+        <div class="popup" id="gatePassForms">
+            <div class="popupHeader">
+                <h3>Gate Pass Forms List</h3>
+                <button onclick="closeGatePassForms()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="search-container">
+                <input type="text" id="visitor-search" class="search-input" placeholder="Search..." style="width: calc(100% - 10px);">
+                <button type="button" onclick="performSearch()">
+                    <i class="ph-bold ph-magnifying-glass"></i>
+                </button>
+            </div>
+            <ul class="toApprove" id="search-results">
+                {% for gate_pass in gate_pass_forms %}
+                    <li class="visitor-item">
+                        <form method="post" action="{{ url_for('gate_pass_form', gatePassId=gate_pass.gatePassId) }}">
+                            <input type="hidden" name="gatePassId" value="{{ gate_pass.gatePassId }}">
+                                <span class="visitorsListDetail">{{ gate_pass.employeeNo }}</span>
+                                {% if gate_pass.employeeName %}
+                                    <span class="visitorsListDetail">{{ gate_pass.employeeName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail centered-details">-</span>
+                                {% endif %}
+                                {% if gate_pass.employeeDepartingTime %}
+                                    <span class="visitorsListDetail centered-details">{{ gate_pass.employeeDepartingTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail centered-details">-</span>
+                                {% endif %}
+                                {% if gate_pass.employeeArrivalTime %}
+                                    <span class="visitorsListDetail centered-details">{{ gate_pass.employeeArrivalTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail centered-details">-</span>
+                                {% endif %}
+                                <span class="visitorsListDetail">{{ gate_pass.employeeFormStatus }}</span>
+                            </button>
+                        </form>
+                        <div class="detail-box">
+                            <div class="detail-box-row">
+                                <span>Employee No:</span><span> {{ gate_pass.employeeNo }} </span>
+                            </div>
+                            <div class="detail-box-row">
+                                <span>Employee Name:</span><span> {{ gate_pass.employeeName or '-' }} </span>
+                            </div>
+                            <div class="detail-box-row">
+                                <span>Departing Time:</span><span> {{ gate_pass.employeeDepartingTime or '-' }} </span>
+                            </div>
+                            <div class="detail-box-row">
+                                <span>Arriving Time:</span><span> {{ gate_pass.employeeArrivalTime or '-' }} </span>
+                            </div>
+                            <div class="detail-box-row">
+                                <span>Status:</span><span> {{ gate_pass.employeeFormStatus }} </span>
                             </div>
                         </div>
                     </li>

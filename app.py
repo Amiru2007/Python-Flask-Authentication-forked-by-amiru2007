@@ -474,6 +474,7 @@ def dashboard():
 
         edit_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester == current_user.username).all()
 
+        gate_pass_forms = GatePass.query.filter(GatePass.committedDate >= fourteen_days_ago).order_by(GatePass.gatePassId.desc()).all()
         
         gate_pass_requests_reminder = False
         visitor_requests_reminder = False
@@ -508,7 +509,8 @@ def dashboard():
                            approved_visitor_numbers=approved_visitors,
                            arrived_visitor_numbers=arrived_visitors,
                            request_list=request_list,
-                           visitors_list=visitors_list, user_permissions=user_permissions,
+                           visitors_list=visitors_list,
+                           user_permissions=user_permissions,
                            pending_gate_pass=pending_gate_pass,
                            edit_gate_pass=edit_gate_pass,
                            approved_gate_pass=approved_gate_pass,
@@ -518,7 +520,8 @@ def dashboard():
                            visitor_requests_reminder=visitor_requests_reminder,
                            gate_pass_gate_reminder=gate_pass_gate_reminder,
                            visitor_gate_reminder=visitor_gate_reminder,
-                           approved_gate_pass_reminder=approved_gate_pass_reminder)
+                           approved_gate_pass_reminder=approved_gate_pass_reminder,
+                           gate_pass_forms=gate_pass_forms)
 
 # Register route
 @app.route('/register', methods=['GET', 'POST'])
@@ -1387,7 +1390,7 @@ def gate_pass():
         
         if not employee_no:
             # Render the template with an error message
-            return render_template('gatePass.html', 
+            return render_template('newGatePass.html', 
                                 #    requester=current_user.username, 
                                 #    visitorNo=visitor_code,
                                    error_message='You must enter a Employee ID')
@@ -1441,7 +1444,7 @@ def gate_pass():
 
         return redirect(url_for('dashboard'))
 
-    return render_template('gatePass.html', employee_list=employee_list)
+    return render_template('newGatePass.html', employee_list=employee_list)
 
 def generate_gatePassId():
     # Get the current date in YYYYMMDD format
@@ -1551,6 +1554,24 @@ def edit_gatepass():
 
     else:
         return jsonify({'error': 'Employee not found', 'gatePassId': gatePassForm}), 404
+
+@app.route('/gate_pass_form', methods=['GET', 'POST'])
+@login_required
+def gate_pass_form():
+    if request.method == 'POST':
+        gatePassId = request.form.get('gatePassId')
+    elif request.method == 'GET':
+        gatePassId = request.args.get('gatePassId')
+    else:
+        return jsonify({'error': 'Method not allowed'}), 405
+
+    gate_pass = GatePass.query.filter_by(gatePassId=gatePassId).first()
+
+    if visitor:
+        return render_template('gatePassForm.html', gate_pass=gate_pass)
+    
+    else:
+        return jsonify({'error': 'Gate Pass Form not found', 'gatePassId': gatePassId}), 404
 
 if __name__ == "__main__":
     app.run(port=5000,  debug=True)
