@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="../static/style.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
+    <title>Gate Pass Form</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="gatePassPage">
+    <h1 class="gate-pass-title">Exit Permit</h1>
+    <form action="{{ url_for('gate_pass_form', gatePassId=gate_pass.gatePassId) }}" method="POST" class="gate-pass-form" enctype="multipart/form-data">
+        <div class="main-form-container">
+            <div class="top-radio-boxes">
+                <div class="radio-boxes-container">
+                    <div class="grid-element">
+                        <label for="radio1">Dayaratne Holdings</label>
+                        <input type="radio" id="radio1" name="company" class="radio" value="Dayaratne Holdings" onclick="setCompany('Dayaratne Holdings')" disabled>
+                    </div>
+                    <div class="grid-element">
+                        <label for="radio2">Dayaratne Apperal</label>
+                        <input type="radio" id="radio2" name="company" class="radio" value="Dayaratne Apperal" onclick="setCompany('Dayaratne Apperal')" disabled>
+                    </div>
+                    <div class="grid-element">
+                        <label for="radio3">Pra Su King</label>
+                        <input type="radio" id="radio3" name="company" class="radio" value="Pra Su King" onclick="setCompany('Pra Su King')" disabled>
+                    </div>
+                    <div class="grid-element">
+                        <label for="radio4">Isuru International</label>
+                        <input type="radio" id="radio4" name="company" class="radio" value="Isuru International" onclick="setCompany('Isuru International')" disabled>
+                    </div>
+                    <div class="grid-element">
+                        <label for="radio5">Isuru Lojistick</label>
+                        <input type="radio" id="radio5" name="company" class="radio" value="Isuru Lojistick" onclick="setCompany('Isuru Lojistick')" disabled>
+                    </div>
+                    <div class="grid-element">
+                        <label for="radio6">V B T N Trading</label>
+                        <input type="radio" id="radio6" name="company" class="radio" value="V B T N Trading" onclick="setCompany('V B T N Trading')" disabled>
+                    </div>
+                    <input type="hidden" name="employeeCompany" id="employeeCompany" value="{{ gate_pass.employeeCompany }}">
+                </div>
+            </div>
+            <div class="bottom-employee-datails">
+                <div class="name-id gate-pass-detail-block">
+                    <div class="employee-id gate-pass-input-container">
+                        <label for="employeeNo">Emplyee ID</label>
+                        <div class="dropdown">
+                            <input type="text" id="employeeNo" name="employeeNo" title="Employee ID" value="{{ gate_pass.employeeNo }}" readonly>
+                            <!-- <input type="text" id="remarks" name="remarks"> -->
+                        </div>
+                    </div>
+                    <div class="employee-name gate-pass-input-container">
+                        <label for="employeeName">Employee Name</label>
+                        <input type="text" id="employeeName" name="employeeName" title="Employee name" value="{{ gate_pass.employeeName }}" readonly>
+                    </div>
+                </div>
+                <div class="time-period gate-pass-detail-block">
+                    <div class="employee-departing-time gate-pass-input-container">
+                        <label for="employeeDepartingTime">Departing Time</label>
+                        <input type="time" id="employeeDepartingTime" name="employeeDepartingTime" title="Employee daparting time" value="{{ gate_pass.employeeDepartingTime }}" readonly>
+                    </div>
+                    <div class="employee-arrival-time gate-pass-input-container">
+                        <label for="employeeArrivalTime">Arrival Time</label>
+                        <input type="time" id="employeeArrivalTime" name="employeeArrivalTime" value="{{ gate_pass.employeeArrivalTime }}" title="Employee time" readonly>
+                    </div>
+                </div>
+                <div class="date-vehicle gate-pass-detail-block">
+                    <div class="employee-departing-date gate-pass-input-container">
+                        <label for="employeeDepartingDate">Date</label>
+                        <input type="date" id="employeeDepartingDate" name="employeeDepartingDate" value="{{ gate_pass.employeeDepartingDate }}" title="Employee departing date" readonly>
+                    </div>
+                    <div class="employee-vehicle-no gate-pass-input-container">
+                        <label for="employeeVehicleNo">Vehicle Number</label>
+                        <input type="text" id="employeeVehicleNo" name="employeeVehicleNo" value="{{ gate_pass.employeeVehicleNo }}" title="Employee vehicle number" readonly>
+                    </div>
+                </div>
+                <div class="departing-reason gate-pass-detail-block">
+                    <div class="employee-departing-reason gate-pass-input-container">
+                        <label for="employeeDepartingReason">Reason</label>
+                        <input type="text" id="employeeDepartingReason" name="employeeDepartingReason" value="{{ gate_pass.employeeDepartingReason }}" title="Departing reason" readonly>
+                    </div>
+                </div>
+                <div class="departing-remark gate-pass-detail-block">
+                    <div class="employee-departing-remark gate-pass-input-container">
+                        <label for="employeeDepartingRemark">Remark</label>
+                        <input type="text" id="employeeDepartingRemark" name="employeeDepartingRemark" value="{{ gate_pass.employeeDepartingRemark }}" title="Departing remark" readonly>
+                    </div>
+                </div>
+                <div class="officer-confirmed-by gate-pass-detail-block">
+                    <div class="employee-officer gate-pass-input-container">
+                        <label for="employeeOfficer">Authorized officer</label>
+                        <input type="text" id="employeeOfficer" name="employeeOfficer" value="{{ gate_pass.employeeOfficer }}" title="Authorized officer" readonly>
+                    </div>
+                    <div class="employee-confirmed-by gate-pass-input-container">
+                        <label for="employee-confirmed-by">Confirmed By</label>
+                        <input type="text" id="employeeConfirmedBy" name="employee-confirmed-by" value="{{ gate_pass.employeeConfirmedBy }}" title="Confirmed by" readonly>
+                    </div>
+                </div>
+                <!-- <div class="sequence-number gate-pass-detail-block">
+                    <div class="employee-sequence-number gate-pass-input-container">
+                        <label for="employee-sequence-number">Sequence Number</label>
+                        <input type="text" id="employeeSequenceNumber" name="employee-sequence-number">
+                    </div>
+                </div> -->
+            </div>
+            <div class="control-buttons-container">
+                <div class="employee-status gate-pass-input-container">
+                    <label for="employee-status">Status</label>
+                    <input type="text" id="employeeStatus" name="employee-status" title="Status" value="{{ gate_pass.employeeFormStatus }}" readonly>
+                </div>
+            </div>
+        </div>
+    </form>
+</body>
+</html>

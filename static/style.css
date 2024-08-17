@@ -457,6 +457,7 @@ select#level {
     background: var(--popup-bg);
 }
 
+#gatePassForms .popupHeader,
 #visitorsList .popupHeader {
     width: 700px;
     z-index: 9999;
@@ -582,6 +583,7 @@ select#level {
     opacity: 1;
 }
 
+#gatePassForms,
 #visitorsList {
     width: 700px;
 }
@@ -1633,6 +1635,10 @@ select#level {
     max-width: 150px;
 }
 
+.centered-details {
+    text-align: center !important;
+}
+
 .pagination .disabled {
     color: var(--sub-text);
     pointer-events: none;
@@ -1856,7 +1862,7 @@ span.secondary-icon i {
     height: auto;
     background: var(--popup-bg);
     position: fixed;
-    bottom: 32px;
+    top: 10px;
     right: 8px;
     padding: 8px 10px;
     border-radius: 8px;
