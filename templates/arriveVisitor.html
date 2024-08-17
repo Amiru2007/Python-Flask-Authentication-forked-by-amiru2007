@@ -39,59 +39,59 @@
                 <div class="left">
                     <h4>Visit Details</h4>
                     <div class="container">
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="Arriving Date">
                             <label for="arrivingDate">Arriving Date</label>
                             <input type="text" id="arrivingDate" name="arrivingDate" value="{{ visitor.arrivingDate }}" readonly>
                         </div>
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="Arriving Time">
                             <label for="arrivingTime">Arriving Time</label>
                             <input type="text" id="arrivingTime" name="arrivingTime" value="{{ visitor.arrivingTime }}" readonly>
                         </div>
                     </div>
                     <div class="container">
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="Departing Data">
                             <label for="departingDate">Departing Date</label>
                             <input type="text" id="departingDate" name="departingDate" value="{{ visitor.departingDate }}" readonly>
                         </div>
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="Departing Time">
                             <label for="departingTime">Departing Time</label>
                             <input type="text" id="departingTime" name="departingTime" value="{{ visitor.departingTime }}" readonly>
                         </div>
                     </div>
                     <div class="container">
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="Vehicle No">
                             <label for="vehicleNo">Vehicle No.</label>
                             <input type="text" id="vehicleNo" name="vehicleNo" value="{{ visitor.vehicleNo }}" readonly>
                         </div>
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="Visitor No">
                             <label for="visitorNo">Visitor No.</label>
                             <input type="text" id="visitorNo" name="visitorNo" value="{{ visitor.visitorNo }}" readonly>
                         </div>
                     </div>
                     <div class="container">
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="Phone Number">
                             <label for="phoneNumber">Phone Number</label>
                             <input type="text" id="phoneNumber" name="phoneNumber" value="{{ visitor.phoneNumber }}" readonly>
                         </div>
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="E-mail Address">
                             <label for="emailAddress">E-mail Address</label>
                             <input type="text" id="emailAddress" name="emailAddress" value="{{ visitor.emailAddress }}" readonly>
                         </div>
                     </div>
                     <div class="container">
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="Requester">
                             <label for="requester">Requester</label>
                             <input type="text" id="requester" name="requester" value="{{ visitor.requester }}" readonly>
                         </div>
                     </div>
                     <div class="container">
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="Number of Visitors">
                             <label for="noOfVisitors">No. of visitors</label>
                             <input type="text" id="noOfVisitors" name="noOfVisitors" value="{{ visitor.noOfVisitors }}" readonly>
                         </div>
                     </div>
                     <div class="container">
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="Remarks">
                             <label for="remarks">Remarks</label>
                             <div class="dropdown">
                                 <input type="text" id="remarks" name="remarks">
@@ -108,13 +108,13 @@
                         </div>
                     </div>
                     <div class="container single">
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="History">
                             <label for="history">History</label>
                             <textarea id="history" name="history" readonly>{{ visitor.history | safe }}</textarea>
                         </div>
                     </div>
                     <div class="container buttons">
-                        <div class="enterDetail">
+                        <div class="enterDetail" data-section="Status">
                             <div class="visitorStatusUpdates">
                                 <label for="statusbtn">Visitor Status</label>
                                 <input type="button" id="statusbtn" name="statusbtn" value="{{ visitor.status }}" style="cursor: auto;" readonly>

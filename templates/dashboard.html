@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -23,7 +22,7 @@
             <div class="grid-container" id="dynamic-grid">
                 <!-- New Visitor -->
                 {% if user_permissions.Create_Visitor %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Create Visitor">
                         <span><i class="ph ph-plus-circle"></i></span>
                         <h3>New Visitor</h3>
                         <a href="{{ url_for('new_visitor') }}"><button type="button">Create</button></a>
@@ -32,7 +31,7 @@
 
                 <!-- Edit Request -->
                 {% if user_permissions.Edit_Visitor %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Edit Visitor">
                         <span><i class="ph ph-pencil-simple"></i></span>
                         <h3>Edit Visitor</h3>
                         <button type="button" id="showRequestList" onclick="openShowRequestList()"><i class="ph ph-arrow-right"></i></button>
@@ -41,7 +40,7 @@
                 
                 <!-- Approve Visitor -->
                 {% if user_permissions.Approve_Visitor %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Approve Visitor">
                         <span><i class="ph ph-paper-plane-tilt"></i></span>
                         <h3>Approve Visitor</h3>
                         <button type="button" id="showToApproveList" onclick="openToApproveList()"><i class="ph ph-arrow-right"></i></button>
@@ -50,7 +49,7 @@
 
                 <!-- Arrive Visitor -->
                 {% if user_permissions.In_Visitor %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="In Visitor">
                         <span><i class="ph ph-arrow-circle-right"></i></span>
                         <h3>Arrive Visitor</h3>
                         <button type="button" id="showApprovedList" onclick="openShowApprovedList()"><i class="ph ph-arrow-right"></i></button>
@@ -59,7 +58,7 @@
 
                 <!-- Depart Visitor -->
                 {% if user_permissions.Out_Visitor %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Depart Visitor">
                         <span><i class="ph ph-check-circle"></i></span>
                         <h3>Depart Visitor</h3>
                         <button type="button" id="showArrivedList" onclick="openArrivedList()"><i class="ph ph-arrow-right"></i></button>
@@ -67,7 +66,7 @@
                 {% endif %}
                 
                 <!-- Change Password -->
-                <div class="grid-item">
+                <div class="grid-item" data-button-block="Change Password">
                     <span><i class="ph ph-password"></i></span>
                     <h3>Change Password</h3>
                     <a href="{{ url_for('change_password') }}"><button type="button">Change</button></a>
@@ -75,7 +74,7 @@
 
                 <!-- User Management -->
                 {% if user_permissions.Create_User %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="User Management">
                         <span><i class="ph ph-user"></i></i></span>
                         <h3>User Management</h3>
                         <a href="{{ url_for('all_users') }}"><button type="button">Manage</button></a>
@@ -84,7 +83,7 @@
 
                 <!-- Reports -->
                 {% if user_permissions.Create_Reports %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Create Reports">
                         <span><i class="ph ph-scroll"></i></span>
                         <h3>Reports</h3>
                         <button type="button" id="showReportButtons" onclick="openReports()" title="Open Reports Popup"><i class="ph ph-arrow-right"></i></button>
@@ -93,7 +92,7 @@
 
                 <!-- Reports -->
                 {% if user_permissions.Create_Visitor %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Visitor List">
                         <span><i class="ph ph-person"></i></span>
                         <h3>Recent Visitors</h3>
                         <button type="button" id="showVisitorList" onclick="openVisitors()"><i class="ph ph-arrow-right"></i></button>
@@ -102,7 +101,7 @@
 
                 <!-- Gate Pass -->
                 {% if user_permissions.Create_Gate_Pass %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Create Gate Pass">
                         <div class="icon-container">
                             <span><i class="ph ph-door-open"></i></span>
                             <span class="secondary-icon">
@@ -116,7 +115,7 @@
 
                 <!-- Gate Pass -->
                 {% if user_permissions.Edit_Gate_Pass %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Edit Gate Pass">
                         <div class="icon-container">
                             <span><i class="ph ph-door-open"></i></span>
                             <span class="secondary-icon">
@@ -130,7 +129,7 @@
 
                 <!-- Gate Pass -->
                 {% if user_permissions.Approve_Gate_Pass %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Approve Gate Pass">
                         <div class="icon-container">
                             <span><i class="ph ph-door-open"></i></span>
                             <span class="secondary-icon">
@@ -144,7 +143,7 @@
 
                 <!-- Gate Pass -->
                 {% if user_permissions.Confirmed_Gate_Pass %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Confirm Gate Pass">
                         <div class="icon-container">
                             <span><i class="ph ph-door-open"></i></span>
                             <span class="secondary-icon">
@@ -158,7 +157,7 @@
 
                 <!-- Gate Pass -->
                 {% if user_permissions.Out_Gate_Pass %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Out Gate Pass">
                         <div class="icon-container">
                             <span><i class="ph ph-door-open"></i></span>
                             <span class="secondary-icon">
@@ -172,7 +171,7 @@
 
                 <!-- Gate Pass -->
                 {% if user_permissions.In_Gate_Pass %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="In Gate Pass">
                         <div class="icon-container">
                             <span><i class="ph ph-door-open"></i></span>
                             <span class="secondary-icon">
@@ -186,7 +185,7 @@
 
                 <!-- Employee Management -->
                 {% if user_permissions.Create_User %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Employee Management">
                         <span><i class="ph ph-identification-badge"></i></span>
                         <h3>Employee Management</h3>
                         <a href="{{ url_for('all_employees') }}"><button type="button">Manage</button></a>
@@ -195,7 +194,7 @@
 
                 <!-- Reports -->
                 {% if user_permissions.Create_Gate_Pass %}
-                    <div class="grid-item">
+                    <div class="grid-item" data-button-block="Gate Pass Forms">
                         <div class="icon-container">
                             <span><i class="ph ph-door-open"></i></span>
                             <span class="secondary-icon">
