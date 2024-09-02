@@ -16,6 +16,7 @@ from openpyxl.worksheet.table import Table, TableStyleInfo
 from io import BytesIO
 from werkzeug.utils import secure_filename
 import os
+import pandas as pd
 # from werkzeug.security import check_password_hash, generate_password_hash
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -176,8 +177,12 @@ def new_visitor():
 
     visitor_code = generate_visitorCode()
 
+    pageTitle = 'New Visitor'
+
     form = ImageUploadForm()
 
+    user_permissions = current_user.permissions
+    
     if request.method == 'POST':
         # Get form data using request.form.get to avoid BadRequestKeyError
         last_name = request.form.get('lastName', '')
@@ -262,7 +267,9 @@ def new_visitor():
 
     return render_template('newvisitor.html',
                             requester=current_user.username,
-                            visitorNo=visitor_code)
+                            visitorNo=visitor_code,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
 
 def generate_visitorCode():
     # Get the latest code from the database for the current date
@@ -433,6 +440,59 @@ def login():
     #         print(f"User {form.username.data} not found")  # Debug statement
     # return render_template('login.html', form=form)
 
+@app.before_request
+def set_global_variables():
+    if current_user.is_authenticated:
+        # Proceed with setting global variables
+        fourteen_days_ago = datetime.utcnow() - timedelta(days=14)
+        
+        g.pending_visitors = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester != current_user.username).all()
+        g.approved_visitors = Visitor.query.filter(Visitor.status == 'Approved').all()
+        g.arrived_visitors = Visitor.query.filter(Visitor.status == 'Arrived').all()
+        g.request_list = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester == current_user.username).all()
+        g.visitors_list = Visitor.query.filter(Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
+
+        if has_permission('hod'):
+            g.pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending').all()
+            g.approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved').all()
+            g.confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed').all()
+        else:
+            g.pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester != current_user.username).all()
+            g.approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved', GatePass.gatePassRequester != current_user.username).all()
+            g.confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed', GatePass.gatePassRequester != current_user.username).all()
+
+        g.departed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester != current_user.username).all()
+        g.edit_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester == current_user.username).all()
+        g.gate_pass_forms = GatePass.query.filter(GatePass.committedDate >= fourteen_days_ago).order_by(GatePass.gatePassId.desc()).all()
+
+        g.gate_pass_requests_reminder = False
+        g.visitor_requests_reminder = False
+        g.gate_pass_gate_reminder = False
+        g.visitor_gate_reminder = False
+        g.approved_gate_pass_reminder = False
+
+        if g.pending_gate_pass and has_permission('Approve_Gate_Pass'):
+            g.gate_pass_requests_reminder = True
+
+        if g.pending_visitors and has_permission('Approve_Visitor'):
+            g.visitor_requests_reminder = True
+
+        if g.approved_gate_pass and has_permission('Confirmed_Gate_Pass'):
+            g.gate_pass_gate_reminder = True
+
+        if g.approved_visitors and has_permission('In_Visitor'):
+            g.visitor_gate_reminder = True
+
+        if g.confirmed_gate_pass and has_permission('Out_Gate_Pass'):
+            g.approved_gate_pass_reminder = True
+
+        g.user_permissions = current_user.permissions
+    else:
+        # Handle the case when the user is not authenticated
+        # For example, set global variables for anonymous users, or set them to None
+        g.user_permissions = None
+
+
 def has_permission(permission_name):
     user_permissions = Permissions.query.filter_by(username=current_user.username).first()
     if user_permissions and getattr(user_permissions, permission_name, False):
@@ -442,86 +502,129 @@ def has_permission(permission_name):
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-    try:
-        # Query to retrieve visitorNos where the status is 'Pending'
-        pending_visitors = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester != current_user.username).all()
-        # Query to retrieve visitorNos where the status is 'Approved'
-        approved_visitors = Visitor.query.filter(Visitor.status == 'Approved').all()
-        # Query to retrieve visitorNos where the status is 'Arrived'
-        arrived_visitors = Visitor.query.filter(Visitor.status == 'Arrived').all()
-
-        request_list = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester == current_user.username).all()
-        # Calculate the date 14 days ago
-        fourteen_days_ago = datetime.utcnow() - timedelta(days=14)
-        # Query visitors added within the last 14 days
-        visitors_list = Visitor.query.filter(Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
-            
-
-        if has_permission('hod'):
-            pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending').all()
-            
-            approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved').all()
-            
-            confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed').all()
-        else:
-            pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester != current_user.username).all()
-            
-            approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved', GatePass.gatePassRequester != current_user.username).all()
-            
-            confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed', GatePass.gatePassRequester != current_user.username).all()
-        
-        departed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester != current_user.username).all()
-
-        edit_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester == current_user.username).all()
-
-        gate_pass_forms = GatePass.query.filter(GatePass.committedDate >= fourteen_days_ago).order_by(GatePass.gatePassId.desc()).all()
-        
-        gate_pass_requests_reminder = False
-        visitor_requests_reminder = False
-        gate_pass_gate_reminder = False
-        visitor_gate_reminder = False
-        approved_gate_pass_reminder = False
-
-        if pending_gate_pass and has_permission('Approve_Gate_Pass'):
-            gate_pass_requests_reminder = True
-        
-        if pending_visitors and has_permission('Approve_Visitor'):
-            visitor_requests_reminder = True
-
-        if approved_gate_pass and has_permission('Confirmed_Gate_Pass'):
-            gate_pass_gate_reminder = True
-        
-        if approved_visitors and has_permission('In_Visitor'):
-            visitor_gate_reminder = True
-
-        if confirmed_gate_pass and has_permission('Out_Gate_Pass'):
-            approved_gate_pass_reminder = True
-
-
-    except Exception as e:
-        return jsonify({'error': str(e)})
+    pageTitle = 'Dashboard'
     
+    # Get today's date
+    today = datetime.now().strftime('%Y-%m-%d')
+    
+    # Query all visitor data and filter by today's date
+    data = Visitor.query.filter(
+        Visitor.arrivedTime.like(f'{today}%')  # Filter records with today’s date
+    ).all()
+
+    # Convert the data into a Pandas DataFrame
+    df = pd.DataFrame([(d.arrivedTime) for d in data], columns=['arrivedTime'])
+    
+    # Print raw data for debugging
+    print("Raw Data from Database:", df.head())
+
+    # Convert arrivedTime to datetime and extract the hour
+    df['arrivedTime'] = pd.to_datetime(df['arrivedTime'], format='%Y-%m-%d %H:%M:%S').dt.hour
+    print("DataFrame after Time Conversion:", df.head())
+
+    # Filter for time range between 8 AM (8) and 6 PM (18)
+    df = df[(df['arrivedTime'] >= 8) & (df['arrivedTime'] <= 18)]
+    print("DataFrame after Filtering:", df.head())
+
+    # Group by the hour and count the number of visitors for each hour
+    chart_data = df.groupby('arrivedTime').size().reset_index(name='count')
+    print("Grouped Data:", chart_data)
+
+    # Ensure all hours from 8 to 18 are represented in the data
+    full_range = pd.DataFrame({'arrivedTime': range(8, 19)})
+    chart_data = pd.merge(full_range, chart_data, left_on='arrivedTime', right_on='arrivedTime', how='left').fillna(0)
+    print("Final Data:", chart_data)
+
+    # Prepare data for rendering
+    labels = chart_data['arrivedTime'].astype(str).tolist()
+    values = chart_data['count'].tolist()
+
+    # Print final data sent to template
+    print("Labels:", labels)
+    print("Values:", values)
+
     user_permissions = current_user.permissions
+
+    return render_template('dashboard.html', labels=labels, values=values, user_permissions=user_permissions, pageTitle=pageTitle, today=today)
+    # try:
+    #     # Query to retrieve visitorNos where the status is 'Pending'
+    #     pending_visitors = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester != current_user.username).all()
+    #     # Query to retrieve visitorNos where the status is 'Approved'
+    #     approved_visitors = Visitor.query.filter(Visitor.status == 'Approved').all()
+    #     # Query to retrieve visitorNos where the status is 'Arrived'
+    #     arrived_visitors = Visitor.query.filter(Visitor.status == 'Arrived').all()
+
+    #     request_list = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester == current_user.username).all()
+    #     # Calculate the date 14 days ago
+    #     fourteen_days_ago = datetime.utcnow() - timedelta(days=14)
+    #     # Query visitors added within the last 14 days
+    #     visitors_list = Visitor.query.filter(Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
+          
+
+    #     if has_permission('hod'):
+    #         pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending').all()
+            
+    #         approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved').all()
+            
+    #         confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed').all()
+    #     else:
+    #         pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester != current_user.username).all()
+            
+    #         approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved', GatePass.gatePassRequester != current_user.username).all()
+            
+    #         confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed', GatePass.gatePassRequester != current_user.username).all()
+        
+    #     departed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester != current_user.username).all()
+
+    #     edit_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester == current_user.username).all()
+
+    #     gate_pass_forms = GatePass.query.filter(GatePass.committedDate >= fourteen_days_ago).order_by(GatePass.gatePassId.desc()).all()
+        
+    #     gate_pass_requests_reminder = False
+    #     visitor_requests_reminder = False
+    #     gate_pass_gate_reminder = False
+    #     visitor_gate_reminder = False
+    #     approved_gate_pass_reminder = False
+
+    #     if pending_gate_pass and has_permission('Approve_Gate_Pass'):
+    #         gate_pass_requests_reminder = True
+        
+    #     if pending_visitors and has_permission('Approve_Visitor'):
+    #         visitor_requests_reminder = True
+
+    #     if approved_gate_pass and has_permission('Confirmed_Gate_Pass'):
+    #         gate_pass_gate_reminder = True
+        
+    #     if approved_visitors and has_permission('In_Visitor'):
+    #         visitor_gate_reminder = True
+
+    #     if confirmed_gate_pass and has_permission('Out_Gate_Pass'):
+    #         approved_gate_pass_reminder = True
+
+
+    # except Exception as e:
+    #     return jsonify({'error': str(e)})
     
-    return render_template('dashboard.html',
-                           pending_visitor_numbers=pending_visitors,
-                        #    pending_visitor_requesters=pending_visitor_requesters_list,
-                           approved_visitor_numbers=approved_visitors,
-                           arrived_visitor_numbers=arrived_visitors,
-                           request_list=request_list,
-                           visitors_list=visitors_list,
-                           user_permissions=user_permissions,
-                           pending_gate_pass=pending_gate_pass,
-                           edit_gate_pass=edit_gate_pass,
-                           approved_gate_pass=approved_gate_pass,
-                           confirmed_gate_pass=confirmed_gate_pass,
-                           departed_gate_pass=departed_gate_pass,
-                           gate_pass_requests_reminder=gate_pass_requests_reminder,
-                           visitor_requests_reminder=visitor_requests_reminder,
-                           gate_pass_gate_reminder=gate_pass_gate_reminder,
-                           visitor_gate_reminder=visitor_gate_reminder,
-                           approved_gate_pass_reminder=approved_gate_pass_reminder,
-                           gate_pass_forms=gate_pass_forms)
+    # return render_template('dashboard.html',
+    #                        pending_visitor_numbers=pending_visitors,
+    #                     #    pending_visitor_requesters=pending_visitor_requesters_list,
+    #                        approved_visitor_numbers=approved_visitors,
+    #                        arrived_visitor_numbers=arrived_visitors,
+    #                        request_list=request_list,
+    #                        visitors_list=visitors_list,
+    #                        user_permissions=user_permissions,
+    #                        pageTitle=pageTitle,
+    #                        pending_gate_pass=pending_gate_pass,
+    #                        edit_gate_pass=edit_gate_pass,
+    #                        approved_gate_pass=approved_gate_pass,
+    #                        confirmed_gate_pass=confirmed_gate_pass,
+    #                        departed_gate_pass=departed_gate_pass,
+    #                        gate_pass_requests_reminder=gate_pass_requests_reminder,
+    #                        visitor_requests_reminder=visitor_requests_reminder,
+    #                        gate_pass_gate_reminder=gate_pass_gate_reminder,
+    #                        visitor_gate_reminder=visitor_gate_reminder,
+    #                        approved_gate_pass_reminder=approved_gate_pass_reminder,
+    #                        gate_pass_forms=gate_pass_forms)
 
 # Register route
 @app.route('/register', methods=['GET', 'POST'])
@@ -529,6 +632,10 @@ def dashboard():
 def register():
     form = RegisterForm()
     form2 = PermissionsForm()
+    
+    pageTitle = 'New User'
+    
+    user_permissions = current_user.permissions
     
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
@@ -578,7 +685,9 @@ def register():
         return redirect(url_for('all_users'))
         pass
 
-    return render_template('register.html', form=form, form2=form2)
+    return render_template('register.html', form=form, form2=form2,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
 
 
 @app.route('/arrive_visitor', methods=['POST'])
@@ -587,6 +696,10 @@ def arrive_visitor():
     visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
 
+    pageTitle = 'Mark Visitor Arrival'
+    
+    user_permissions = current_user.permissions
+    
     if visitor:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -614,7 +727,9 @@ def arrive_visitor():
         image_path = visitor.profilePhoto
         print("Image Path:", visitor.profilePhoto)
     
-        return render_template('arriveVisitor.html', visitor=visitor, image_path=image_path)
+        return render_template('arriveVisitor.html', visitor=visitor, image_path=image_path,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
@@ -625,6 +740,10 @@ def depart_visitor():
     visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
 
+    pageTitle = 'Mark Visitor Departure'
+    
+    user_permissions = current_user.permissions
+    
     if visitor:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -651,7 +770,9 @@ def depart_visitor():
         # Read the image file path from the database
         image_path = visitor.profilePhoto
         print("Image Path:", visitor.profilePhoto)
-        return render_template('departVisitor.html', visitor=visitor, image_path=image_path)
+        return render_template('departVisitor.html', visitor=visitor, image_path=image_path,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
@@ -668,6 +789,10 @@ def get_visitor():
     visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
 
+    pageTitle = 'Approve Visitor'
+    
+    user_permissions = current_user.permissions
+    
     if visitor:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -701,7 +826,9 @@ def get_visitor():
         # Read the image file path from the database
         image_path = visitor.profilePhoto
         print("Image Path:", visitor.profilePhoto)
-        return render_template('filledForm.html', visitor=visitor, image_path=image_path)
+        return render_template('filledForm.html', visitor=visitor, image_path=image_path,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
@@ -713,6 +840,10 @@ def edit_request():
     visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
 
+    pageTitle = 'Edit Visitor Request'
+    
+    user_permissions = current_user.permissions
+    
     if visitor:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -751,7 +882,9 @@ def edit_request():
         # Read the image file path from the database
         image_path = visitor.profilePhoto
         print("Image Path:", visitor.profilePhoto)
-        return render_template('editRequest.html', visitor=visitor, image_path=image_path)
+        return render_template('editRequest.html', visitor=visitor, image_path=image_path,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
@@ -768,12 +901,18 @@ def visitor():
 
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
 
+    pageTitle = 'Visitor'
+    
+    user_permissions = current_user.permissions
+    
     if visitor:
         # Read the image file path from the database
         image_path = visitor.profilePhoto
         print("Image Path:", visitor.profilePhoto)
     
-        return render_template('visitor.html', visitor=visitor, image_path=image_path)
+        return render_template('visitor.html', visitor=visitor, image_path=image_path,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
     
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
@@ -791,6 +930,10 @@ def all_users():
     rows_per_page = request.args.get('rows_per_page', 10, type=int)
     status = request.args.get('status', 'active')  # Get status from query parameters
 
+    pageTitle = 'All Users'
+    
+    user_permissions = current_user.permissions
+    
     if request.method == 'POST':
         # Handle deactivating selected users
         if 'deactivate_selected' in request.form:
@@ -838,7 +981,9 @@ def all_users():
     return render_template('allUsers.html',
                            users_pagination=users_pagination,
                            current_status=status,
-                           toggle_button_text=toggle_button_text)
+                           toggle_button_text=toggle_button_text,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
 
 def get_filtered_users(search_query):
     # Assuming you have a method to filter users based on a search query
@@ -856,6 +1001,10 @@ def get_filtered_users(search_query):
 def new_employee():
     form = EmployeeForm()
     
+    pageTitle = 'New Employee'
+    
+    user_permissions = current_user.permissions
+    
     if form.validate_on_submit():
         new_employee = Employee(
             employeeNo=form.employeeNo.data,
@@ -871,7 +1020,9 @@ def new_employee():
         return redirect(url_for('all_employees'))
         pass
 
-    return render_template('newEmployee.html', form=form)
+    return render_template('newEmployee.html', form=form,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
 
 @app.route('/all_employees', methods=['GET', 'POST'])
 @login_required
@@ -880,6 +1031,10 @@ def all_employees():
     rows_per_page = request.args.get('rows_per_page', 10, type=int)
     status = request.args.get('status', 'active')  # Get status from query parameters
 
+    pageTitle = 'All Employees'
+    
+    user_permissions = current_user.permissions
+    
     if request.method == 'POST':
         if 'deactivate_selected' in request.form:
             employee_ids = request.form.getlist('employee_checkbox')
@@ -934,7 +1089,9 @@ def all_employees():
     return render_template('allEmployees.html', 
                            employee_pagination=employee_pagination,
                            current_status=status,
-                           toggle_button_text=toggle_button_text)
+                           toggle_button_text=toggle_button_text,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
 
 def get_filtered_employees(search_query):
     # Assuming you have a method to filter users based on a search query
@@ -977,7 +1134,6 @@ def get_employee_by_number(employeeNo):
 @app.route('/update_user', methods=['POST'])
 @login_required
 def update_user():
-
     if request.method == 'POST':
         # Get the form data
         username = request.form.get('username')
@@ -1042,10 +1198,13 @@ def get_user_by_username(username):
     user = User.query.filter_by(username=username).first()
     permissions = Permissions.query.filter_by(username=username).first()
 
+    user_permissions = current_user.permissions
+    
     if user:
         # Initialize the form and set the initial data based on the current permissions
         form2 = PermissionsForm(obj=permissions)
-        return render_template('editUser.html', user=user, form2=form2)
+        return render_template('editUser.html', user=user, form2=form2,
+                           user_permissions=user_permissions)
     else:
         return "User not found", 404
     
@@ -1363,6 +1522,10 @@ def profile():
 @login_required
 def gate_pass():
     
+    user_permissions = current_user.permissions
+    
+    pageTitle = 'New Gate Pass'
+    
     employee_list = Employee.query.filter().all()
     # visitor_code = generate_visitorCode()
     gate_pass_code = generate_gatePassId()
@@ -1444,7 +1607,9 @@ def gate_pass():
 
         return redirect(url_for('dashboard'))
 
-    return render_template('newGatePass.html', employee_list=employee_list)
+    return render_template('newGatePass.html', employee_list=employee_list,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
 
 def generate_gatePassId():
     # Get the current date in YYYYMMDD format
@@ -1476,6 +1641,10 @@ def approve_gatepass():
     employeeFormStatus = request.form.get('employeeFormStatus')
     gatePassForm = GatePass.query.filter_by(gatePassId=gatePassId).first()
 
+    pageTitle = 'Approve Gate Pass'
+    
+    user_permissions = current_user.permissions
+    
     if gatePassForm:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -1484,6 +1653,9 @@ def approve_gatepass():
 
         # Your logic based on the clicked button value
         if clicked_button_value == 'Approve':
+            
+            pageTitle = 'Approved Gate Pass Forms'
+    
             gatePassForm.employeeFormStatus = 'Approved'
             gatePassForm.employeeOfficer = current_user.username
 
@@ -1491,12 +1663,36 @@ def approve_gatepass():
             return redirect(url_for('dashboard'))
             
         elif clicked_button_value == 'Reject':
-            gatePassForm.employeeFormStatus = 'Rejected'
+            gatePassForm.employeeFormStatus = 'Approve Rejected'
             gatePassForm.employeeOfficer = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
-            
-        elif clicked_button_value == 'Confirm':
+           
+        return render_template('pendingGatePass.html', gatePassForm=gatePassForm, status=status,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
+        
+    else:
+        return jsonify({'error': 'Employee not found'}), 404
+
+@app.route('/confirm_gatepass', methods=['POST'])
+@login_required
+def confirm_gatepass():
+    gatePassId = request.form.get('gatePassId')
+    employeeFormStatus = request.form.get('employeeFormStatus')
+    gatePassForm = GatePass.query.filter_by(gatePassId=gatePassId).first()
+
+    pageTitle = 'Confirm Gate Pass'
+    
+    user_permissions = current_user.permissions
+    
+    if gatePassForm:
+        # Access the value of the clicked button from the form data
+        clicked_button_value = request.form.get('changeStatus')
+        print(clicked_button_value)
+        status = employeeFormStatus
+
+        if clicked_button_value == 'Confirm':
             gatePassForm.employeeFormStatus = 'Confirmed'
             gatePassForm.employeeConfirmedBy = current_user.username
             db.session.commit()
@@ -1508,23 +1704,73 @@ def approve_gatepass():
             db.session.commit()
             return redirect(url_for('dashboard'))
             
-        elif clicked_button_value == 'Out':
+        return render_template('approvedGatePass.html', gatePassForm=gatePassForm, status=status,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
+        
+    else:
+        return jsonify({'error': 'Employee not found'}), 404
+
+@app.route('/out_gatepass', methods=['POST'])
+@login_required
+def out_gatepass():
+    gatePassId = request.form.get('gatePassId')
+    employeeFormStatus = request.form.get('employeeFormStatus')
+    gatePassForm = GatePass.query.filter_by(gatePassId=gatePassId).first()
+
+    pageTitle = 'Out Gate Pass'
+    
+    user_permissions = current_user.permissions
+    
+    if gatePassForm:
+        # Access the value of the clicked button from the form data
+        clicked_button_value = request.form.get('changeStatus')
+        print(clicked_button_value)
+        status = employeeFormStatus
+            
+        if clicked_button_value == 'Out':
             gatePassForm.employeeFormStatus = 'Out'
             gatePassForm.employeeOutMark = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
             
-        elif clicked_button_value == 'In':
+        return render_template('confirmedGatePass.html', gatePassForm=gatePassForm, status=status,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
+        
+    else:
+        return jsonify({'error': 'Employee not found'}), 404
+    
+@app.route('/in_gatepass', methods=['POST'])
+@login_required
+def in_gatepass():
+    gatePassId = request.form.get('gatePassId')
+    employeeFormStatus = request.form.get('employeeFormStatus')
+    gatePassForm = GatePass.query.filter_by(gatePassId=gatePassId).first()
+
+    pageTitle = 'In Gate Pass'
+    
+    user_permissions = current_user.permissions
+    
+    if gatePassForm:
+        # Access the value of the clicked button from the form data
+        clicked_button_value = request.form.get('changeStatus')
+        print(clicked_button_value)
+        status = employeeFormStatus
+            
+        if clicked_button_value == 'In':
             gatePassForm.employeeFormStatus = 'In'
             gatePassForm.employeeInMark = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
             
-        return render_template('pendingGatePass.html', gatePassForm=gatePassForm, status=status)
+        return render_template('outGatePass.html', gatePassForm=gatePassForm, status=status,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
         
     else:
         return jsonify({'error': 'Employee not found'}), 404
-
+    
 @app.route('/edit_gatepass', methods=['POST'])
 @login_required
 def edit_gatepass():
@@ -1532,6 +1778,10 @@ def edit_gatepass():
     gatePassForm = GatePass.query.filter_by(gatePassId=gatePassId).first()
     print(gatePassForm)
 
+    pageTitle = 'Edit Gate Pass Request'
+    
+    user_permissions = current_user.permissions
+    
     if gatePassForm:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -1550,7 +1800,9 @@ def edit_gatepass():
             db.session.commit()
             return redirect(url_for('dashboard'))
         
-        return render_template('editGatePass.html', gatePassForm=gatePassForm)
+        return render_template('editGatePass.html', gatePassForm=gatePassForm,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
 
     else:
         return jsonify({'error': 'Employee not found', 'gatePassId': gatePassForm}), 404
@@ -1567,8 +1819,14 @@ def gate_pass_form():
 
     gate_pass = GatePass.query.filter_by(gatePassId=gatePassId).first()
 
+    pageTitle = 'Gate Pass Form'
+    
+    user_permissions = current_user.permissions
+    
     if visitor:
-        return render_template('gatePassForm.html', gate_pass=gate_pass)
+        return render_template('gatePassForm.html', gate_pass=gate_pass,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
     
     else:
         return jsonify({'error': 'Gate Pass Form not found', 'gatePassId': gatePassId}), 404

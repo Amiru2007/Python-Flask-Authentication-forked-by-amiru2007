@@ -1,0 +1,240 @@
+<nav class="sidebar">
+    <div class="nav-upper">
+        <div class="nav-logo-container">
+            <a href="{{ url_for('dashboard') }}">
+                <img class="nav-logo-image" src="{{ url_for('static', filename='logo.png') }}" alt="Dayartne Holdings Logo">
+            </a>
+        </div>
+        <ul class="nav-list">
+            <!-- Visitor Management Dropdown -->
+            {% if user_permissions.Edit_Visitor or user_permissions.Approve_Visitor or user_permissions.In_Visitor or user_permissions.Out_Visitor or user_permissions.Create_Visitor %}
+            <li class="nav-dropdown">
+                <a class="dropdown-toggle" onclick="toggleDropdown('visitor-management-dropdown')">
+                    <span class="main-nav-link-header">
+                        <span class="nav-icon">
+                            <i class="ph-bold ph-person"></i>
+                        </span>
+                        Visitor Manage
+                    </span>
+                    <i class="ph-bold ph-caret-down"></i>
+                </a>
+                <ul id="visitor-management-dropdown" class="dropdown-menu">
+                    {% if user_permissions.Create_Visitor %}
+                    <li>
+                        <a href="{{ url_for('new_visitor') }}">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-plus-circle"></i>
+                            </span>
+                            New Visitor
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.Edit_Visitor %}
+                    <li>
+                        <a onclick="togglePopup('editVisitorRequest')">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-pencil-simple"></i>
+                            </span>    
+                            Edit Visitor
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.Approve_Visitor %}
+                    <li>
+                        <a onclick="togglePopup('pendingApproval')">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-paper-plane-tilt"></i>
+                            </span>    
+                            Approve Visitor
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.In_Visitor %}
+                    <li>
+                        <a onclick="togglePopup('ApprovedVisitors')">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-arrow-circle-right"></i>
+                            </span>
+                            Arrive Visitor
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.Out_Visitor %}
+                    <li>
+                        <a onclick="togglePopup('arrivedVisitors')">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-check-circle"></i>
+                            </span>    
+                            Depart Visitor
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.Create_Visitor %}
+                    <li>
+                        <a onclick="togglePopup('visitorsList')">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-person"></i>
+                            </span>    
+                            Recent Visitors
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </li>
+            {% endif %}
+    
+            <!-- Gate Pass Management Dropdown -->
+            {% if user_permissions.Create_Gate_Pass or user_permissions.Edit_Gate_Pass or user_permissions.Approve_Gate_Pass or user_permissions.Confirmed_Gate_Pass or user_permissions.Out_Gate_Pass or user_permissions.In_Gate_Pass %}
+            <li class="nav-dropdown">
+                <a class="dropdown-toggle" onclick="toggleDropdown('gate-pass-dropdown')">
+                    <span class="main-nav-link-header">
+                        <span class="nav-icon">
+                            <i class="ph-bold ph-door-open"></i> 
+                        </span>
+                        Gate Pass Manage
+                    </span>
+                    <i class="ph-bold ph-caret-down"></i>
+                </a>
+                <ul id="gate-pass-dropdown" class="dropdown-menu">
+                    {% if user_permissions.Create_Gate_Pass %}
+                    <li>
+                        <a href="{{ url_for('gate_pass') }}">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-plus-circle"></i>
+                            </span>
+                            Create Gate Pass
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.Edit_Gate_Pass %}
+                    <li>
+                        <a onclick="togglePopup('editGatePassList')">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-pencil"></i>
+                            </span>    
+                            Edit Gate Pass
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.Approve_Gate_Pass %}
+                    <li>
+                        <a onclick="togglePopup('requestGatePassList')">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-warning-circle"></i>
+                            </span>    
+                            Approve Gate Pass
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.Confirmed_Gate_Pass %}
+                    <li>
+                        <a onclick="togglePopup('approvedGatePassList')">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-check-circle"></i>
+                            </span>    
+                            Confirm Gate Pass
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.Out_Gate_Pass %}
+                    <li>
+                        <a onclick="togglePopup('confirmedGatePassList')">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-arrow-circle-right"></i>
+                            </span>    
+                            Gate Pass Out
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.In_Gate_Pass %}
+                    <li>
+                        <a onclick="togglePopup('departedGatePassList')">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-arrow-circle-left"></i>
+                            </span>    
+                            Gate Pass In
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.Create_Gate_Pass %}
+                    <li>
+                        <a onclick="togglePopup('gatePassForms')">
+                            <span class="nav-icon">
+                                <i class="ph-bold ph-door-open"></i>
+                            </span>    
+                            Recent Gate Passes
+                        </a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </li>
+            {% endif %}
+    
+            <!-- <li>
+                <a href="{{ url_for('change_password') }}">
+                    <span class="main-nav-link-header">
+                        <i class="ph ph-password"></i> Change Password
+                    </span>
+                </a>
+            </li> -->
+            {% if user_permissions.Create_User %}
+            <li>
+                <a href="{{ url_for('all_users') }}">
+                    <span class="main-nav-link-header">
+                        <span class="nav-icon">
+                            <i class="ph-bold ph-user"></i>
+                        </span>    
+                        User Manage
+                    </span>
+                </a>
+            </li>
+            {% endif %}
+            {% if user_permissions.Create_User %}
+            <li>
+                <a href="{{ url_for('all_employees') }}">
+                    <span class="main-nav-link-header">
+                        <span class="nav-icon">
+                            <i class="ph-bold ph-identification-badge"></i>
+                        </span>    
+                        Employee Manage
+                    </span>
+                </a>
+            </li>
+            {% endif %}
+            {% if user_permissions.Create_Reports %}
+            <li>
+                <a onclick="openReports()">
+                    <span class="main-nav-link-header">
+                        <span class="nav-icon">
+                            <i class="ph-bold ph-scroll"></i>
+                        </span>    
+                        Reports
+                    </span>
+                </a>
+            </li>
+            {% endif %}
+        </ul>
+    </div>
+    <ul class="nav-list">
+        <li>
+            <a type="button" id="showReportButtons" onclick="openHelp()">
+                <span class="main-nav-link-header">
+                    <span class="nav-icon">
+                        <i class="ph-boldpyt ph-question-mark"></i>
+                    </span>    
+                    Help
+                </span>
+            </a>
+        </li>
+        <li>
+            <a href="{{url_for('logout')}}">
+                <span class="main-nav-link-header">
+                    <span class="nav-icon">
+                        <i class="ph-bold ph-sign-out"></i>
+                    </span>    
+                    logout
+                </span>
+            </a>
+        </li>
+    </ul>
+</nav>

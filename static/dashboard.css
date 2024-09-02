@@ -1,0 +1,42 @@
+.charts-conatiner {
+    width: calc(100% - 100px);
+    padding: 50px;
+}
+
+.date-container {
+    height: 50px;
+    font-size: 20px;
+}
+
+.date-container::after {
+    content: '';
+    display: block;
+    height: 2px;
+    width: 100%;
+    margin-top: 5px;
+    background: var(--textdued);
+}
+
+.visitor-charts {
+    display: block;
+}
+
+.visitor-charts .charts {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+.visitor-charts .charts .data-chart {
+    width: calc(50% - 40px);
+    padding: 20px;
+    height: auto;
+    /* background: black; */
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.visitor-charts .charts .data-chart:nth-child(1) {
+    margin-right: 30px;
+}

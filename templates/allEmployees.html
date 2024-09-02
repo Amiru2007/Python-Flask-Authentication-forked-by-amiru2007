@@ -11,6 +11,9 @@
     <title>All Employees</title>
 </head>
 <body>
+    {% extends 'base.html' %}
+
+    {% block content %}
     <div class="user-list" aria-label="All Employees">
         <form action="{{ url_for('all_employees') }}" method="post">
             <div class="mainTableHeader">
@@ -106,7 +109,6 @@
             {% endif %}
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function () {
             function initializeEventListeners() {
@@ -199,6 +201,7 @@
                 }
             }
         });
-    </script>    
+    </script>
+    {% endblock %}
 </body>
 </html>

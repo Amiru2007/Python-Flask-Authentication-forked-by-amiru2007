@@ -260,3 +260,14 @@ CREATE TABLE visitor (
 
 
 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+
+
+,
+                           user_permissions=user_permissions
+
+
+
+
+
+c

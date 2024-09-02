@@ -1,0 +1,872 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
+     <!-- <link rel="stylesheet" href="../static/style.css"> -->
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <title>Dashboard</title>
+</head>
+
+<body class="dashboard">
+    {% extends 'base.html' %}
+
+    {% block content %}
+    <h1>Dashboard Content</h1>
+    <p>This is the content for the dashboard page.</p>
+    <div class="header-logo">
+        <img class="logo-image" src="{{ url_for('static', filename='logo.png') }}" alt="Dayartne Holdings Logo">
+    </div>
+    <div class="toolsAndPreview">
+        <div class="tools">
+            <div class="grid-container" id="dynamic-grid">
+                <!-- New Visitor -->
+                {% if user_permissions.Create_Visitor %}
+                    <div class="grid-item" data-button-block="Create Visitor">
+                        <span><i class="ph ph-plus-circle"></i></span>
+                        <h3>New Visitor</h3>
+                        <a href="{{ url_for('new_visitor') }}"><button type="button">Create</button></a>
+                    </div>
+                {% endif %}
+
+                <!-- Edit Request -->
+                {% if user_permissions.Edit_Visitor %}
+                    <div class="grid-item" data-button-block="Edit Visitor">
+                        <span><i class="ph ph-pencil-simple"></i></span>
+                        <h3>Edit Visitor</h3>
+                        <button type="button" id="showRequestList" onclick="openShowRequestList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+                
+                <!-- Approve Visitor -->
+                {% if user_permissions.Approve_Visitor %}
+                    <div class="grid-item" data-button-block="Approve Visitor">
+                        <span><i class="ph ph-paper-plane-tilt"></i></span>
+                        <h3>Approve Visitor</h3>
+                        <button type="button" id="showToApproveList" onclick="openToApproveList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Arrive Visitor -->
+                {% if user_permissions.In_Visitor %}
+                    <div class="grid-item" data-button-block="In Visitor">
+                        <span><i class="ph ph-arrow-circle-right"></i></span>
+                        <h3>Arrive Visitor</h3>
+                        <button type="button" id="showApprovedList" onclick="openShowApprovedList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Depart Visitor -->
+                {% if user_permissions.Out_Visitor %}
+                    <div class="grid-item" data-button-block="Depart Visitor">
+                        <span><i class="ph ph-check-circle"></i></span>
+                        <h3>Depart Visitor</h3>
+                        <button type="button" id="showArrivedList" onclick="openArrivedList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+                
+                <!-- Change Password -->
+                <div class="grid-item" data-button-block="Change Password">
+                    <span><i class="ph ph-password"></i></span>
+                    <h3>Change Password</h3>
+                    <a href="{{ url_for('change_password') }}"><button type="button">Change</button></a>
+                </div>
+
+                <!-- User Management -->
+                {% if user_permissions.Create_User %}
+                    <div class="grid-item" data-button-block="User Management">
+                        <span><i class="ph ph-user"></i></i></span>
+                        <h3>User Management</h3>
+                        <a href="{{ url_for('all_users') }}"><button type="button">Manage</button></a>
+                    </div>
+                {% endif %}
+
+                <!-- Reports -->
+                {% if user_permissions.Create_Reports %}
+                    <div class="grid-item" data-button-block="Create Reports">
+                        <span><i class="ph ph-scroll"></i></span>
+                        <h3>Reports</h3>
+                        <button type="button" id="showReportButtons" onclick="openReports()" title="Open Reports Popup"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Reports -->
+                {% if user_permissions.Create_Visitor %}
+                    <div class="grid-item" data-button-block="Visitor List">
+                        <span><i class="ph ph-person"></i></span>
+                        <h3>Recent Visitors</h3>
+                        <button type="button" id="showVisitorList" onclick="openVisitors()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Gate Pass -->
+                {% if user_permissions.Create_Gate_Pass %}
+                    <div class="grid-item" data-button-block="Create Gate Pass">
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-plus-circle"></i>
+                            </span>
+                        </div>
+                        <h3>Gate Pass Form</h3>
+                        <a href="{{ url_for('gate_pass') }}"><button type="button">Create</button></a>
+                    </div>
+                {% endif %}
+
+                <!-- Gate Pass -->
+                {% if user_permissions.Edit_Gate_Pass %}
+                    <div class="grid-item" data-button-block="Edit Gate Pass">
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-pencil"></i>
+                            </span>
+                        </div>
+                        <h3>Edit Gate Pass</h3>
+                        <button type="button" id="showGatePassRequestList" onclick="openEditGatePassList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Gate Pass -->
+                {% if user_permissions.Approve_Gate_Pass %}
+                    <div class="grid-item" data-button-block="Approve Gate Pass">
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-warning-circle"></i>
+                            </span>
+                        </div>
+                        <h3>Approve Gate Pass</h3>
+                        <button type="button" id="showGatePassRequestList" onclick="openRequestGatePassList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Gate Pass -->
+                {% if user_permissions.Confirmed_Gate_Pass %}
+                    <div class="grid-item" data-button-block="Confirm Gate Pass">
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-check-circle"></i>
+                            </span>
+                        </div>
+                        <h3>Confirm Gate Pass</h3>
+                        <button type="button" id="showGatePassApprovedList" onclick="openApprovedGatePassList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Gate Pass -->
+                {% if user_permissions.Out_Gate_Pass %}
+                    <div class="grid-item" data-button-block="Out Gate Pass">
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-arrow-circle-right"></i>
+                            </span>
+                        </div>
+                        <h3>Gate Pass Out</h3>
+                        <button type="button" id="showGatePassConfirmedList" onclick="openConfirmedGatePassList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Gate Pass -->
+                {% if user_permissions.In_Gate_Pass %}
+                    <div class="grid-item" data-button-block="In Gate Pass">
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-arrow-circle-left"></i>
+                            </span>
+                        </div>
+                        <h3>Gate Pass In</h3>
+                        <button type="button" id="showGatePassDepartedList" onclick="openDepartedGatePassList()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+
+                <!-- Employee Management -->
+                {% if user_permissions.Create_User %}
+                    <div class="grid-item" data-button-block="Employee Management">
+                        <span><i class="ph ph-identification-badge"></i></span>
+                        <h3>Employee Management</h3>
+                        <a href="{{ url_for('all_employees') }}"><button type="button">Manage</button></a>
+                    </div>
+                {% endif %}
+
+                <!-- Reports -->
+                {% if user_permissions.Create_Gate_Pass %}
+                    <div class="grid-item" data-button-block="Gate Pass Forms">
+                        <div class="icon-container">
+                            <span><i class="ph ph-door-open"></i></span>
+                            <span class="secondary-icon">
+                                <i class="ph-bold ph-person"></i>
+                            </span>
+                        </div>
+                        <h3>Recent Gate Passes</h3>
+                        <button type="button" id="showGatePassFormList" onclick="openGatePassForms()"><i class="ph ph-arrow-right"></i></button>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        <div class="overlay" id="requestListoverlay" onclick="closeShowRequestList()"></div>
+        <div class="popup" id="requestList">
+            <div class="popupHeader">
+                <h3>Approved Visitor List</h3>
+                <button onclick="closeShowRequestList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for visitor in request_list %}
+                    <li>
+                        <form method="post" action="{{ url_for('edit_request') }}">
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                            {% if visitor.profilePhoto == 'none' %}
+                                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
+                            {% elif visitor.profilePhoto %}
+                                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
+                            {% endif %}
+                            <button type="submit">{{ visitor.visitorNo }}</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="pendingApprovaloverlay" onclick="closeShowApprovedList()"></div>
+        <div class="popup" id="pendingApproval">
+            <div class="popupHeader">
+                <h3>Approved Visitor List</h3>
+                <button onclick="closeShowApprovedList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for visitor in approved_visitor_numbers %}
+                    <li>
+                        <form method="post" action="{{ url_for('arrive_visitor') }}">
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                            {% if visitor.profilePhoto == 'none' %}
+                                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
+                            {% elif visitor.profilePhoto %}
+                                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
+                            {% endif %}
+                            <button type="submit">{{ visitor.visitorNo }}</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="ApprovedVisitorsoverlay" onclick="closeToApproveList()"></div>
+        <div class="popup" id="ApprovedVisitors">
+            <div class="popupHeader">
+                <h3>Pending Approval Visitor List</h3>
+                <button onclick="closeToApproveList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for visitor in pending_visitor_numbers %}
+                    <li>
+                        <form method="post" action="{{ url_for('get_visitor') }}">
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span>{{ visitor.visitorNo }}</span><span>{{ visitor.requester }}</span>
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="visitorsOverlay" onclick="closeVisitors()"></div>
+        <div class="popup" id="visitorsList">
+            <div class="popupHeader">
+                <h3>Visitor List</h3>
+                <button onclick="closeVisitors()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="search-container">
+                <input type="text" id="visitor-search" class="search-input" placeholder="Search..." style="width: calc(100% - 10px);">
+                <button type="button" onclick="performSearch()">
+                    <i class="ph-bold ph-magnifying-glass"></i>
+                </button>
+            </div>
+            <ul class="toApprove" id="search-results">
+                {% for visitor in visitors_list %}
+                    <li class="visitor-item">
+                        <form method="post" action="{{ url_for('visitor', visitor_no=visitor.visitorNo) }}">
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                            {% if visitor.profilePhoto == 'none' %}
+                                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
+                            {% elif visitor.profilePhoto %}
+                                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
+                            {% endif %}
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span class="visitorsListDetail">{{ visitor.visitorNo }}</span>
+                                {% if visitor.companyName %}
+                                    <span class="visitorsListDetail">{{ visitor.companyName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                {% if visitor.arrivedTime %}
+                                    <span class="visitorsListDetail">{{ visitor.arrivedTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                {% if visitor.departedTime %}
+                                    <span class="visitorsListDetail">{{ visitor.departedTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                <span class="visitorsListDetail">{{ visitor.status }}</span>
+                            </button>
+                        </form>
+                        <div class="detail-box">
+                            <div class="detail-box-row">
+                                <span>Visitor No:</span><span> {{ visitor.visitorNo }} </span>
+                            </div>
+                            <div class="detail-box-row">
+                                <span>Company Name:</span><span> {{ visitor.companyName or '-' }} </span>
+                            </div>
+                            <div class="detail-box-row">
+                                <span>Arrived Time:</span><span> {{ visitor.arrivedTime or '-' }} </span>
+                            </div>
+                            <div class="detail-box-row">
+                                <span>Departed Time:</span><span> {{ visitor.departedTime or '-' }} </span>
+                            </div>
+                            <div class="detail-box-row">
+                                <span>Status:</span><span> {{ visitor.status }} </span>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}            
+            </ul>            
+        </div>
+        <div class="overlay" id="gatePassFormsOverlay" onclick="closeGatePassForms()"></div>
+        <div class="popup" id="gatePassForms">
+            <div class="popupHeader">
+                <h3>Gate Pass Forms List</h3>
+                <button onclick="closeGatePassForms()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="search-container">
+                <input type="text" id="visitor-search" class="search-input" placeholder="Search..." style="width: calc(100% - 10px);">
+                <button type="button" onclick="performSearch()">
+                    <i class="ph-bold ph-magnifying-glass"></i>
+                </button>
+            </div>
+            <ul class="toApprove" id="search-results">
+                {% for gate_pass in gate_pass_forms %}
+                    <li class="visitor-item">
+                        <form method="post" action="{{ url_for('gate_pass_form', gatePassId=gate_pass.gatePassId) }}">
+                            <input type="hidden" name="gatePassId" value="{{ gate_pass.gatePassId }}">
+                                <span class="visitorsListDetail">{{ gate_pass.employeeNo }}</span>
+                                {% if gate_pass.employeeName %}
+                                    <span class="visitorsListDetail">{{ gate_pass.employeeName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail centered-details">-</span>
+                                {% endif %}
+                                {% if gate_pass.employeeDepartingTime %}
+                                    <span class="visitorsListDetail centered-details">{{ gate_pass.employeeDepartingTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail centered-details">-</span>
+                                {% endif %}
+                                {% if gate_pass.employeeArrivalTime %}
+                                    <span class="visitorsListDetail centered-details">{{ gate_pass.employeeArrivalTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail centered-details">-</span>
+                                {% endif %}
+                                <span class="visitorsListDetail">{{ gate_pass.employeeFormStatus }}</span>
+                            </button>
+                        </form>
+                        <div class="detail-box">
+                            <div class="detail-box-row">
+                                <span>Employee No:</span><span> {{ gate_pass.employeeNo }} </span>
+                            </div>
+                            <div class="detail-box-row">
+                                <span>Employee Name:</span><span> {{ gate_pass.employeeName or '-' }} </span>
+                            </div>
+                            <div class="detail-box-row">
+                                <span>Departing Time:</span><span> {{ gate_pass.employeeDepartingTime or '-' }} </span>
+                            </div>
+                            <div class="detail-box-row">
+                                <span>Arriving Time:</span><span> {{ gate_pass.employeeArrivalTime or '-' }} </span>
+                            </div>
+                            <div class="detail-box-row">
+                                <span>Status:</span><span> {{ gate_pass.employeeFormStatus }} </span>
+                            </div>
+                        </div>
+                    </li>
+                {% endfor %}            
+            </ul>            
+        </div>
+        <div class="overlay" id="arrivedOverlay" onclick="closeArrivedList()"></div>
+        <div class="popup" id="arrivedVisitors">
+            <div class="popupHeader">
+                <h3>Arrived Visitor List</h3>
+                <button onclick="closeArrivedList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for visitor in arrived_visitor_numbers %}
+                    <li>
+                        <form method="post" action="{{ url_for('depart_visitor') }}">
+                            <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                            {% if visitor.profilePhoto == 'none' %}
+                                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
+                            {% elif visitor.profilePhoto %}
+                                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
+                            {% endif %}
+                            <button type="submit">{{ visitor.visitorNo }}</button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="reportOverlay" onclick="closeReports()"></div>
+        <div class="popup" id="reportButtons">
+            <div class="popupHeader" style="position: relative; width: 100%;">
+                <h3>Export Reports</h3>
+                <button onclick="closeReports()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="reportButtonsContainer">
+                <form action="/export_excel/user" method="POST" class="excelExportBtns">
+                    <span><i class="ph ph-user-list"></i></span>
+                    <h5>User Report</h5>
+                    <button type="submit">Export</button>
+                </form>
+                <div class="excelExportBtns" onclick="openVisitorReport()">
+                    <span><i class="ph ph-user-square"></i></span>
+                    <h5>Visitor Reports</h5>
+                    <button type="button">Create</button>
+                </div>
+                <div class="excelExportBtns" onclick="openEmployeeGatePassReport()">
+                    <span><i class="ph ph-door"></i></span>
+                    <h5>Gate Pass Search</h5>
+                    <button type="button">Create</button>
+                </div>
+                <div class="excelExportBtns" onclick="openGatePassListReport()">
+                    <span><i class="ph ph-door"></i></span>
+                    <h5>Gate Pass List</h5>
+                    <button type="button">Create</button>
+                </div>
+            </div>
+        </div>
+        <div class="overlay" id="visitorReportOverlay" onclick="closeVisitorReport()"></div>
+        <div class="popup" id="visitorReportButtons">
+            <div class="popupHeader" style="position: relative; width: 100%;">
+                <h3>Set Duration</h3>
+                <button onclick="closeVisitorReport()"><i class="ph ph-x"></i></button>
+            </div>
+            <form action="/export_excel/visitor" method="POST" class="excelExportVisitorBtns">
+                <div class="startDate excelTimeDuration">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" name="startDate">
+                </div>
+                <div class="endDate excelTimeDuration">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" name="endDate">
+                </div>
+                <input type="submit" class="exportVisitorExcel" id="exportVisitorExcel" value="Export">
+            </form>
+        </div>
+        <div class="overlay" id="gatePassReportOverlay" onclick="closeEmployeeGatePassReport()"></div>
+        <div class="popup" id="gatePassReportButtons">
+            <div class="popupHeader" style="position: relative; width: 100%;">
+                <h3>Set Duration For Employee</h3>
+                <button onclick="closeEmployeeGatePassReport()"><i class="ph ph-x"></i></button>
+            </div>
+            <form action="/export_excel/employee_gate_pass" method="POST" class="excelExportVisitorBtns">
+                <div class="employeeNoForReport excelTimeDuration">
+                    <label for="reportEmployeeNo">Employee Number</label>
+                    <input type="text" id="reportEmployeeNo" name="reportEmployeeNo">
+                </div>
+                <div class="startDate excelTimeDuration">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" name="startDate">
+                </div>
+                <div class="endDate excelTimeDuration">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" name="endDate">
+                </div>
+                <input type="submit" class="exportVisitorExcel" id="exportEmployeeGatePassExcel" value="Export">
+            </form>
+        </div>
+        <div class="overlay" id="gatePassListReportOverlay" onclick="closeGatePassListReport()"></div>
+        <div class="popup" id="gatePassListReportButtons">
+            <div class="popupHeader" style="position: relative; width: 100%;">
+                <h3>Set Duration (Gate Pass List)</h3>
+                <button onclick="closeGatePassListReport()"><i class="ph ph-x"></i></button>
+            </div>
+            <form action="/export_excel/gate_pass_list" method="POST" class="excelExportVisitorBtns">
+                <div class="startDate excelTimeDuration">
+                    <label for="startDate">Start Date</label>
+                    <input type="date" id="startDate" name="startDate">
+                </div>
+                <div class="endDate excelTimeDuration">
+                    <label for="endDate">End Date</label>
+                    <input type="date" id="endDate" name="endDate">
+                </div>
+                <input type="submit" class="exportVisitorExcel" id="exportGatePassListExcel" value="Export">
+            </form>
+        </div>
+        <div class="overlay" id="requestGatePassListOverlay" onclick="closeRequestGatePassList()"></div>
+        <div class="popup" id="requestGatePassList">
+            <div class="popupHeader">
+                <h3>Gate Pass Requests</h3>
+                <button onclick="closeRequestGatePassList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for employee in pending_gate_pass %}
+                    <li>
+                        <form method="post" action="{{ url_for('approve_gatepass') }}">
+                            <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
+                            <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
+                                {% if employee.employeeName %}
+                                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                {% if employee.employeeDepartingTime %}
+                                    <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="editGatePassListOverlay" onclick="closeEditGatePassList()"></div>
+        <div class="popup" id="editGatePassList">
+            <div class="popupHeader">
+                <h3>Edit Gate Pass</h3>
+                <button onclick="closeEditGatePassList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for employee in edit_gate_pass %}
+                    <li>
+                        <form method="post" action="{{ url_for('edit_gatepass') }}">
+                            <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
+                            <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
+                                {% if employee.employeeName %}
+                                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                {% if employee.employeeDepartingTime %}
+                                    <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="approveGatePassListOverlay" onclick="closeApprovedGatePassList()"></div>
+        <div class="popup" id="approveGatePassList">
+            <div class="popupHeader">
+                <h3>Gate Pass Requests</h3>
+                <button onclick="closeApprovedGatePassList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for employee in approved_gate_pass %}
+                    <li>
+                        <form method="post" action="{{ url_for('approve_gatepass') }}">
+                            <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
+                            <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
+                                {% if employee.employeeName %}
+                                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                {% if employee.employeeDepartingTime %}
+                                    <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="confirmedGatePassListOverlay" onclick="closeConfirmedGatePassList()"></div>
+        <div class="popup" id="confirmedGatePassList">
+            <div class="popupHeader">
+                <h3>Gate Pass Requests</h3>
+                <button onclick="closeConfirmedGatePassList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for employee in confirmed_gate_pass %}
+                    <li>
+                        <form method="post" action="{{ url_for('approve_gatepass') }}">
+                            <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
+                            <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
+                                {% if employee.employeeName %}
+                                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                {% if employee.employeeDepartingTime %}
+                                    <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="departedGatePassListOverlay" onclick="closeDepartedGatePassList()"></div>
+        <div class="popup" id="departedGatePassList">
+            <div class="popupHeader">
+                <h3>Gate Pass Requests</h3>
+                <button onclick="closeDepartedGatePassList()"><i class="ph ph-x"></i></button>
+            </div>
+            <ul class="toApprove">
+                {% for employee in departed_gate_pass %}
+                    <li>
+                        <form method="post" action="{{ url_for('approve_gatepass') }}">
+                            <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
+                            <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                            <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                                <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
+                                {% if employee.employeeName %}
+                                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                                {% if employee.employeeDepartingTime %}
+                                    <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
+                                {% else %}
+                                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                                {% endif %}
+                            </button>
+                        </form>
+                    </li>
+                {% endfor %}
+            </ul>
+        </div>
+        <div class="overlay" id="helpMenuOverlay" onclick="closeHelp()"></div>
+        <div class="popup help-menu" id="helpMenu">
+            <div class="popupHeader" style="position: relative; width: 100%;">
+                <h3>Help Menu</h3>
+                <button onclick="closeHelp()"><i class="ph ph-x"></i></button>
+            </div>
+            <div class="panels">
+                <div class="tabs panel">
+                    <button type="button" onclick="openWindow(1)" id="button1">New Visitor</button>
+                    <button type="button" onclick="openWindow(2)" id="button2">Approve Visitor</button>
+                    <button type="button" onclick="openWindow(3)" id="button3">Password Change</button>
+                    <button type="button" onclick="openWindow(4)" id="button4">User Management</button>
+                    <button type="button" onclick="openWindow(5)" id="button5">Reports</button>
+                    <button type="button" onclick="openWindow(6)" id="button6">Gate User</button>
+                </div>
+                <div class="helpDetails panel">
+                    <div class="window" id="window1">
+                        <h3>How to create a visitor?</h3>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Click on “New Visitor” icon(Create).</li>
+                            <li class="mainListItem">
+                                Fill required fields one by on
+                                <ol>
+                                    <li class="inneListItem">Visitor ID no is compulsory (Here you can use National ID No, Driving License No & Passport No.).</li>
+                                    <li class="inneListItem">If you have a photo of the visitor you can upload it. Its size must be less-than 100Kb.</li>
+                                </ol>
+                            </li>
+                            <li class="mainListItem">
+                                The final form like given below.
+                                <br>
+                                <img id="fullscreenTrigger" src="{{ url_for('static', filename='Create Visitor Preview.jpg') }}" alt="Visitor Form Preview">
+                            </li>
+                            <li class="mainListItem">If information are correct, Click on “Save”.</li>
+                            <li class="mainListItem">If you do not need to save Click on “Cancel”.</li>
+                        </ol>
+                    </div>
+                    <div class="window" id="window2">
+                        <h3>How to Approve a visitor?</h3>
+                        <p style="font-size: 10px; color: #666666;">(Requester cannot approve his own request).</p>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Click on “Approve Visitor” icon “<span class="quotes"><i class="ph ph-arrow-right"></i></span>”.</li>
+                            <li class="mainListItem">Click on the relevant visitor number on side panel.</li>
+                            <li class="mainListItem">If any information need to update, mention in Remarks Field as required.</li>
+                            <li class="mainListItem">If enough information are there, Click on “Approve”,  else Click on “Reject”.</li>
+                        </ol>
+                    </div>
+                    <div class="window" id="window3">
+                        <h3>How to change current user's password?</h3>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Click on “Change” icon.</li>
+                            <li class="mainListItem">Type new password in both text boxes.</li>
+                            <li class="mainListItem">Click on “Save”.</li>
+                        </ol>
+                    </div>
+                    <div class="window" id="window4">
+                        <h3>How to create a new user?</h3>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Click on “Manage” icon.</li>
+                            <li class="mainListItem">To create a new user Click on “Create” icon.</li>
+                            <li class="mainListItem">Fill all fields with relevant information.</li>
+                            <li class="mainListItem">
+                                4. Select User level.
+                                <ol>
+                                    <li class="inneListItem">Admin - Can do any changes except Gate users functions.</li>
+                                    <li class="inneListItem">Approver - Can Approve & Create a new visitor Request.</li>
+                                    <li class="inneListItem">Requester - Only do request for a new user.</li>
+                                    <li class="inneListItem">Gate - Only Arrive & Departure functions are allowed.</li>
+                                </ol>
+                            </li>
+                            <li class="mainListItem">Click on “Register”</li>
+                        </ol>
+                        <h3>How to update an existing user's information?</h3>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Click on relevant user record.</li>
+                            <li class="mainListItem">Change information as required.</li>
+                            <li class="mainListItem">Click on “Save”</li>
+                        </ol>
+                        <h3>How to delete a user login?</h3>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Type the user name in search box, then Click on “Search” icon or Click on the Check box of the relevant users which is located at the left side of the user name.</li>
+                            <li class="mainListItem">Click on “Delete” icon.</li>
+                            <li class="mainListItem"><span style="color: #ff0000;">*</span>By clicking on “Select all” check box you can delete all users at once.</li>
+                            <li class="mainListItem">By Clicking on “<span class="quotes"><i class="ph ph-arrow-left"></i></span>” icon on left upper corner, you can come back to your dashboard.</li>
+                        </ol>
+                    </div>
+                    <div class="window" id="window5">
+                        <h3>How to generate Reports?</h3>
+                        <ol class="mainOl">
+                            <li class="mainListItem">Click on Reports “<span class="quotes"><i class="ph ph-arrow-right"></i></span>” icon.</li>
+                            <li class="mainListItem">
+                                Select required report on side panel.
+                                <ol>
+                                    <li class="inneListItem">User report - Generate users list.,</li>
+                                    <li class="inneListItem">Visitor Reports - Generate visitors list.(You should select a starting date & ending date for the report.)</li>
+                                </ol>
+                            </li>
+                            <li class="mainListItem">Finally Click on “Export” to generate the excel sheet.</li>
+                        </ol>
+                    </div>
+                    <div class="window" id="window6">
+                        <h3>How to visitor entrance manage?</h3>
+                        <h4>Visitor Entrance</h4>
+                        <ol class="mainOl">
+                            <li class="mainListItem">When a visitor arrives, ask the visitor number.</li>
+                            <li class="mainListItem">Click on Arrive Visitor “<span class="quotes"><i class="ph ph-arrow-right"></i></span>” icon.</li>
+                            <li class="mainListItem">Click on the relevant visitor number.</li>
+                            <li class="mainListItem">Check the Visitor ID number.</li>
+                            <li class="mainListItem">If any information mismatch except Visitor ID number, update the Remarks Field as required.</li>
+                            <li class="mainListItem">Click on “Arrived”</li>
+                        </ol>
+                        <h4>When Visitor Departure</h4>
+                        <ol class="mainOl">
+                            <li class="mainListItem">When a visitor depart, ask the visitor number.</li>
+                            <li class="mainListItem">Click on Departure Visitor “<span class="quotes"><i class="ph ph-arrow-right"></i></span>” icon.</li>
+                            <li class="mainListItem">Click on the relevant visitor number.</li>
+                            <li class="mainListItem">Click on “Departed”</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="fullscreenOverlay">
+        <div id="closeButton" onclick="closeFullscreen()">&#x2715;</div>
+        <img id="fullscreenImage" src="" alt="Fullscreen Image">
+    </div>
+    <div class="dashboard-footer" id="dashboardFooter">
+        <a href="{{url_for('logout')}}"><button type="button">logout</button></a>
+        <button type="button" id="showReportButtons" onclick="openHelp()">Help?</button>
+    </div>
+    <div class="contactMe" id="contactMe">
+        <div class="innerContainer">
+            <p style="padding-right: 20px;">Designed & developed By Amiru Weerathunga</p>
+            <div class="contactInfo">
+                <span>0768452122</span>
+                <div class="socialLinks">
+                    <a href="https://www.linkedin.com/in/amiru-weerathunga-499878280/" target="_blank"><i class="fa-brands fa-linkedin" style="color: #0077b5;"></i> <span class="linkText">LinkedIn</span></a>
+                    <a href="https://www.youtube.com/@Amiru_Weerathunga/featured" target="_blank"><i class="fa-brands fa-youtube" style="color: #CD201F;"></i> <span class="linkText">YouTube</span></a>
+                    <a href="https://github.com/Amiru2007" target="_blank"><i class="fa-brands fa-github" style="color: #000000;"></i> <span class="linkText">GitHub</span></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Visitor Request Reminder -->
+    {% if visitor_requests_reminder %}
+    <div class="requests-reminder" id="visitorReminder">
+        <div class="text-container">
+            <h3>Reminder</h3>
+            <p class="reminder-message">There are pending visitor requests.</p>
+        </div>
+        <div class="nav-btn-container">
+            <button type="button" id="showToApproveList2" onclick="openToApproveList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
+            <button type="button" onclick="closeVisitorReminder()"><i class="ph-fill ph-x-circle"></i></button>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Gate Pass Reminder -->
+    {% if gate_pass_requests_reminder %}
+    <div class="requests-reminder" id="gatePassReminder">
+        <div class="text-container">
+            <h3>Reminder</h3>
+            <p class="reminder-message">There are pending exit permit requests.</p>
+        </div>
+        <div class="nav-btn-container">
+            <button type="button" id="showGatePassRequestList2" onclick="openRequestGatePassList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
+            <button type="button" onclick="closeGatePassReminder()"><i class="ph-fill ph-x-circle"></i></button>
+        </div>
+    </div>
+    {% endif %}
+
+    <!-- Visitor Gate Reminder -->
+    {% if visitor_gate_reminder %}
+    <div class="requests-reminder" id="visitorGateReminder">
+        <div class="text-container">
+            <h3>Reminder</h3>
+            <p class="reminder-message">There are approved visitor requests.</p>
+        </div>
+        <div class="nav-btn-container">
+            <button type="button" id="showAnotherRequestList2" onclick="openShowApprovedList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
+            <button type="button" onclick="closeVisitorGateReminder()"><i class="ph-fill ph-x-circle"></i></button>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Gate Pass Gate Reminder -->
+    {% if gate_pass_gate_reminder %}
+    <div class="requests-reminder" id="gatePassGateReminder">
+        <div class="text-container">
+            <h3>Reminder</h3>
+            <p class="reminder-message">There are confirmed exit permits.</p>
+        </div>
+        <div class="nav-btn-container">
+            <button type="button" id="showAnotherRequestList1" onclick="openConfirmedGatePassList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
+            <button type="button" onclick="closeGatePassGateReminder()"><i class="ph-fill ph-x-circle"></i></button>
+        </div>
+    </div>
+    {% endif %}
+    
+    <!-- Gate Pass Gate Reminder -->
+    {% if approved_gate_pass_reminder %}
+    <div class="requests-reminder" id="approvedGatePassReminder">
+        <div class="text-container">
+            <h3>Reminder</h3>
+            <p class="reminder-message">There are Approved exit permits.</p>
+        </div>
+        <div class="nav-btn-container">
+            <button type="button" id="showAnotherRequestList1" onclick="openConfirmedGatePassList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
+            <button type="button" onclick="closeApprovedGatePassReminder()"><i class="ph-fill ph-x-circle"></i></button>
+        </div>
+    </div>
+    {% endif %}
+    {% endblock %}
+    <script src="{{ url_for('static', filename='dashboard.js')}}"></script>
+</body>
+</html>

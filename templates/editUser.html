@@ -13,6 +13,9 @@
 </head>
 
 <body class="register">
+    {% extends 'base.html' %}
+
+    {% block content %}
     <div class="content login">
         <form method="POST" action="{{ url_for('update_user') }}" class="login-details">
             <div class="logo-wrapper">
@@ -124,5 +127,6 @@
             document.getElementById('permissionList').classList.remove('visible');
         }
     </script>
+    {% endblock %}
 </body>
 </html>

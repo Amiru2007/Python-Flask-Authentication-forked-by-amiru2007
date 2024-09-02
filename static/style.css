@@ -11,14 +11,18 @@
     --popup-bg: #f1f8fe;
     --button-bg: #efefef;
     --table-line: #edf0f4;
-    --popup-border: #dddddd;
+    --popup-border: #e3e1e6;
     --border: #c8c8c8;
     --sub-text: #5c6378;
     --alt-text: #000000;
     --accent: #0078d4;
     --highlight: #00dfff;
+    --nav-bg: #fcfcfc;
+    --horizontal-nav-bg: #f3f1f6;
+    --textdued: #525469;
+    --timeframe-bg: #eae8ed;
 
-    --border-radius-1: 8px;
+    --border-radius-1: 5px;
 
     --font-size-12: 12px;
     --font-size-14: 14px;
@@ -60,7 +64,6 @@ body {
 
 body.dashboard,
 body.login,
-body.register,
 body.gatePassPage {
     display: flex;
     align-items: center;
@@ -85,7 +88,7 @@ body.gatePassPage {
 
 .register .content {
     width: 100%;
-    height: 400px;
+    height: calc(100vh - 72px);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -93,7 +96,7 @@ body.gatePassPage {
 
 .register .content form {
     width: 100%;
-    height: 600px;
+    /* height: 600px; */
 }
 
 .logo-wrapper {
@@ -182,8 +185,8 @@ select#level {
     border-bottom: 2px solid var(--accent);
 }
 
-.login-input:focus + .input-head,
-.login-input:not(:placeholder-shown) + .input-head {
+.login-input:focus+.input-head,
+.login-input:not(:placeholder-shown)+.input-head {
     top: 0;
     font-size: var(--font-size-12);
     color: var(--accent);
@@ -353,26 +356,27 @@ select#level {
 }
 
 .popup {
-    display: none;
     position: fixed;
+    z-index: 99999;
     bottom: 0;
     right: 0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.014);
-    z-index: 2;
+    /* box-shadow: 0 4px 8px rgba(0, 0, 0, 0.014); */
     width: 300px;
-    height: auto;
-    max-height: calc(
-        100vh - 30px
-    ); /* Set maximum height to 90% of the viewport height */
+    height: calc(100vh - 87px);
+    max-height: calc(100vh - 30px);
     overflow-y: auto;
-    background: var(--popup-bg);
-    border-radius: 10px;
-    margin: 8px;
+    background: var(--nav-bg);
+    border-left: 2px solid var(--popup-border) !important;
+    border-radius: 0;
+    margin: 0;
     padding: 0 15px 15px 15px;
-    opacity: 0;
     -webkit-transition: all 1s;
     transition: all 1s;
-    border: 2px solid var(--text-main);
+    border: 0;
+    transform: translateX(330px);
+    /* Initial position for transition */
+    transition: transform 0.5s ease, visibility 0.5s;
+    visibility: hidden;
 }
 
 #permissionList {
@@ -454,7 +458,6 @@ select#level {
     justify-content: space-between;
     position: fixed;
     z-index: 2;
-    background: var(--popup-bg);
 }
 
 #gatePassForms .popupHeader,
@@ -560,10 +563,10 @@ select#level {
     margin: 5px 0;
     padding: 10px;
     height: 30px;
-    background-color: var(--popup-bg);
     border: 1px solid var(--popup-border);
     border-radius: 5px;
     display: flex;
+    color: var(--textdued);
 }
 
 .toApprove li form button {
@@ -577,15 +580,26 @@ select#level {
     border-radius: 5px;
 }
 
-.overlay.visible,
 .popup.visible {
-    display: block;
     opacity: 1;
+    transform: translateX(0);
+    visibility: visible;
 }
 
 #gatePassForms,
 #visitorsList {
     width: 700px;
+    transform: translateX(720px);
+    /* Initial position for transition */
+    transition: transform 0.5s ease, visibility 0.5s;
+    visibility: hidden;
+}
+
+#gatePassForms.visible,
+#visitorsList.visible {
+    width: 700px;
+    transform: translateX(0);
+    visibility: visible;
 }
 
 .visitorPage {
@@ -594,20 +608,20 @@ select#level {
 
 .content.visitor {
     width: 100%;
-    height: 100vh;
+    height: auto;
 }
 
 .visitorForm {
     width: 100%;
-    height: 100vh;
+    height: auto;
 }
 
 .visitordetails {
     width: calc(100% - 46px);
-    background: var(--button-low-bg);
+    background: var(--main-bg-color);
     border-radius: 10px;
     margin: 8px 8px 0px 8px;
-    padding: 15px;
+    padding: 25px 15px 15px 15px;
 }
 
 .visitdetails {
@@ -621,21 +635,22 @@ select#level {
 .visitdetails .left {
     flex-grow: 1;
     height: 500px;
-    background: var(--button-low-bg);
+    background: var(--main-bg-color);
     border-radius: 10px;
     margin: 4px 0px 4px 8px;
     padding: 15px;
 }
 
 .visitdetails .left h4 {
-    font-size: 24px;
+    font-size: 26px;
+    padding-left: 18px;
 }
 
 .visitorForm .names,
 .visitdetails .left .container {
     width: 100%;
     height: 50px;
-    background: #f9f9f9;
+    background: var(--main-bg-color);
     display: flex;
     align-items: center;
     justify-content: flex;
@@ -647,6 +662,9 @@ select#level {
 .visitorForm .visitordetails .names .id {
     width: 50%;
     padding: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .visitdetails .left .enterDetail {
@@ -716,12 +734,12 @@ select#level {
 }
 
 .right {
-    width: 300px;
+    width: auto;
     height: 500px;
-    background: var(--button-low-bg);
+    background: var(--main-bg-color);
     border-radius: 10px;
     margin: 8px;
-    padding: 15px;
+    padding: 15px 29px 15px 5px;
 }
 
 .right .visitor-photo {
@@ -793,14 +811,14 @@ select#level {
 }
 
 .footer {
-    width: calc(100% - 32px);
+    width: auto;
     height: 70px;
     background: transparent;
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 8px;
-    padding: 8px;
+    padding: 8px 35px 8px 31px;
 }
 
 .footer .approveOrReject,
@@ -861,7 +879,8 @@ select#level {
 }
 
 .user-list {
-    width: 80%;
+    /* padding: 0 50px; */
+    width: 100%;
     margin: 20px auto;
 }
 
@@ -905,7 +924,7 @@ select#level {
 .user-list table {
     width: 100%;
     background: var(--main-bg-color);
-    padding: 16px;
+    /* padding: 16px; */
 }
 
 .user-list table .tableHeadRow tr {
@@ -981,7 +1000,7 @@ select#level {
     border-bottom: 1px solid transparent !important;
 }
 
-.user-list[aria-label="All Employees"]  table tbody tr td:nth-child(3) {
+.user-list[aria-label="All Employees"] table tbody tr td:nth-child(3) {
     font-family: var(--open-sans);
 }
 
@@ -1145,7 +1164,12 @@ select#level {
 .radio,
 .user-list input[type="checkbox"] {
     transform: scale(1.2);
-    margin: 7px; /* Adjust the font size as needed */
+    margin: 7px;
+    /* Adjust the font size as needed */
+}
+
+.grid-element input[type="radio"] {
+    margin: 7px 2px !important;
 }
 
 .pwordchange-details {
@@ -1185,7 +1209,8 @@ select#level {
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.014);
     z-index: 1;
     width: 300px;
-    height: fit-content; /* Set maximum height to 90% of the viewport height */
+    height: fit-content;
+    /* Set maximum height to 90% of the viewport height */
     overflow-y: auto;
     background: var(--text-main);
     border-radius: 10px;
@@ -1216,7 +1241,8 @@ select#level {
     right: 0;
     box-shadow: -4px -4px 20px #edf8ff43;
     z-index: 1;
-    height: fit-content; /* Set maximum height to 90% of the viewport height */
+    height: fit-content;
+    /* Set maximum height to 90% of the viewport height */
     overflow-y: auto;
     background: #edf8ff;
     padding: 4px 15px;
@@ -1322,12 +1348,10 @@ select#level {
 
 .help-menu .panels .tabs .activeButton {
     /* Add your styles for the active button here */
-    background-color: var(
-        --border
-    ); /* Change this to your desired active button background color */
-    color: var(
-        --alt-text
-    ); /* Change this to your desired active button text color */
+    background-color: var(--border);
+    /* Change this to your desired active button background color */
+    color: var(--alt-text);
+    /* Change this to your desired active button text color */
 }
 
 .help-menu .panels .helpDetails {
@@ -1369,7 +1393,8 @@ select#level {
 
 .help-menu .panels .helpDetails .window .mainOl .mainListItem {
     list-style-position: inside;
-    align-items: center; /* Align content vertically in the flex container */
+    align-items: center;
+    /* Align content vertically in the flex container */
     /* white-space: nowrap; */
 }
 
@@ -1496,8 +1521,9 @@ select#level {
     margin-top: 3px;
     border: 1px solid var(--border);
     width: 100%;
-    max-height: 200px; /* Maximum height when multiple items are visible */
-    overflow-y: auto; 
+    max-height: 200px;
+    /* Maximum height when multiple items are visible */
+    overflow-y: auto;
 }
 
 .option {
@@ -1529,9 +1555,9 @@ select#level {
     margin-top: 40px;
     height: 40px;
     padding: 0;
-    width: 685px;
-    background: var(--popup-bg);
-    box-shadow: 0px 10px 10px#f1f8fe;
+    width: 694px;
+    /* background: var(--popup-bg); */
+    /* box-shadow: 0px 10px 10px#f1f8fe; */
     z-index: 9999;
 }
 
@@ -1575,6 +1601,7 @@ select#level {
     text-overflow: ellipsis;
     margin: 0 10px;
 }
+
 .visitorsListDetail:last-child {
     flex: 1;
     margin: 0 !important;
@@ -1721,10 +1748,10 @@ select#level {
 }
 
 .gate-pass-form {
-    width: 900px;
+    /* width: 900px; */
     height: auto;
-    background: #ececec5f;
-    padding: 30px;
+    /* background: #ececec5f; */
+    padding: 30px 50px;
     border-radius: 30px;
 }
 
@@ -1737,9 +1764,10 @@ select#level {
     grid-template-columns: repeat(2, 1fr);
     grid-template-rows: repeat(3, 1fr);
     grid-column-gap: 40px;
-    grid-row-gap: 10px;
-    width: calc(100% - 40px);
-    padding: 20px 20px 0 20px;
+    grid-row-gap: 20px;
+    /* width: calc(100% - 40px); */
+    width: 100%;
+    /* padding: 20px 20px 0 20px; */
 }
 
 .grid-element {
@@ -1781,9 +1809,25 @@ select#level {
     align-items: center;
     justify-content: center;
 }
+.control-buttons-container .gate-pass-input-container {
+    padding: 0 !important;
+}
+
+.gate-pass-detail-block .gate-pass-input-container:nth-child(1) {
+    padding: 0 20px 0 0;
+}
+
+.gate-pass-detail-block .gate-pass-input-container:nth-child(2) {
+    padding: 0 0 0 20px;
+}
+
+.gate-pass-detail-block.departing-reason .gate-pass-input-container,
+.gate-pass-detail-block.departing-remark .gate-pass-input-container {
+    padding: 0 !important;
+}
 
 .gate-pass-input-container {
-    height: 50px;
+    height: 60px;
     /* background: rgb(141, 141, 141); */
     display: flex;
     align-items: center;
@@ -1822,12 +1866,12 @@ select#level {
 
 .employee-status {
     flex: none !important;
-    width: calc(50% - 40px);
+    width: calc(50% - 20px);
 }
 
-.button-container {
+/* .button-container {
     margin-right: 10px;
-}
+} */
 
 .control-buttons-container .exit-form-control-btn {
     width: 100px;
@@ -1835,7 +1879,7 @@ select#level {
     background: var(--button-bg);
     border: 1px solid var(--border);
     border-radius: var(--border-radius-1);
-    margin: 0 10px;
+    margin: 0 0 0 10px;
 }
 
 .exit-form-control-btn.accented {
@@ -1874,14 +1918,17 @@ span.secondary-icon i {
     opacity: 0;
     z-index: 99999;
     box-shadow: 3px 3px 10px rgba(50, 50, 50, 0.144);
-    transform: translateX(330px); /* Initial position for transition */
+    transform: translateX(330px);
+    /* Initial position for transition */
     transition: opacity 0.5s ease, transform 0.5s ease, visibility 0.5s;
     visibility: hidden;
 }
 
 .requests-reminder.show {
-    opacity: 1; /* Show notification */
-    transform: translateX(0); /* Move to final position */
+    opacity: 1;
+    /* Show notification */
+    transform: translateX(0);
+    /* Move to final position */
     visibility: visible;
 }
 
@@ -1909,14 +1956,6 @@ span.secondary-icon i {
     width: 24px;
     height: 24px;
     margin-left: 10px;
-}
-
-.nav-btn-container {
-    width: auto;
-    height: auto;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
 }
 
 @media screen and (max-width: 1360px) {
@@ -2176,6 +2215,19 @@ span.secondary-icon i {
     }
 }
 
+/* Adjust if the sidebar width changes */
+@media (max-width: 768px) {
+    .sidebar {
+        width: 200px;
+        /* Adjust for smaller screens */
+    }
+
+    .main-content {
+        margin-left: 200px;
+        width: calc(100% - 200px);
+    }
+}
+
 @media screen and (max-width: 650px) {
     .gate-pass-title {
         margin-top: 50px;
@@ -2253,6 +2305,7 @@ span.secondary-icon i {
     .linkText {
         display: none;
     }
+
     .dashboard-footer {
         bottom: 10px;
     }

@@ -13,6 +13,9 @@
 </head>
 
 <body class="gatePassPage">
+    {% extends 'base.html' %}
+
+    {% block content %}
     <h1 class="gate-pass-title">Exit Permit</h1>
     <form action="{{ url_for('approve_gatepass', gatePassId=gatePassForm.gatePassId) }}" method="POST" class="gate-pass-form" enctype="multipart/form-data">
         <div class="main-form-container">
@@ -114,7 +117,7 @@
                     <input type="text" id="employeeStatus" name="employee-status" title="Status" value="{{ gatePassForm.employeeFormStatus }}" readonly>
                 </div>
                 <div class="button-container">
-                    <input type="hidden" name="gatePassId" value="{{ gatePassForm.gatePassId }}">
+                    <input type="hidden" name="gatePassId" id="gatePassId" value="{{ gatePassForm.gatePassId }}">
                     {% if status == 'Pending' %}
                         <a href="{{ url_for('dashboard') }}"><button type="submit" class="exit-form-control-btn" title="reject" name="changeStatus" value="Reject">Reject</button></a>
                         <a href="{{ url_for('dashboard') }}"><button type="submit" class="exit-form-control-btn accented" title="approve" name="changeStatus" value="Approve">Approve</button></a>
@@ -151,5 +154,6 @@
             });
         });
     </script>
+    {% endblock %}
 </body>
 </html>

@@ -10,6 +10,9 @@
 </head>
 
 <body class="visitorPage">
+    {% extends 'base.html' %}
+
+    {% block content %}
     <div class="content visitor">
         <form method="POST" action="{{ url_for('get_visitor', visitor_no=visitor.visitorNo) }}" class="visitorForm">
             
@@ -214,5 +217,6 @@
         //         window.open(outlookLink, '_blank');
         //     }
     </script>
+    {% endblock %}
 </body>
 </html>

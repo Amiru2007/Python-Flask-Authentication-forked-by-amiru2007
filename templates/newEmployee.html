@@ -13,21 +13,24 @@
 </head>
 
 <body class="register">
+    {% extends 'base.html' %}
+
+    {% block content %}
     <div class="content login">
         <form method="POST" action="" class="login-details">
-            <div class="logo-wrapper">
+            <!-- <div class="logo-wrapper">
                 <img class="logo-image" src="{{ url_for('static', filename='logo.png') }}" alt="Dayartne Holdings Logo">
-            </div>
+            </div> -->
             {{ form.hidden_tag() }}
             <div class="twosections">
-                <div class="sections-container">
-                    <div class="section">
+                <div class="sections-container" style="flex-direction: column;">
+                    <div class="section" style="padding: 20px 0;">
                         <div class="form-sections">
                             <h4 class="input-head">Employee No.</h4>
                             {{ form.employeeNo(class="login-input") }}
                         </div>
                     </div>
-                    <div class="section">
+                    <div class="section" style="padding: 20px 0;">
                         <div class="form-sections">
                             <h4 class="input-head">Name with initials</h4>
                             {{ form.nameWithInitials(class="login-input") }}
@@ -45,5 +48,6 @@
             </div>
         </form>
     </div>
+    {% endblock %}
 </body>
 </html>

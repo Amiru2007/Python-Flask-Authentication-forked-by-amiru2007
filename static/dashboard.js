@@ -1,282 +1,53 @@
-function openShowRequestList() {
-    document.getElementById('requestListoverlay').classList.add('visible');
-    document.getElementById('requestList').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
+function toggleSubMenu(id) {
+    var submenu = document.getElementById(id);
+    submenu.style.display = submenu.style.display === 'block' ? 'none' : 'block';
 }
 
-function closeShowRequestList() {
-    document.getElementById('requestListoverlay').classList.remove('visible');
-    document.getElementById('requestList').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
+function loadContent(url) {
+    event.preventDefault();
+    fetch(url, { headers: { "X-Requested-With": "XMLHttpRequest" } })
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('content').innerHTML = data;
+            history.pushState(null, '', url);
+        })
+        .catch(error => console.log('Error loading content:', error));
 }
 
-function openShowApprovedList() {
-    document.getElementById('pendingApprovaloverlay').classList.add('visible');
-    document.getElementById('pendingApproval').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
+let currentPopup = null;
+
+function togglePopup(popupId) {
+    // Close the current popup if it's open and different from the new one
+    if (currentPopup && currentPopup !== popupId) {
+        document.getElementById(currentPopup).classList.remove('visible');
+    }
+
+    // Show the new popup or close it if the same popup is clicked again
+    const popup = document.getElementById(popupId);
+    if (popup.classList.contains('visible')) {
+        popup.classList.remove('visible');
+        currentPopup = null;
+    } else {
+        popup.classList.add('visible');
+        currentPopup = popupId;
+    }
+
+    // Toggle visibility of the common elements
+    const hideElements = popup.classList.contains('visible');
+    document.getElementById('contactMe').classList.toggle('hide', hideElements);
+    document.getElementById('dashboardFooter').classList.toggle('hide', hideElements);
 }
 
-function closeShowApprovedList() {
-    document.getElementById('pendingApprovaloverlay').classList.remove('visible');
-    document.getElementById('pendingApproval').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
+function closeCurrentPopup() {
+    // Close the current popup
+    if (currentPopup) {
+        document.getElementById(currentPopup).classList.remove('visible');
+        currentPopup = null;
 
-function openToApproveList() {
-    document.getElementById('ApprovedVisitorsoverlay').classList.add('visible');
-    document.getElementById('ApprovedVisitors').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
-}
-
-function closeToApproveList() {
-    document.getElementById('ApprovedVisitorsoverlay').classList.remove('visible');
-    document.getElementById('ApprovedVisitors').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
-
-function openArrivedList() {
-    document.getElementById('arrivedOverlay').classList.add('visible');
-    document.getElementById('arrivedVisitors').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
-}
-
-function closeArrivedList() {
-    document.getElementById('arrivedOverlay').classList.remove('visible');
-    document.getElementById('arrivedVisitors').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
-
-function openReports() {
-    document.getElementById('reportOverlay').classList.add('visible');
-    document.getElementById('reportButtons').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
-}
-
-function closeReports() {
-    document.getElementById('reportOverlay').classList.remove('visible');
-    document.getElementById('reportButtons').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
-
-function openVisitorReport() {
-    document.getElementById('reportOverlay').classList.remove('visible');
-    document.getElementById('reportButtons').classList.remove('visible');
-    document.getElementById('visitorReportOverlay').classList.add('visible');
-    document.getElementById('visitorReportButtons').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-}
-
-function closeVisitorReport() {
-    document.getElementById('visitorReportOverlay').classList.remove('visible');
-    document.getElementById('visitorReportButtons').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
-
-function openEmployeeGatePassReport() {
-    document.getElementById('reportOverlay').classList.remove('visible');
-    document.getElementById('reportButtons').classList.remove('visible');
-    document.getElementById('gatePassReportOverlay').classList.add('visible');
-    document.getElementById('gatePassReportButtons').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-}
-
-function closeEmployeeGatePassReport() {
-    document.getElementById('gatePassReportOverlay').classList.remove('visible');
-    document.getElementById('gatePassReportButtons').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
-
-function openGatePassListReport() {
-    document.getElementById('reportOverlay').classList.remove('visible');
-    document.getElementById('reportButtons').classList.remove('visible');
-    document.getElementById('gatePassListReportOverlay').classList.add('visible');
-    document.getElementById('gatePassListReportButtons').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-}
-
-function closeGatePassListReport() {
-    document.getElementById('gatePassListReportOverlay').classList.remove('visible');
-    document.getElementById('gatePassListReportButtons').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
-
-function openVisitors() {
-    document.getElementById('visitorsOverlay').classList.add('visible');
-    document.getElementById('visitorsList').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
-}
-
-function closeVisitors() {
-    document.getElementById('visitorsOverlay').classList.remove('visible');
-    document.getElementById('visitorsList').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
-
-function openRequestGatePassList() {
-    document.getElementById('requestGatePassListOverlay').classList.add('visible');
-    document.getElementById('requestGatePassList').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
-}
-
-function closeRequestGatePassList() {
-    document.getElementById('requestGatePassListOverlay').classList.remove('visible');
-    document.getElementById('requestGatePassList').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
-
-function openEditGatePassList() {
-    document.getElementById('editGatePassListOverlay').classList.add('visible');
-    document.getElementById('editGatePassList').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
-}
-
-function closeEditGatePassList() {
-    document.getElementById('editGatePassListOverlay').classList.remove('visible');
-    document.getElementById('editGatePassList').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
-
-function openApprovedGatePassList() {
-    document.getElementById('approveGatePassListOverlay').classList.add('visible');
-    document.getElementById('approveGatePassList').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
-}
-
-function closeApprovedGatePassList() {
-    document.getElementById('approveGatePassListOverlay').classList.remove('visible');
-    document.getElementById('approveGatePassList').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
-
-function openConfirmedGatePassList() {
-    document.getElementById('confirmedGatePassListOverlay').classList.add('visible');
-    document.getElementById('confirmedGatePassList').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
-}
-
-function closeConfirmedGatePassList() {
-    document.getElementById('confirmedGatePassListOverlay').classList.remove('visible');
-    document.getElementById('confirmedGatePassList').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
-
-function openDepartedGatePassList() {
-    document.getElementById('departedGatePassListOverlay').classList.add('visible');
-    document.getElementById('departedGatePassList').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
-}
-
-function closeDepartedGatePassList() {
-    document.getElementById('departedGatePassListOverlay').classList.remove('visible');
-    document.getElementById('departedGatePassList').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
-}
-
-function openGatePassForms() {
-    document.getElementById('gatePassFormsOverlay').classList.add('visible');
-    document.getElementById('gatePassForms').classList.add('visible');
-    document.getElementById('contactMe').classList.add('hide');
-    document.getElementById('dashboardFooter').classList.add('hide');
-    document.getElementById('gatePassReminder').classList.remove('show');
-    document.getElementById('visitorReminder').classList.remove('show');
-    document.getElementById('gatePassGateReminder').classList.remove('show');
-    document.getElementById('visitorGateReminder').classList.remove('show');
-    document.getElementById('approvedGatePassReminder').classList.remove('show');
-}
-
-function closeGatePassForms() {
-    document.getElementById('gatePassFormsOverlay').classList.remove('visible');
-    document.getElementById('gatePassForms').classList.remove('visible');
-    document.getElementById('contactMe').classList.remove('hide');
-    document.getElementById('dashboardFooter').classList.remove('hide');
+        // Show the common elements
+        document.getElementById('contactMe').classList.remove('hide');
+        document.getElementById('dashboardFooter').classList.remove('hide');
+    }
 }
 
 window.onload = function() {

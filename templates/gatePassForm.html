@@ -13,6 +13,9 @@
 </head>
 
 <body class="gatePassPage">
+    {% extends 'base.html' %}
+
+    {% block content %}
     <h1 class="gate-pass-title">Exit Permit</h1>
     <form action="{{ url_for('gate_pass_form', gatePassId=gate_pass.gatePassId) }}" method="POST" class="gate-pass-form" enctype="multipart/form-data">
         <div class="main-form-container">
@@ -116,5 +119,6 @@
             </div>
         </div>
     </form>
+    {% endblock %}
 </body>
 </html>

@@ -10,6 +10,9 @@
 </head>
 
 <body class="visitorPage">
+    {% extends 'base.html' %}
+
+    {% block content %}
     <div class="content visitor">
         <form method="POST" action="{{ url_for('arrive_visitor', visitor_no=visitor.visitorNo) }}" class="visitorForm">
             
@@ -197,5 +200,6 @@
             });
         });
     </script>
+    {% endblock %}
 </body>
 </html>

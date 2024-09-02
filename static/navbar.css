@@ -1,0 +1,312 @@
+.nav-btn-container {
+    width: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.container {
+    display: flex;
+    max-width: 100%;
+    width: 100%;
+}
+
+/* Sidebar styles */
+.sidebar {
+    width: auto;
+    height: calc(100vh - 40px);
+    background-color: var(--nav-bg);
+    color: var(--textdued);
+    position: fixed;
+    top: 0;
+    left: 0;
+    overflow: hidden;
+    font-family: Arial, sans-serif;
+    padding-top: 20px;
+    transition: width 0.3s ease;
+    padding: 20px;
+    border-right: 2px solid var(--popup-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+/* Main content styles */
+.main-content {
+    margin-left: 306px;
+    /* padding: 20px; */
+    width: calc(100% - 306px);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.nav-logo-container {
+    padding: 30px 0 40px 0;
+    text-align: center;
+}
+
+.nav-logo-image {
+    max-width: 200px;
+    height: auto;
+}
+
+.nav-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.nav-list li {
+    position: relative;
+}
+
+/* Style for dropdown links */
+.nav-list li a {
+    display: block;
+    padding: 12px;
+    color: var(--textdued);
+    text-decoration: none;
+    /* border-bottom: 1px solid #495057; */
+    width: 240px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: color 0.3s ease;
+    font-size: 18px;
+}
+
+.nav-list li a .nav-icon {
+    margin: 0 10px 0 0;
+}
+
+.nav-list li a:hover {
+    color: var(--alt-text);
+}
+
+/* Dropdown Menu */
+.nav-dropdown {
+    position: relative;
+    width: 240px;
+}
+
+/* Hidden state for dropdown */
+.dropdown-menu {
+    max-height: 0;
+    /* Start with height 0 */
+    overflow: hidden;
+    /* Hide overflow when collapsed */
+    opacity: 0;
+    /* Start with opacity 0 */
+    visibility: hidden;
+    /* Start with visibility hidden */
+    margin-left: 10px;
+    width: calc(100% - 20px);
+    /* Make the dropdown full-width */
+    /* box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); */
+    transition: max-height 0.5s ease, opacity 0.5s ease, visibility 0.5s ease;
+    /* Transition effects */
+    transition: max-height 0.6s ease, opacity 0.6s ease, visibility 0.6s ease;
+    /* Adjust timings if needed */
+}
+
+/* When the dropdown is shown */
+.dropdown-menu.show {
+    max-height: 500px;
+    /* Allow dropdown to expand (adjust as needed) */
+    opacity: 1;
+    visibility: visible;
+}
+
+.dropdown-menu li a {
+    color: var(--textdued);
+    text-decoration: none;
+    font-weight: 500;
+    justify-content: flex-start !important;
+    padding: 10px 10px 10px 15px !important;
+    font-size: 16px !important;
+}
+
+/* .dropdown-menu li a:hover {
+    background-color: #6c757d;
+} */
+
+/* Optional: Add styles for the dropdown-toggle */
+.dropdown-toggle {
+    cursor: pointer;
+}
+
+.horizontal-global-nav {
+    width: calc(100% - 372px);
+    flex-grow: initial;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--horizontal-nav-bg);
+    padding: 16px 34px;
+    border-bottom: 2px solid var(--popup-border);
+    position: fixed;
+}
+
+.horizontal-global-nav .nav-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.horizontal-global-nav h3 {
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+}
+
+.horizontal-global-nav h3::after {
+    content: '';
+    height: 2px;
+    width: 60px;
+    border-radius: 9px;
+    background: var(--border);
+    display: inline-block;
+    margin: 0 15px;
+}
+
+/* Container styling */
+.switch-container {
+    display: inline-block;
+    position: relative;
+    width: 140px;
+    background-color: var(--timeframe-bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0px;
+    user-select: none;
+    display: flex;
+}
+
+/* Hidden radio inputs */
+.switch-container input[type="radio"] {
+    display: none;
+}
+
+/* Labels */
+.switch-label {
+    width: 100%;
+    text-align: center;
+    cursor: pointer;
+    padding: 5px 0;
+    font-weight: bold;
+    color: #666;
+    transition: color 0.3s;
+    z-index: 2;
+}
+
+/* Active state indicator */
+.switch-slider {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 3px;
+    width: calc(50% - 3px);
+    background-color: var(--main-bg-color);
+    border-radius: 6px;
+    transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1), color 0.3s ease;
+    z-index: 1;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Position the labels */
+.switch-label.day {
+    float: left;
+}
+
+.switch-label.month {
+    float: right;
+}
+
+/* Change the label color when selected */
+.switch-container input[type="radio"]:checked+label {
+    color: var(--alt-text);
+}
+
+/* Set the slider position based on input selection */
+#day:checked~.switch-slider {
+    left: 3;
+}
+
+#month:checked~.switch-slider {
+    left: 50%;
+}
+
+.horizontal-global-nav ul.control-nav {
+    width: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.horizontal-global-nav ul.control-nav li.nav-btn {
+    list-style: none;
+}
+
+.horizontal-global-nav ul.control-nav li.nav-btn button {
+    border: 1px solid var(--border);
+    border-radius: 50%;
+    background: var(--nav-bg);
+    width: 38px;
+    height: 38px;
+    font-size: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--textdued);
+    cursor: pointer;
+}
+
+.horizontal-global-nav ul.control-nav li.nav-btn button.notification-btn {
+    font-size: 20px !important;
+    margin-right: 10px;
+}
+
+.horizontal-global-nav ul.control-nav li.nav-btn button span {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.block-content-parent {
+    margin-top: 72px;
+    background: var(--main-bg-color);
+    height: calc(100vh - 72px);
+    overflow-y: auto;
+}
+
+#navVisitorNo {
+    letter-spacing: 1px;
+    color: var(--textdued);
+    font-weight: 700;
+}
+
+/* .popup {
+    display: none;
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.014);
+    z-index: 2;
+    width: 300px;
+    height: auto;
+    max-height: calc(100vh - 30px);
+    /* Set maximum height to 90% of the viewport height */
+    /* overflow-y: auto;
+    background: var(--popup-bg);
+    border-radius: 10px;
+    margin: 8px;
+    padding: 0 15px 15px 15px;
+    opacity: 0;
+    -webkit-transition: all 1s;
+    transition: all 1s;
+    border: 2px solid var(--text-main);
+} */
