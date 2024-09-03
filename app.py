@@ -369,6 +369,9 @@ class newPword(FlaskForm):
 @login_required
 def change_password():
     form = newPword()
+    
+    user_permissions = current_user.permissions
+    
     if form.validate_on_submit():
         print("password accessed")
         user = current_user
@@ -383,7 +386,7 @@ def change_password():
         #         login_user(user)
         return redirect(url_for('dashboard'))
     
-    return render_template('change_password.html', form=form)
+    return render_template('change_password.html', form=form, user_permissions=user_permissions)
 
 
 class LoginForm(FlaskForm):
@@ -504,6 +507,8 @@ def has_permission(permission_name):
 def dashboard():
     pageTitle = 'Dashboard'
     
+    # --- Visitors Charts ---
+    
     # Get today's date
     today = datetime.now().strftime('%Y-%m-%d')
     
@@ -515,37 +520,123 @@ def dashboard():
     # Convert the data into a Pandas DataFrame
     df = pd.DataFrame([(d.arrivedTime) for d in data], columns=['arrivedTime'])
     
-    # Print raw data for debugging
-    print("Raw Data from Database:", df.head())
-
     # Convert arrivedTime to datetime and extract the hour
     df['arrivedTime'] = pd.to_datetime(df['arrivedTime'], format='%Y-%m-%d %H:%M:%S').dt.hour
-    print("DataFrame after Time Conversion:", df.head())
 
     # Filter for time range between 8 AM (8) and 6 PM (18)
     df = df[(df['arrivedTime'] >= 8) & (df['arrivedTime'] <= 18)]
-    print("DataFrame after Filtering:", df.head())
 
     # Group by the hour and count the number of visitors for each hour
     chart_data = df.groupby('arrivedTime').size().reset_index(name='count')
-    print("Grouped Data:", chart_data)
 
     # Ensure all hours from 8 to 18 are represented in the data
     full_range = pd.DataFrame({'arrivedTime': range(8, 19)})
     chart_data = pd.merge(full_range, chart_data, left_on='arrivedTime', right_on='arrivedTime', how='left').fillna(0)
-    print("Final Data:", chart_data)
 
-    # Prepare data for rendering
+    # Prepare data for rendering the hourly chart
     labels = chart_data['arrivedTime'].astype(str).tolist()
     values = chart_data['count'].tolist()
 
-    # Print final data sent to template
-    print("Labels:", labels)
-    print("Values:", values)
+    # Get the date 30 days ago
+    start_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
+
+    # Query visitor data for the last 30 days
+    data_30_days = Visitor.query.filter(
+        Visitor.arrivedTime >= start_date
+    ).all()
+
+    # Convert the data into a Pandas DataFrame
+    df_30_days = pd.DataFrame([(d.arrivedTime) for d in data_30_days], columns=['arrivedTime'])
+
+    # Convert arrivedTime to datetime and extract the date
+    df_30_days['arrivedTime'] = pd.to_datetime(df_30_days['arrivedTime'], format='%Y-%m-%d %H:%M:%S').dt.date
+
+    # Group by the date and count the number of visitors for each date
+    chart_data_30_days = df_30_days.groupby('arrivedTime').size().reset_index(name='count')
+
+    # Ensure all dates in the last 30 days are represented in the data
+    full_range_30_days = pd.date_range(start=start_date, end=today).date
+    full_range_df_30_days = pd.DataFrame({'arrivedTime': full_range_30_days})
+    chart_data_30_days = pd.merge(full_range_df_30_days, chart_data_30_days, on='arrivedTime', how='left').fillna(0)
+
+    # Convert counts to integers
+    chart_data_30_days['count'] = chart_data_30_days['count'].astype(int)
+
+    # Prepare data for rendering the 30-day chart
+    labels_30_days = chart_data_30_days['arrivedTime'].astype(str).tolist()
+    values_30_days = chart_data_30_days['count'].tolist()
+
+    # --- Exit Permits Charts ---
+    
+    # Query all gate pass data and filter by today's date
+    gatepass_data = GatePass.query.filter(
+        GatePass.committedDate.like(f'{today}%')  # Filter records with today’s date
+    ).all()
+
+    # Convert the data into a Pandas DataFrame
+    df_gatepass = pd.DataFrame([(d.committedDate) for d in gatepass_data], columns=['committedDate'])
+    
+    # Convert committedDate to datetime and extract the hour
+    df_gatepass['committedDate'] = pd.to_datetime(df_gatepass['committedDate'], format='%Y-%m-%d %H:%M:%S').dt.hour
+
+    # Filter for time range between 8 AM (8) and 6 PM (18)
+    df_gatepass = df_gatepass[(df_gatepass['committedDate'] >= 8) & (df_gatepass['committedDate'] <= 18)]
+
+    # Group by the hour and count the number of gate passes for each hour
+    chart_data_gatepass = df_gatepass.groupby('committedDate').size().reset_index(name='count')
+
+    # Ensure all hours from 8 to 18 are represented in the data
+    full_range_gatepass = pd.DataFrame({'committedDate': range(8, 19)})
+    chart_data_gatepass = pd.merge(full_range_gatepass, chart_data_gatepass, left_on='committedDate', right_on='committedDate', how='left').fillna(0)
+
+    # Prepare data for rendering the hourly chart for gate passes
+    labels_gatepass = chart_data_gatepass['committedDate'].astype(str).tolist()
+    values_gatepass = chart_data_gatepass['count'].tolist()
+
+    # Query gate pass data for the last 30 days
+    gatepass_data_30_days = GatePass.query.filter(
+        GatePass.committedDate >= start_date
+    ).all()
+
+    # Convert the data into a Pandas DataFrame
+    df_gatepass_30_days = pd.DataFrame([(d.committedDate) for d in gatepass_data_30_days], columns=['committedDate'])
+
+    # Convert committedDate to datetime and extract the date
+    df_gatepass_30_days['committedDate'] = pd.to_datetime(df_gatepass_30_days['committedDate'], format='%Y-%m-%d %H:%M:%S').dt.date
+
+    # Group by the date and count the number of gate passes for each date
+    chart_data_gatepass_30_days = df_gatepass_30_days.groupby('committedDate').size().reset_index(name='count')
+
+    # Ensure all dates in the last 30 days are represented in the data
+    full_range_gatepass_30_days = pd.date_range(start=start_date, end=today).date
+    full_range_df_gatepass_30_days = pd.DataFrame({'committedDate': full_range_gatepass_30_days})
+    chart_data_gatepass_30_days = pd.merge(full_range_df_gatepass_30_days, chart_data_gatepass_30_days, on='committedDate', how='left').fillna(0)
+
+    # Convert counts to integers
+    chart_data_gatepass_30_days['count'] = chart_data_gatepass_30_days['count'].astype(int)
+
+    # Prepare data for rendering the 30-day chart for gate passes
+    labels_gatepass_30_days = chart_data_gatepass_30_days['committedDate'].astype(str).tolist()
+    values_gatepass_30_days = chart_data_gatepass_30_days['count'].tolist()
 
     user_permissions = current_user.permissions
 
-    return render_template('dashboard.html', labels=labels, values=values, user_permissions=user_permissions, pageTitle=pageTitle, today=today)
+    return render_template(
+        'dashboard.html',
+        labels=labels,
+        values=values,
+        labels_30_days=labels_30_days,
+        values_30_days=values_30_days,
+        labels_gatepass=labels_gatepass,
+        values_gatepass=values_gatepass,
+        labels_gatepass_30_days=labels_gatepass_30_days,
+        values_gatepass_30_days=values_gatepass_30_days,
+        user_permissions=user_permissions,
+        pageTitle=pageTitle,
+        today=today
+    )
+
+
     # try:
     #     # Query to retrieve visitorNos where the status is 'Pending'
     #     pending_visitors = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester != current_user.username).all()
@@ -628,7 +719,7 @@ def dashboard():
 
 # Register route
 @app.route('/register', methods=['GET', 'POST'])
-# @login_required
+@login_required
 def register():
     form = RegisterForm()
     form2 = PermissionsForm()
@@ -1830,6 +1921,15 @@ def gate_pass_form():
     
     else:
         return jsonify({'error': 'Gate Pass Form not found', 'gatePassId': gatePassId}), 404
+
+@app.route('/help')
+@login_required
+def help():
+    pageTitle = 'Help'
+    
+    user_permissions = current_user.permissions
+    
+    return render_template('help.html', user_permissions=user_permissions, pageTitle=pageTitle)
 
 if __name__ == "__main__":
     app.run(port=5000,  debug=True)

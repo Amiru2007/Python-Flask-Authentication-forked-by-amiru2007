@@ -490,12 +490,12 @@ select#level {
 
 #reportButtons {
     width: 250px;
-    height: auto;
+    /* height: auto; */
 }
 
 .popup .excelExportBtns {
     flex: 1;
-    margin: 5px 0;
+    margin: 15px 0;
     padding: 10px;
     height: 30px;
     background-color: var(--text-main);
@@ -525,8 +525,9 @@ select#level {
     background: var(--button-low-bg);
     border: 1px solid var(--border);
     font-size: var(--font-size-12);
-    border-radius: 3px;
+    border-radius: var(--border-radius-1);
     padding: 2px 5px;
+    cursor: pointer;
 }
 
 .popup .excelExportVisitorBtns {
@@ -534,14 +535,14 @@ select#level {
 }
 
 .popup .excelExportVisitorBtns .excelTimeDuration {
-    width: 100%;
+    width: calc(100% - 30px);
     height: 46px;
-    margin: 5px 0;
+    margin: 15px 0;
     background: var(--text-main);
     border: 1px solid var(--border);
     font-size: var(--font-size-12);
-    border-radius: 3px;
-    padding: 2px 5px;
+    border-radius: var(--border-radius-1);
+    padding: 6px 14px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -551,11 +552,25 @@ select#level {
     width: 150px;
     padding: 4px 6px;
     border: 1px solid var(--border);
-    border-radius: 3px;
+    border-radius: var(--border-radius-1);
     background-color: var(--text-main);
     font-size: var(--font-size-14);
     outline: none;
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.exportAndBack {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.exportAndBack button.exportVisitorExcel {
+    width: auto !important;
+}
+
+.exportAndBack .exportVisitorExcel {
+    cursor: pointer;
 }
 
 .toApprove li form {
@@ -564,7 +579,7 @@ select#level {
     padding: 10px;
     height: 30px;
     border: 1px solid var(--popup-border);
-    border-radius: 5px;
+    border-radius: var(--border-radius-1);
     display: flex;
     color: var(--textdued);
 }
@@ -696,7 +711,8 @@ select#level {
 .container input,
 .container textarea,
 .photo-controls input,
-.footer input {
+.footer input,
+button.exportVisitorExcel {
     width: calc(100% - 182px);
     padding: 4px 6px;
     border: 1px solid var(--border);
@@ -782,6 +798,7 @@ select#level {
     right: 0;
     top: 0;
     opacity: 0;
+    visibility: hidden;
 }
 
 .right .visitor-photo .photo-controls .file-upload-label {
@@ -1172,6 +1189,17 @@ select#level {
     margin: 7px 2px !important;
 }
 
+.change-password-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+}
+
+.change-password-child-container {
+    display: block;
+}
+
 .pwordchange-details {
     width: 300px;
     height: fit-content;
@@ -1294,45 +1322,57 @@ select#level {
     justify-content: space-between;
 }
 
-.help-menu {
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    bottom: auto;
-    width: 90%;
-    height: 90%;
-    padding-top: 0;
+#helpMenu {
+    width: calc(100% - 100px);
+    height: calc(100% - 100px);
+    padding: 50px;
 }
 
-.help-menu .popupHeader {
+/* #helpMenu .helpHeader {
     width: 100%;
-    padding: 10px 0;
+    margin-bottom: 20px;
     font-size: 28px;
     height: fit-content;
-}
+} */
 
-.help-menu .panels {
+#helpMenu .panels {
     width: 100%;
     height: calc(100% - 68px);
-    background-color: var(--popup-border);
-    display: flex;
     border-radius: 14px;
+    overflow: auto;
+}
+
+.tabs.panel {
+    width: 100%;
+    display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    padding: 20px 0 10px 0;
+    width: 100%;
 }
 
-.help-menu .panels .panel {
-    height: calc(100% - 16px);
-    background-color: var(--table-row);
-    border-radius: var(--border-radius-1);
+.tabs.panel button {
+    padding: 5px 10px;
+    font-size: 16px;
+    font-weight: 500;
+    border: 1px solid transparent;
+    background: transparent;
 }
 
-.help-menu .panels .tabs {
-    width: 250px;
-    margin: 8px;
+.tabs.panel button:nth-child(1) {
+    padding: 5px 10px 5px 0 !important;
 }
 
-.help-menu .panels .tabs button {
+.panels .tabs button::after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    margin-top: 2px;
+    background: transparent;
+    display: block;
+}
+
+/* .panels .tabs button {
     width: calc(100% - 10px);
     margin: 5px;
     padding: 15px 10px;
@@ -1344,75 +1384,78 @@ select#level {
     font-weight: 500;
     cursor: pointer;
     transition: all 0.2s ease;
+} */
+
+.panels .tabs .activeButton {
+    font-weight: 700;
 }
 
-.help-menu .panels .tabs .activeButton {
-    /* Add your styles for the active button here */
-    background-color: var(--border);
-    /* Change this to your desired active button background color */
-    color: var(--alt-text);
-    /* Change this to your desired active button text color */
-}
-
-.help-menu .panels .helpDetails {
-    flex: 1;
-    margin: 8px 8px 8px 0;
-}
-
-.help-menu .panels .helpDetails .window {
-    width: calc(100% - 30px);
-    height: calc(100% - 30px);
-    padding: 15px;
-    background-color: var(--table-row);
-    border-radius: var(--border-radius-1);
-    display: none;
-}
-
-.help-menu .panels .helpDetails .window.visible {
+.panels .tabs .activeButton::after {
+    content: '';
+    width: 100%;
+    height: 2px;
+    margin-top: 2px;
+    background: var(--accent);
     display: block;
 }
 
-.help-menu .panels .helpDetails .window h3 {
-    font-size: 18px;
+.panels .helpDetails {
+    /* flex: 1; */
+    width: 100%;
+    /* margin: 8px 8px 8px 0; */
+}
+
+.panels .helpDetails .window {
+    /* width: calc(100% - 30px);
+    height: calc(100% - 30px);
+    padding: 15px;
+    background-color: var(--table-row);
+    border-radius: var(--border-radius-1); */
+    display: none;
+}
+
+.panels .helpDetails .window.visible {
+    display: block;
+}
+
+.panels .helpDetails .window h3 {
+    font-size: 22px;
+    font-weight: 600;
+    margin: 10px 0;
+}
+
+.panels .helpDetails .window h4 {
+    font-size: 19px;
     font-weight: 500;
+    margin: 10px 0;
 }
 
-.help-menu .panels .helpDetails .window h4 {
+.panels .helpDetails .window .mainOl {
     font-size: var(--font-size-16);
-    font-weight: 400;
-}
-
-.help-menu .panels .helpDetails .window .mainOl {
-    margin-bottom: 10px;
-    font-size: var(--font-size-12);
     display: flex;
     flex-direction: column;
     align-items: flex-start;
     justify-content: center;
 }
 
-.help-menu .panels .helpDetails .window .mainOl .mainListItem {
+.panels .helpDetails .window .mainOl li::marker {
+    width: 50px;
+}
+
+.panels .helpDetails .window .mainOl .mainListItem {
     list-style-position: inside;
     align-items: center;
     /* Align content vertically in the flex container */
     /* white-space: nowrap; */
 }
 
-/* .help-menu .panels .helpDetails .window .mainOl .mainListItem::before {
-    content: '\2022';
-    width: 1em;
-    display: inline-block;
-    margin-right: 5px;
-    text-align: right;
-} */
-
-.help-menu .panels .helpDetails .window .mainOl .mainListItem ol {
+.panels .helpDetails .window .mainOl .mainListItem ol {
     list-style-type: upper-roman;
     margin-left: 30px;
     list-style-position: outside;
 }
 
-.help-menu .panels .helpDetails .window .mainOl .mainListItem img {
+.panels .helpDetails .window .mainOl .mainListItem img {
     width: 400px;
     height: auto;
     float: left;
@@ -1422,7 +1465,7 @@ select#level {
     cursor: pointer;
 }
 
-.help-menu .quotes {
+.quotes {
     padding: 2px 5px;
     background: var(--popup-border);
     border-radius: 3px;

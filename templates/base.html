@@ -19,6 +19,8 @@
                 <div class="nav-left">
                     <h3 class="nav-current-page" id="pageTitle">{{ pageTitle }}</h3>
                     {% if pageTitle == 'Dashboard' %}
+                        <div class="breakerLine"></div>
+                        <p>{{ today }}</p>
                         <!-- <div class="switch-container">
                             <input type="radio" id="day" name="timeframe" checked>
                             <label for="day" class="switch-label day">Day</label>
@@ -28,7 +30,20 @@
 
                             <div class="switch-slider"></div>
                         </div> -->
-                    {% elif pageTitle == 'New Visitor' or 'Approve Visitor' or 'Arrive Visitor' or 'Depart Visitor' %}
+                    {% elif pageTitle == 'New Visitor' %}
+                        <div class="breakerLine"></div>
+                        <p id="navVisitorNo">...</p>
+                    {% elif pageTitle == 'Approve Visitor' %}
+                        <div class="breakerLine"></div>
+                        <p id="navVisitorNo">...</p>
+                    {% elif pageTitle == 'Mark Visitor Arrival' %}
+                        <div class="breakerLine"></div>
+                        <p id="navVisitorNo">...</p>
+                    {% elif pageTitle == 'Mark Visitor Departure' %}
+                        <div class="breakerLine"></div>
+                        <p id="navVisitorNo">...</p>
+                    {% elif pageTitle == 'Edit Visitor Request' %}
+                        <div class="breakerLine"></div>
                         <p id="navVisitorNo">...</p>
                     {% endif %}
                 </div>
@@ -41,7 +56,7 @@
                         </button>
                     </li>
                     <li class="nav-btn">
-                        <button type="button" class="profile-btn" id="profile" title="Profile">
+                        <button type="button" class="profile-btn" id="profileBtn" title="Your Profile" onclick="togglePopup('profileMenu')">
                             <span>
                                 <i class="ph-fill ph-user-circle"></i>
                             </span>

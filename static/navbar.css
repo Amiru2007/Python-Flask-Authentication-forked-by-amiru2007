@@ -163,7 +163,7 @@
     align-items: center;
 }
 
-.horizontal-global-nav h3::after {
+.horizontal-global-nav .breakerLine {
     content: '';
     height: 2px;
     width: 60px;
@@ -289,24 +289,57 @@
     font-weight: 700;
 }
 
-/* .popup {
-    display: none;
-    position: fixed;
-    bottom: 0;
-    right: 0;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.014);
-    z-index: 2;
-    width: 300px;
+#profileMenu {
+    width: 150px;
+    padding: 5px;
     height: auto;
-    max-height: calc(100vh - 30px);
-    /* Set maximum height to 90% of the viewport height */
-    /* overflow-y: auto;
-    background: var(--popup-bg);
-    border-radius: 10px;
-    margin: 8px;
-    padding: 0 15px 15px 15px;
-    opacity: 0;
-    -webkit-transition: all 1s;
-    transition: all 1s;
-    border: 2px solid var(--text-main);
-} */
+    background: var(--main-bg-color);
+    display: none;
+    transform: translateX(0);
+    top: 65px !important;
+    bottom: auto;
+    right: 33px;
+    position: absolute;
+    border: 1px solid var(--border);
+    border-radius: var(--border-radius-1);
+    overflow: visible;
+}
+
+#profileMenu::after {
+    content: '';
+    width: 12px;
+    height: 12px;
+    background: var(--nav-bg);
+    display: block !important;
+    position: absolute;
+    transform: rotate(45deg);
+    top: -7px !important;
+    bottom: auto;
+    right: 10px;
+    border: 1px solid var(--border);
+    border-bottom: transparent;
+    border-right: transparent;
+    border-top-left-radius: var(--border-radius-1);
+}
+
+#profileMenu.visible {
+    position: fixed;
+    display: block;
+}
+
+#profileMenu ul li {
+    width: calc(100% - 10px);
+    list-style-type: none;
+}
+
+#profileMenu ul li a {
+    width: 100%;
+    padding: 5px;
+    display: block;
+    font-size: var(--font-size-14);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    text-decoration: none;
+    color: var(--textdued);
+}

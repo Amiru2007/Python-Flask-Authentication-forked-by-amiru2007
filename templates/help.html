@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <link rel="stylesheet" href="../static/style.css"> -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
+    <title>Gate Pass Form</title>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+
+<body class="gatePassPage">
+    {% extends 'base.html' %}
+
+    {% block content %}
+    <!-- <div class="overlay" id="helpMenuOverlay" onclick="closeHelp()"></div> -->
+    <div class="mainMenu" id="helpMenu">
+        <!-- <div class="helpHeader" style="position: relative; width: 100%;">
+            <h3>Help Menu</h3>
+        </div> -->
+        <div class="panels">
+            <div class="tabs panel">
+                <button type="button" onclick="openWindow(1)" id="button1">New Visitor</button>
+                <button type="button" onclick="openWindow(2)" id="button2">Approve Visitor</button>
+                <button type="button" onclick="openWindow(3)" id="button3">Password Change</button>
+                <button type="button" onclick="openWindow(4)" id="button4">User Management</button>
+                <button type="button" onclick="openWindow(5)" id="button5">Reports</button>
+                <button type="button" onclick="openWindow(6)" id="button6">Gate User</button>
+            </div>
+            <div class="helpDetails panel">
+                <div class="window" id="window1">
+                    <h3>How to create a visitor?</h3>
+                    <ol class="mainOl">
+                        <li class="mainListItem">Click on “New Visitor” icon(Create).</li>
+                        <li class="mainListItem">
+                            Fill required fields one by on
+                            <ol>
+                                <li class="inneListItem">Visitor ID no is compulsory (Here you can use National ID No, Driving License No & Passport No.).</li>
+                                <li class="inneListItem">If you have a photo of the visitor you can upload it. Its size must be less-than 100Kb.</li>
+                            </ol>
+                        </li>
+                        <li class="mainListItem">
+                            The final form like given below.
+                            <br>
+                            <!-- <img id="fullscreenTrigger" src="{{ url_for('static', filename='Create Visitor Preview.jpg') }}" alt="Visitor Form Preview"> -->
+                        </li>
+                        <li class="mainListItem">If information are correct, Click on “Save”.</li>
+                        <li class="mainListItem">If you do not need to save Click on “Cancel”.</li>
+                    </ol>
+                </div>
+                <div class="window" id="window2">
+                    <h3>How to Approve a visitor?</h3>
+                    <p style="font-size: 14px; color: #666666;">(Requester cannot approve his own request).</p>
+                    <ol class="mainOl">
+                        <li class="mainListItem">Click on “Approve Visitor” icon “<span class="quotes"><i class="ph ph-arrow-right"></i></span>”.</li>
+                        <li class="mainListItem">Click on the relevant visitor number on side panel.</li>
+                        <li class="mainListItem">If any information need to update, mention in Remarks Field as required.</li>
+                        <li class="mainListItem">If enough information are there, Click on “Approve”,  else Click on “Reject”.</li>
+                    </ol>
+                </div>
+                <div class="window" id="window3">
+                    <h3>How to change current user's password?</h3>
+                    <ol class="mainOl">
+                        <li class="mainListItem">Click on “Change” icon.</li>
+                        <li class="mainListItem">Type new password in both text boxes.</li>
+                        <li class="mainListItem">Click on “Save”.</li>
+                    </ol>
+                </div>
+                <div class="window" id="window4">
+                    <h3>How to create a new user?</h3>
+                    <ol class="mainOl">
+                        <li class="mainListItem">Click on “Manage” icon.</li>
+                        <li class="mainListItem">To create a new user Click on “Create” icon.</li>
+                        <li class="mainListItem">Fill all fields with relevant information.</li>
+                        <li class="mainListItem">
+                            4. Select User level.
+                            <ol>
+                                <li class="inneListItem">Admin - Can do any changes except Gate users functions.</li>
+                                <li class="inneListItem">Approver - Can Approve & Create a new visitor Request.</li>
+                                <li class="inneListItem">Requester - Only do request for a new user.</li>
+                                <li class="inneListItem">Gate - Only Arrive & Departure functions are allowed.</li>
+                            </ol>
+                        </li>
+                        <li class="mainListItem">Click on “Register”</li>
+                    </ol>
+                    <h3>How to update an existing user's information?</h3>
+                    <ol class="mainOl">
+                        <li class="mainListItem">Click on relevant user record.</li>
+                        <li class="mainListItem">Change information as required.</li>
+                        <li class="mainListItem">Click on “Save”</li>
+                    </ol>
+                    <h3>How to delete a user login?</h3>
+                    <ol class="mainOl">
+                        <li class="mainListItem">Type the user name in search box, then Click on “Search” icon or Click on the Check box of the relevant users which is located at the left side of the user name.</li>
+                        <li class="mainListItem">Click on “Delete” icon.</li>
+                        <li class="mainListItem"><span style="color: #ff0000;">*</span>By clicking on “Select all” check box you can delete all users at once.</li>
+                        <li class="mainListItem">By Clicking on “<span class="quotes"><i class="ph ph-arrow-left"></i></span>” icon on left upper corner, you can come back to your dashboard.</li>
+                    </ol>
+                </div>
+                <div class="window" id="window5">
+                    <h3>How to generate Reports?</h3>
+                    <ol class="mainOl">
+                        <li class="mainListItem">Click on Reports “<span class="quotes"><i class="ph ph-arrow-right"></i></span>” icon.</li>
+                        <li class="mainListItem">
+                            Select required report on side panel.
+                            <ol>
+                                <li class="inneListItem">User report - Generate users list.,</li>
+                                <li class="inneListItem">Visitor Reports - Generate visitors list.(You should select a starting date & ending date for the report.)</li>
+                            </ol>
+                        </li>
+                        <li class="mainListItem">Finally Click on “Export” to generate the excel sheet.</li>
+                    </ol>
+                </div>
+                <div class="window" id="window6">
+                    <h3>How to visitor entrance manage?</h3>
+                    <h4>Visitor Entrance</h4>
+                    <ol class="mainOl">
+                        <li class="mainListItem">When a visitor arrives, ask the visitor number.</li>
+                        <li class="mainListItem">Click on Arrive Visitor “<span class="quotes"><i class="ph ph-arrow-right"></i></span>” icon.</li>
+                        <li class="mainListItem">Click on the relevant visitor number.</li>
+                        <li class="mainListItem">Check the Visitor ID number.</li>
+                        <li class="mainListItem">If any information mismatch except Visitor ID number, update the Remarks Field as required.</li>
+                        <li class="mainListItem">Click on “Arrived”</li>
+                    </ol>
+                    <h4>When Visitor Departure</h4>
+                    <ol class="mainOl">
+                        <li class="mainListItem">When a visitor depart, ask the visitor number.</li>
+                        <li class="mainListItem">Click on Departure Visitor “<span class="quotes"><i class="ph ph-arrow-right"></i></span>” icon.</li>
+                        <li class="mainListItem">Click on the relevant visitor number.</li>
+                        <li class="mainListItem">Click on “Departed”</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            openWindow(1);
+        });
+
+        function openWindow(index) {
+            for (let i = 1; i <= 6; i++) {
+                const windowElement = document.getElementById(`window${i}`);
+                const buttonElement = document.getElementById(`button${i}`);
+                
+                if (i === index) {
+                    windowElement.classList.add('visible');
+                    buttonElement.classList.add('activeButton');
+                } else {
+                    windowElement.classList.remove('visible');
+                    buttonElement.classList.remove('activeButton');
+                }
+            }
+        }
+
+        document.getElementById("fullscreenTrigger").addEventListener("click", function() {
+            const fullscreenImage = document.getElementById("fullscreenImage");
+            const fullscreenOverlay = document.getElementById("fullscreenOverlay");
+
+            fullscreenImage.src = this.src;
+            fullscreenOverlay.style.display = "flex";
+        });
+
+        function closeFullscreen() {
+            document.getElementById("fullscreenOverlay").style.display = "none";
+        }
+
+        document.addEventListener("DOMContentLoaded", function () {
+            // ... (your existing code)
+
+            // Add the event listener for the search box
+            const searchInput = document.getElementById("visitor-search");
+            searchInput.addEventListener("input", function () {
+                const searchTerm = this.value.trim().toLowerCase();
+                performSearch(searchTerm);
+            });
+        });
+
+        document.addEventListener("DOMContentLoaded", function () {
+            const searchInput = document.getElementById('visitor-search');
+            const searchResults = document.getElementById('search-results');
+            const allVisitors = document.querySelectorAll('#search-results li');
+
+            searchInput.addEventListener('input', function () {
+                const searchTerm = searchInput.value.toLowerCase();
+
+                // Show only the matching visitors based on the search term
+                allVisitors.forEach(function (visitor) {
+                    const visitorNumber = visitor.querySelector('span:first-child').textContent.toLowerCase();
+                    const shouldShow = visitorNumber.includes(searchTerm);
+                    visitor.style.display = shouldShow ? 'block' : 'none';
+                });
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const visitorItems = document.querySelectorAll('.visitor-item');
+
+            visitorItems.forEach(item => {
+                item.addEventListener('mouseover', function (event) {
+                    const detailBox = this.querySelector('.detail-box');
+                    const rect = this.getBoundingClientRect();
+                    const detailBoxHeight = detailBox.offsetHeight;
+
+                    // Reset any inline styles first
+                    detailBox.style.top = '';
+                    detailBox.style.bottom = '';
+                    
+                    // Check if detail box would go beyond the viewport bottom
+                    if (rect.bottom + detailBoxHeight > window.innerHeight) {
+                        detailBox.style.bottom = '100%';
+                    } else {
+                        detailBox.style.top = '100%';
+                    }
+
+                    // Adjust left position if it overflows the right side of the viewport
+                    if (rect.right + detailBox.offsetWidth > window.innerWidth) {
+                        detailBox.style.left = 'auto';
+                        detailBox.style.right = '0';
+                    } else {
+                        detailBox.style.left = '0';
+                        detailBox.style.right = 'auto';
+                    }
+                });
+            });
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>

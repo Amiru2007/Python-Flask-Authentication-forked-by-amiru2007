@@ -203,7 +203,7 @@
             {% endif %}
             {% if user_permissions.Create_Reports %}
             <li>
-                <a onclick="openReports()">
+                <a onclick="togglePopup('reportButtons')">
                     <span class="main-nav-link-header">
                         <span class="nav-icon">
                             <i class="ph-bold ph-scroll"></i>
@@ -217,10 +217,10 @@
     </div>
     <ul class="nav-list">
         <li>
-            <a type="button" id="showReportButtons" onclick="openHelp()">
+            <a href="{{url_for('help')}}">
                 <span class="main-nav-link-header">
                     <span class="nav-icon">
-                        <i class="ph-boldpyt ph-question-mark"></i>
+                        <i class="ph-bold ph-question-mark"></i>
                     </span>    
                     Help
                 </span>

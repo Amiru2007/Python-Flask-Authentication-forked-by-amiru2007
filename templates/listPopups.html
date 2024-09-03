@@ -473,7 +473,7 @@
 <div class="popup" id="reportButtons">
     <div class="popupHeader" style="position: relative; width: 100%;">
         <h3>Export Reports</h3>
-        <button onclick="closeReports()"><i class="ph ph-x"></i></button>
+        <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
     </div>
     <div class="reportButtonsContainer">
         <form action="/export_excel/user" method="POST" class="excelExportBtns">
@@ -481,17 +481,17 @@
             <h5>User Report</h5>
             <button type="submit">Export</button>
         </form>
-        <div class="excelExportBtns" onclick="openVisitorReport()">
+        <div class="excelExportBtns" onclick="togglePopup('visitorReportButtons')">
             <span><i class="ph ph-user-square"></i></span>
             <h5>Visitor Reports</h5>
             <button type="button">Create</button>
         </div>
-        <div class="excelExportBtns" onclick="openEmployeeGatePassReport()">
+        <div class="excelExportBtns" onclick="togglePopup('gatePassReportButtons')">
             <span><i class="ph ph-door"></i></span>
             <h5>Gate Pass Search</h5>
             <button type="button">Create</button>
         </div>
-        <div class="excelExportBtns" onclick="openGatePassListReport()">
+        <div class="excelExportBtns" onclick="togglePopup('gatePassListReportButtons')">
             <span><i class="ph ph-door"></i></span>
             <h5>Gate Pass List</h5>
             <button type="button">Create</button>
@@ -503,7 +503,7 @@
 <div class="popup" id="visitorReportButtons">
     <div class="popupHeader" style="position: relative; width: 100%;">
         <h3>Set Duration</h3>
-        <button onclick="closeVisitorReport()"><i class="ph ph-x"></i></button>
+        <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
     </div>
     <form action="/export_excel/visitor" method="POST" class="excelExportVisitorBtns">
         <div class="startDate excelTimeDuration">
@@ -514,7 +514,10 @@
             <label for="endDate">End Date</label>
             <input type="date" id="endDate" name="endDate">
         </div>
-        <input type="submit" class="exportVisitorExcel" id="exportVisitorExcel" value="Export">
+        <div class="exportAndBack">
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i class="ph ph-arrow-left"></i></button>
+            <input type="submit" class="exportVisitorExcel" id="exportVisitorExcel" value="Export">
+        </div>
     </form>
 </div>
 
@@ -522,7 +525,7 @@
 <div class="popup" id="gatePassReportButtons">
     <div class="popupHeader" style="position: relative; width: 100%;">
         <h3>Set Duration For Employee</h3>
-        <button onclick="closeEmployeeGatePassReport()"><i class="ph ph-x"></i></button>
+        <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
     </div>
     <form action="/export_excel/employee_gate_pass" method="POST" class="excelExportVisitorBtns">
         <div class="employeeNoForReport excelTimeDuration">
@@ -537,7 +540,10 @@
             <label for="endDate">End Date</label>
             <input type="date" id="endDate" name="endDate">
         </div>
-        <input type="submit" class="exportVisitorExcel" id="exportEmployeeGatePassExcel" value="Export">
+        <div class="exportAndBack">
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i class="ph ph-arrow-left"></i></button>
+            <input type="submit" class="exportVisitorExcel" id="exportEmployeeGatePassExcel" value="Export">
+        </div>
     </form>
 </div>
 
@@ -545,7 +551,7 @@
 <div class="popup" id="gatePassListReportButtons">
     <div class="popupHeader" style="position: relative; width: 100%;">
         <h3>Set Duration (Gate Pass List)</h3>
-        <button onclick="closeGatePassListReport()"><i class="ph ph-x"></i></button>
+        <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
     </div>
     <form action="/export_excel/gate_pass_list" method="POST" class="excelExportVisitorBtns">
         <div class="startDate excelTimeDuration">
@@ -556,136 +562,24 @@
             <label for="endDate">End Date</label>
             <input type="date" id="endDate" name="endDate">
         </div>
-        <input type="submit" class="exportVisitorExcel" id="exportGatePassListExcel" value="Export">
+        <div class="exportAndBack">
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i class="ph ph-arrow-left"></i></button>
+            <input type="submit" class="exportVisitorExcel" id="exportGatePassListExcel" value="Export">
+        </div>
     </form>
 </div>
 
 
 
-
-
-
-
-
-<!-- <div class="overlay" id="helpMenuOverlay" onclick="closeHelp()"></div> -->
-<div class="popup help-menu" id="helpMenu">
-    <div class="popupHeader" style="position: relative; width: 100%;">
-        <h3>Help Menu</h3>
-        <button onclick="closeHelp()"><i class="ph ph-x"></i></button>
-    </div>
-    <div class="panels">
-        <div class="tabs panel">
-            <button type="button" onclick="openWindow(1)" id="button1">New Visitor</button>
-            <button type="button" onclick="openWindow(2)" id="button2">Approve Visitor</button>
-            <button type="button" onclick="openWindow(3)" id="button3">Password Change</button>
-            <button type="button" onclick="openWindow(4)" id="button4">User Management</button>
-            <button type="button" onclick="openWindow(5)" id="button5">Reports</button>
-            <button type="button" onclick="openWindow(6)" id="button6">Gate User</button>
-        </div>
-        <div class="helpDetails panel">
-            <div class="window" id="window1">
-                <h3>How to create a visitor?</h3>
-                <ol class="mainOl">
-                    <li class="mainListItem">Click on “New Visitor” icon(Create).</li>
-                    <li class="mainListItem">
-                        Fill required fields one by on
-                        <ol>
-                            <li class="inneListItem">Visitor ID no is compulsory (Here you can use National ID No, Driving License No & Passport No.).</li>
-                            <li class="inneListItem">If you have a photo of the visitor you can upload it. Its size must be less-than 100Kb.</li>
-                        </ol>
-                    </li>
-                    <li class="mainListItem">
-                        The final form like given below.
-                        <br>
-                        <img id="fullscreenTrigger" src="{{ url_for('static', filename='Create Visitor Preview.jpg') }}" alt="Visitor Form Preview">
-                    </li>
-                    <li class="mainListItem">If information are correct, Click on “Save”.</li>
-                    <li class="mainListItem">If you do not need to save Click on “Cancel”.</li>
-                </ol>
-            </div>
-            <div class="window" id="window2">
-                <h3>How to Approve a visitor?</h3>
-                <p style="font-size: 10px; color: #666666;">(Requester cannot approve his own request).</p>
-                <ol class="mainOl">
-                    <li class="mainListItem">Click on “Approve Visitor” icon “<span class="quotes"><i class="ph ph-arrow-right"></i></span>”.</li>
-                    <li class="mainListItem">Click on the relevant visitor number on side panel.</li>
-                    <li class="mainListItem">If any information need to update, mention in Remarks Field as required.</li>
-                    <li class="mainListItem">If enough information are there, Click on “Approve”,  else Click on “Reject”.</li>
-                </ol>
-            </div>
-            <div class="window" id="window3">
-                <h3>How to change current user's password?</h3>
-                <ol class="mainOl">
-                    <li class="mainListItem">Click on “Change” icon.</li>
-                    <li class="mainListItem">Type new password in both text boxes.</li>
-                    <li class="mainListItem">Click on “Save”.</li>
-                </ol>
-            </div>
-            <div class="window" id="window4">
-                <h3>How to create a new user?</h3>
-                <ol class="mainOl">
-                    <li class="mainListItem">Click on “Manage” icon.</li>
-                    <li class="mainListItem">To create a new user Click on “Create” icon.</li>
-                    <li class="mainListItem">Fill all fields with relevant information.</li>
-                    <li class="mainListItem">
-                        4. Select User level.
-                        <ol>
-                            <li class="inneListItem">Admin - Can do any changes except Gate users functions.</li>
-                            <li class="inneListItem">Approver - Can Approve & Create a new visitor Request.</li>
-                            <li class="inneListItem">Requester - Only do request for a new user.</li>
-                            <li class="inneListItem">Gate - Only Arrive & Departure functions are allowed.</li>
-                        </ol>
-                    </li>
-                    <li class="mainListItem">Click on “Register”</li>
-                </ol>
-                <h3>How to update an existing user's information?</h3>
-                <ol class="mainOl">
-                    <li class="mainListItem">Click on relevant user record.</li>
-                    <li class="mainListItem">Change information as required.</li>
-                    <li class="mainListItem">Click on “Save”</li>
-                </ol>
-                <h3>How to delete a user login?</h3>
-                <ol class="mainOl">
-                    <li class="mainListItem">Type the user name in search box, then Click on “Search” icon or Click on the Check box of the relevant users which is located at the left side of the user name.</li>
-                    <li class="mainListItem">Click on “Delete” icon.</li>
-                    <li class="mainListItem"><span style="color: #ff0000;">*</span>By clicking on “Select all” check box you can delete all users at once.</li>
-                    <li class="mainListItem">By Clicking on “<span class="quotes"><i class="ph ph-arrow-left"></i></span>” icon on left upper corner, you can come back to your dashboard.</li>
-                </ol>
-            </div>
-            <div class="window" id="window5">
-                <h3>How to generate Reports?</h3>
-                <ol class="mainOl">
-                    <li class="mainListItem">Click on Reports “<span class="quotes"><i class="ph ph-arrow-right"></i></span>” icon.</li>
-                    <li class="mainListItem">
-                        Select required report on side panel.
-                        <ol>
-                            <li class="inneListItem">User report - Generate users list.,</li>
-                            <li class="inneListItem">Visitor Reports - Generate visitors list.(You should select a starting date & ending date for the report.)</li>
-                        </ol>
-                    </li>
-                    <li class="mainListItem">Finally Click on “Export” to generate the excel sheet.</li>
-                </ol>
-            </div>
-            <div class="window" id="window6">
-                <h3>How to visitor entrance manage?</h3>
-                <h4>Visitor Entrance</h4>
-                <ol class="mainOl">
-                    <li class="mainListItem">When a visitor arrives, ask the visitor number.</li>
-                    <li class="mainListItem">Click on Arrive Visitor “<span class="quotes"><i class="ph ph-arrow-right"></i></span>” icon.</li>
-                    <li class="mainListItem">Click on the relevant visitor number.</li>
-                    <li class="mainListItem">Check the Visitor ID number.</li>
-                    <li class="mainListItem">If any information mismatch except Visitor ID number, update the Remarks Field as required.</li>
-                    <li class="mainListItem">Click on “Arrived”</li>
-                </ol>
-                <h4>When Visitor Departure</h4>
-                <ol class="mainOl">
-                    <li class="mainListItem">When a visitor depart, ask the visitor number.</li>
-                    <li class="mainListItem">Click on Departure Visitor “<span class="quotes"><i class="ph ph-arrow-right"></i></span>” icon.</li>
-                    <li class="mainListItem">Click on the relevant visitor number.</li>
-                    <li class="mainListItem">Click on “Departed”</li>
-                </ol>
-            </div>
-        </div>
-    </div>
-</div>
+<div id="profileMenu" class="popup">
+    <ul class="additionalLinks">
+        <li class="profileLinks">
+            <a href="{{ url_for('change_password') }}" id="changePasswordLink">
+                <span class="nav-icon">
+                    <i class="ph-bold ph-password"></i>
+                </span>
+                Change Password
+            </a>
+        </li>
+    </ul>
 </div>
