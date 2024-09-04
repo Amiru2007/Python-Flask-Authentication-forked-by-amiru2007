@@ -49,9 +49,12 @@
                 </div>
                 <ul class="control-nav">
                     <li class="nav-btn">
-                        <button type="button" class="notification-btn" id="showNotifications" title="Notifications">
+                        <button type="button" class="notification-btn" id="showNotifications" title="Notifications" onclick="togglePopup('notificationsMenu')">
                             <span>
                                 <i class="ph-fill ph-bell-simple-ringing"></i>
+                                {% if g.there_are_notification %}
+                                    <div class="thereAreNotificationBubble"></div>
+                                {% endif %}
                             </span>
                         </button>
                     </li>

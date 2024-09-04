@@ -268,6 +268,7 @@
 .horizontal-global-nav ul.control-nav li.nav-btn button.notification-btn {
     font-size: 20px !important;
     margin-right: 10px;
+    position: relative;
 }
 
 .horizontal-global-nav ul.control-nav li.nav-btn button span {
@@ -289,6 +290,7 @@
     font-weight: 700;
 }
 
+#notificationsMenu,
 #profileMenu {
     width: 150px;
     padding: 5px;
@@ -305,6 +307,7 @@
     overflow: visible;
 }
 
+#notificationsMenu::after,
 #profileMenu::after {
     content: '';
     width: 12px;
@@ -322,16 +325,25 @@
     border-top-left-radius: var(--border-radius-1);
 }
 
+#notificationsMenu {
+    padding: 5px 10px;
+    width: 404px;
+    right: 81px !important;
+}
+
+#notificationsMenu.visible,
 #profileMenu.visible {
     position: fixed;
     display: block;
 }
 
+#notificationsMenu ul li,
 #profileMenu ul li {
     width: calc(100% - 10px);
     list-style-type: none;
 }
 
+#notificationsMenu ul li a,
 #profileMenu ul li a {
     width: 100%;
     padding: 5px;
@@ -342,4 +354,14 @@
     justify-content: space-between;
     text-decoration: none;
     color: var(--textdued);
+}
+
+.thereAreNotificationBubble {
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    position: absolute;
+    top: 0;
+    right: 0;
 }

@@ -394,77 +394,6 @@
 
 
 
-<!-- Visitor Request Reminder -->
-{% if visitor_requests_reminder %}
-<div class="requests-reminder" id="visitorReminder">
-<div class="text-container">
-    <h3>Reminder</h3>
-    <p class="reminder-message">There are pending visitor requests.</p>
-</div>
-<div class="nav-btn-container">
-    <button type="button" id="showToApproveList2" onclick="openToApproveList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
-    <button type="button" onclick="closeVisitorReminder()"><i class="ph-fill ph-x-circle"></i></button>
-</div>
-</div>
-{% endif %}
-
-<!-- Gate Pass Reminder -->
-{% if g.gate_pass_requests_reminder %}
-<div class="requests-reminder" id="gatePassReminder">
-<div class="text-container">
-    <h3>Reminder</h3>
-    <p class="reminder-message">There are pending exit permit requests.</p>
-</div>
-<div class="nav-btn-container">
-    <button type="button" id="showGatePassRequestList2" onclick="openRequestGatePassList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
-    <button type="button" onclick="closeGatePassReminder()"><i class="ph-fill ph-x-circle"></i></button>
-</div>
-</div>
-{% endif %}
-
-<!-- Visitor Gate Reminder -->
-{% if g.visitor_gate_reminder %}
-<div class="requests-reminder" id="visitorGateReminder">
-<div class="text-container">
-    <h3>Reminder</h3>
-    <p class="reminder-message">There are approved visitor requests.</p>
-</div>
-<div class="nav-btn-container">
-    <button type="button" id="showAnotherRequestList2" onclick="openShowApprovedList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
-    <button type="button" onclick="closeVisitorGateReminder()"><i class="ph-fill ph-x-circle"></i></button>
-</div>
-</div>
-{% endif %}
-
-<!-- Gate Pass Gate Reminder -->
-{% if g.gate_pass_gate_reminder %}
-<div class="requests-reminder" id="gatePassGateReminder">
-<div class="text-container">
-    <h3>Reminder</h3>
-    <p class="reminder-message">There are confirmed exit permits.</p>
-</div>
-<div class="nav-btn-container">
-    <button type="button" id="showAnotherRequestList1" onclick="openConfirmedGatePassList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
-    <button type="button" onclick="closeGatePassGateReminder()"><i class="ph-fill ph-x-circle"></i></button>
-</div>
-</div>
-{% endif %}
-
-<!-- Gate Pass Gate Reminder -->
-{% if g.approved_gate_pass_reminder %}
-<div class="requests-reminder" id="approvedGatePassReminder">
-<div class="text-container">
-    <h3>Reminder</h3>
-    <p class="reminder-message">There are Approved exit permits.</p>
-</div>
-<div class="nav-btn-container">
-    <button type="button" id="showAnotherRequestList1" onclick="openConfirmedGatePassList()"><i class="ph-fill ph-arrow-circle-right"></i></button>
-    <button type="button" onclick="closeApprovedGatePassReminder()"><i class="ph-fill ph-x-circle"></i></button>
-</div>
-</div>
-{% endif %}
-
-
 
 
 
@@ -581,5 +510,80 @@
                 Change Password
             </a>
         </li>
+    </ul>
+</div>
+
+<div id="notificationsMenu" class="popup">
+    <ul class="additionalLinks">
+        <li class="profileLinks">
+            <!-- Visitor Request Reminder -->
+            {% if g.visitor_requests_reminder %}
+                <div class="requests-reminder" id="visitorReminder">
+                    <div class="text-container">
+                        <h3>Reminder</h3>
+                        <p class="reminder-message">There are pending visitor requests.</p>
+                    </div>
+                    <div class="nav-btn-container">
+                        <button type="button" id="showToApproveList2" onclick="togglePopup('pendingApproval')"><i class="ph-fill ph-arrow-circle-right"></i></button>
+                    </div>
+                </div>
+            {% endif %}
+        </li>
+        <li class="profileLinks">
+            <!-- Gate Pass Reminder -->
+            {% if g.gate_pass_requests_reminder %}
+                <div class="requests-reminder" id="gatePassReminder">
+                    <div class="text-container">
+                        <h3>Reminder</h3>
+                        <p class="reminder-message">There are pending exit permit requests.</p>
+                    </div>
+                    <div class="nav-btn-container">
+                        <button type="button" id="showGatePassRequestList2" onclick="togglePopup('requestGatePassList')"><i class="ph-fill ph-arrow-circle-right"></i></button>
+                    </div>
+                </div>
+            {% endif %}
+        </li>
+        <li class="profileLinks">
+            <!-- Visitor Gate Reminder -->
+            {% if g.visitor_gate_reminder %}
+                <div class="requests-reminder" id="visitorGateReminder">
+                    <div class="text-container">
+                        <h3>Reminder</h3>
+                        <p class="reminder-message">There are approved visitor requests.</p>
+                    </div>
+                    <div class="nav-btn-container">
+                        <button type="button" id="showAnotherRequestList2" onclick="togglePopup('ApprovedVisitors')"><i class="ph-fill ph-arrow-circle-right"></i></button>
+                    </div>
+                </div>
+            {% endif %}
+        </li>
+        <li class="profileLinks">
+            <!-- Gate Pass Gate Reminder -->
+            {% if g.gate_pass_gate_reminder %}
+                <div class="requests-reminder" id="gatePassGateReminder">
+                    <div class="text-container">
+                        <h3>Reminder</h3>
+                        <p class="reminder-message">There are confirmed exit permits.</p>
+                    </div>
+                    <div class="nav-btn-container">
+                        <button type="button" id="showAnotherRequestList1" onclick="togglePopup('confirmedGatePassList')"><i class="ph-fill ph-arrow-circle-right"></i></button>
+                    </div>
+                </div>
+            {% endif %}
+        </li>
+        <li class="profileLinks">
+            <!-- Gate Pass Gate Reminder -->
+            {% if g.approved_gate_pass_reminder %}
+                <div class="requests-reminder" id="approvedGatePassReminder">
+                    <div class="text-container">
+                        <h3>Reminder</h3>
+                        <p class="reminder-message">There are Approved exit permits.</p>
+                    </div>
+                    <div class="nav-btn-container">
+                        <button type="button" id="showAnotherRequestList1" onclick="togglePopup('approvedGatePassList')"><i class="ph-fill ph-arrow-circle-right"></i></button>
+                    </div>
+                </div>
+            {% endif %}    
+        </li>        
     </ul>
 </div>

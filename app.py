@@ -474,6 +474,8 @@ def set_global_variables():
         g.visitor_gate_reminder = False
         g.approved_gate_pass_reminder = False
 
+        g.there_are_notification = False
+
         if g.pending_gate_pass and has_permission('Approve_Gate_Pass'):
             g.gate_pass_requests_reminder = True
 
@@ -488,6 +490,10 @@ def set_global_variables():
 
         if g.confirmed_gate_pass and has_permission('Out_Gate_Pass'):
             g.approved_gate_pass_reminder = True
+
+        
+        if g.gate_pass_requests_reminder or g.visitor_requests_reminder or g.gate_pass_gate_reminder or g.visitor_gate_reminder or g.approved_gate_pass_reminder:
+            g.there_are_notification = True
 
         g.user_permissions = current_user.permissions
     else:
@@ -511,6 +517,7 @@ def dashboard():
     
     # Get today's date
     today = datetime.now().strftime('%Y-%m-%d')
+    start_of_today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     
     # Query all visitor data and filter by today's date
     data = Visitor.query.filter(
@@ -619,6 +626,46 @@ def dashboard():
     labels_gatepass_30_days = chart_data_gatepass_30_days['committedDate'].astype(str).tolist()
     values_gatepass_30_days = chart_data_gatepass_30_days['count'].tolist()
 
+    # --- Gate Pass Management Counts ---
+    
+    # 1. Count the employees who went out today (status = 'Out')
+    out_count = GatePass.query.filter(
+        GatePass.employeeDepartingDate.like(f'{today}%')
+    ).count()
+
+    # 2. Count the employees who returned today (status = 'In')
+    returned_count = GatePass.query.filter(
+        GatePass.employeeFormStatus == 'In',
+        GatePass.employeeDepartingDate.like(f'{today}%')
+    ).count()
+
+    # 3. Count the employees who are currently out of the office (status = 'Out')
+    out_of_office_count = GatePass.query.filter(
+        GatePass.employeeFormStatus == 'Out',
+        GatePass.employeeDepartingDate.like(f'{today}%'),
+        GatePass.employeeDepartingDate.is_(None)
+    ).count()
+
+    # --- Visitor Management Counts ---
+    
+    # 1. Count the visitors who arrived today (status = 'Arrived') - this count will only increase
+    arrived_count = Visitor.query.filter(
+        Visitor.arrivedTime.like(f'{today}%')
+    ).count()
+
+    # 2. Count the visitors who departed today (status = 'Departed')
+    departed_count = Visitor.query.filter(
+        Visitor.status == 'Departed',
+        Visitor.departedTime.like(f'{today}%')
+    ).count()
+
+    # 3. Count the visitors who are currently in the premises (status = 'Arrived' and not 'Departed')
+    in_premises_count = Visitor.query.filter(
+        Visitor.status == 'Arrived',
+        Visitor.arrivedTime.like(f'{today}%'),
+        Visitor.departedTime.is_(None)  # Check that there's no departed time (i.e., they haven't left)
+    ).count()
+
     user_permissions = current_user.permissions
 
     return render_template(
@@ -633,7 +680,13 @@ def dashboard():
         values_gatepass_30_days=values_gatepass_30_days,
         user_permissions=user_permissions,
         pageTitle=pageTitle,
-        today=today
+        today=today,
+        out_count=out_count,
+        returned_count=returned_count,
+        out_of_office_count=out_of_office_count,
+        arrived_count=arrived_count,
+        departed_count=departed_count,
+        in_premises_count=in_premises_count
     )
 
 

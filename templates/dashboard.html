@@ -20,8 +20,33 @@
         <!-- <h3 class="date-container">
             <span style="color: var(--textdued); font-weight: 400;"></span>
         </h3> -->
-        <div class="visitor-charts">
+        <div class="dashboard-charts">
             <h4 class="chart-catogary">Visitors</h4>
+            <div class="charts-status">
+                <h5 class="chart-header">
+                    Curent Status
+                </h5>
+                <div class="status-chart">
+                    <div class="status-detail-block">
+                        <p>Arrived</p>
+                        <div class="status-card">
+                            <p>{{ arrived_count }}</p>
+                        </div>
+                    </div>
+                    <div class="status-detail-block">
+                        <p>Departed</p>
+                        <div class="status-card">
+                            <p>{{ departed_count }}</p>
+                        </div>
+                    </div>
+                    <div class="status-detail-block">
+                        <p>In Premises</p>
+                        <div class="status-card">
+                            <p>{{ in_premises_count }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="charts">
                 <div class="data-chart one-day">
                     <canvas id="dayVisitors"></canvas>
@@ -31,8 +56,33 @@
                 </div>
             </div>
         </div>
-        <div class="visitor-charts">
+        <div class="dashboard-charts">
             <h4 class="chart-catogary">Exit Permits</h4>
+            <div class="charts-status">
+                <h5 class="chart-header">
+                    Curent Status
+                </h5>
+                <div class="status-chart">
+                    <div class="status-detail-block">
+                        <p>Out</p>
+                        <div class="status-card">
+                            <p>{{ out_count }}</p>
+                        </div>
+                    </div>
+                    <div class="status-detail-block">
+                        <p>Returned</p>
+                        <div class="status-card">
+                            <p>{{ returned_count }}</p>
+                        </div>
+                    </div>
+                    <div class="status-detail-block">
+                        <p>Out of Office</p>
+                        <div class="status-card">
+                            <p>{{ out_of_office_count }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="charts">
                 <div class="data-chart one-day">
                     <canvas id="dayExits"></canvas>

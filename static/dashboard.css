@@ -17,18 +17,18 @@
     background: var(--textdued);
 }
 
-.visitor-charts {
+.dashboard-charts {
     display: block;
 }
 
-.visitor-charts .charts {
+.dashboard-charts .charts {
     display: flex;
     align-items: center;
     justify-content: center;
     margin: 20px 0;
 }
 
-.visitor-charts .charts .data-chart {
+.dashboard-charts .charts .data-chart {
     width: calc(50% - 40px);
     padding: 20px;
     height: auto;
@@ -37,6 +37,32 @@
     border: 1px solid var(--border);
 }
 
-.visitor-charts .charts .data-chart:nth-child(1) {
+.dashboard-charts .charts .data-chart:nth-child(1) {
     margin-right: 30px;
+}
+
+h5.chart-header {
+    margin: 10px 0;
+    color: var(--textdued);
+}
+
+.status-chart {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(1, 1fr);
+    grid-column-gap: 30px;
+}
+
+.status-detail-block {
+    /* background: red; */
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.status-detail-block .status-card p {
+    font-weight: 700;
 }

@@ -10,13 +10,13 @@
             {% if user_permissions.Edit_Visitor or user_permissions.Approve_Visitor or user_permissions.In_Visitor or user_permissions.Out_Visitor or user_permissions.Create_Visitor %}
             <li class="nav-dropdown">
                 <a class="dropdown-toggle" onclick="toggleDropdown('visitor-management-dropdown')">
-                    <span class="main-nav-link-header">
+                    <span class="main-nav-link-header" style="pointer-events: none;">
                         <span class="nav-icon">
                             <i class="ph-bold ph-person"></i>
                         </span>
                         Visitor Manage
                     </span>
-                    <i class="ph-bold ph-caret-down"></i>
+                    <i class="ph-bold ph-caret-down" style="pointer-events: none;"></i>
                 </a>
                 <ul id="visitor-management-dropdown" class="dropdown-menu">
                     {% if user_permissions.Create_Visitor %}
@@ -87,13 +87,13 @@
             {% if user_permissions.Create_Gate_Pass or user_permissions.Edit_Gate_Pass or user_permissions.Approve_Gate_Pass or user_permissions.Confirmed_Gate_Pass or user_permissions.Out_Gate_Pass or user_permissions.In_Gate_Pass %}
             <li class="nav-dropdown">
                 <a class="dropdown-toggle" onclick="toggleDropdown('gate-pass-dropdown')">
-                    <span class="main-nav-link-header">
+                    <span class="main-nav-link-header" style="pointer-events: none;">
                         <span class="nav-icon">
                             <i class="ph-bold ph-door-open"></i> 
                         </span>
                         Gate Pass Manage
                     </span>
-                    <i class="ph-bold ph-caret-down"></i>
+                    <i class="ph-bold ph-caret-down" style="pointer-events: none;"></i>
                 </a>
                 <ul id="gate-pass-dropdown" class="dropdown-menu">
                     {% if user_permissions.Create_Gate_Pass %}
@@ -203,7 +203,7 @@
             {% endif %}
             {% if user_permissions.Create_Reports %}
             <li>
-                <a onclick="togglePopup('reportButtons')">
+                <a onclick="togglePopup('reportButtons')" style="cursor: pointer;">
                     <span class="main-nav-link-header">
                         <span class="nav-icon">
                             <i class="ph-bold ph-scroll"></i>
