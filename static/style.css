@@ -1951,7 +1951,7 @@ span.secondary-icon i {
     padding: 10px 10px;
     border-radius: var(--border-radius-1);
     border: 1px solid var(--popup-border);
-    margin: 5px 0;
+    margin: 10px 0;
     display: flex;
     align-items: center;
     justify-content: space-between;
