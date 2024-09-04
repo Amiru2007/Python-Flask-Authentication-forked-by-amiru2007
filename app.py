@@ -640,11 +640,7 @@ def dashboard():
     ).count()
 
     # 3. Count the employees who are currently out of the office (status = 'Out')
-    out_of_office_count = GatePass.query.filter(
-        GatePass.employeeFormStatus == 'Out',
-        GatePass.employeeDepartingDate.like(f'{today}%'),
-        GatePass.employeeDepartingDate.is_(None)
-    ).count()
+    out_of_office_count = out_count - returned_count
 
     # --- Visitor Management Counts ---
     

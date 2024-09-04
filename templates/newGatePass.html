@@ -53,7 +53,7 @@
                     <div class="employee-id gate-pass-input-container">
                         <label for="employeeNo">Employee ID</label>
                         <div class="dropdown">
-                            <input type="text" id="employeeNo" name="employeeNo" title="Employee ID" onkeyup="filterDropdown()" placeholder="Search Employee ID">
+                            <input type="text" id="employeeNo" name="employeeNo" title="Employee ID" onkeyup="filterDropdown()" placeholder="Search Employee ID" required>
                             <div class="dropdown-content" id="dropdownOptions">
                                 {% for employee in employee_list %}
                                     <input type="hidden" id="employeeName_{{ employee.employeeNo }}" value="{{ employee.nameWithInitials }}">
