@@ -312,7 +312,7 @@
     content: '';
     width: 12px;
     height: 12px;
-    background: var(--nav-bg);
+    background: var(--main-bg-color);
     display: block !important;
     position: absolute;
     transform: rotate(45deg);
