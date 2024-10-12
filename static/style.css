@@ -706,13 +706,7 @@ select#level {
     font-weight: 500;
 }
 
-.gatePassPage input,
-.names input,
-.container input,
-.container textarea,
-.photo-controls input,
-.footer input,
-button.exportVisitorExcel {
+.gatePassPage input, .names input, .container textarea, .photo-controls input, .footer input, button.exportVisitorExcel {
     width: calc(100% - 182px);
     padding: 4px 6px;
     border: 1px solid var(--border);
