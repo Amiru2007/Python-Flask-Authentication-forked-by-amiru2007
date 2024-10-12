@@ -1,9 +1,13 @@
-<nav class="sidebar">
+<nav class="sidebar" id="sideMenu">
     <div class="nav-upper">
         <div class="nav-logo-container">
             <a href="{{ url_for('dashboard') }}">
-                <img class="nav-logo-image" src="{{ url_for('static', filename='logo.png') }}" alt="Dayartne Holdings Logo">
+                <!-- <img class="nav-logo-image" src="{{ url_for('static', filename='logo.png') }}" alt="Dayartne Holdings Logo"> -->
+                <div class="logo-on-bg"></div>
             </a>
+            <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" title="Close Sidebar" onclick="closeSideMenu()">
+                <i class="ph-bold ph-x"></i>
+            </button>
         </div>
         <ul class="nav-list">
             <!-- Visitor Management Dropdown -->
@@ -14,7 +18,7 @@
                         <span class="nav-icon">
                             <i class="ph-bold ph-person"></i>
                         </span>
-                        Visitor Manage
+                        <span class="nav-link-text">Visitor Manage</span>
                     </span>
                     <i class="ph-bold ph-caret-down" style="pointer-events: none;"></i>
                 </a>
@@ -25,7 +29,7 @@
                             <span class="nav-icon">
                                 <i class="ph-bold ph-plus-circle"></i>
                             </span>
-                            New Visitor
+                            <span class="nav-link-text">New Visitor</span>
                         </a>
                     </li>
                     {% endif %}
@@ -34,8 +38,8 @@
                         <a onclick="togglePopup('editVisitorRequest')">
                             <span class="nav-icon">
                                 <i class="ph-bold ph-pencil-simple"></i>
-                            </span>    
-                            Edit Visitor
+                            </span>
+                            <span class="nav-link-text">Edit Visitor</span>
                         </a>
                     </li>
                     {% endif %}
@@ -44,8 +48,8 @@
                         <a onclick="togglePopup('pendingApproval')">
                             <span class="nav-icon">
                                 <i class="ph-bold ph-paper-plane-tilt"></i>
-                            </span>    
-                            Approve Visitor
+                            </span>
+                            <span class="nav-link-text">Approve Visitor</span>
                         </a>
                     </li>
                     {% endif %}
@@ -55,7 +59,7 @@
                             <span class="nav-icon">
                                 <i class="ph-bold ph-arrow-circle-right"></i>
                             </span>
-                            Arrive Visitor
+                            <span class="nav-link-text">Arrive Visitor</span>
                         </a>
                     </li>
                     {% endif %}
@@ -64,8 +68,8 @@
                         <a onclick="togglePopup('arrivedVisitors')">
                             <span class="nav-icon">
                                 <i class="ph-bold ph-check-circle"></i>
-                            </span>    
-                            Depart Visitor
+                            </span>
+                            <span class="nav-link-text">Depart Visitor</span>
                         </a>
                     </li>
                     {% endif %}
@@ -74,8 +78,8 @@
                         <a onclick="togglePopup('visitorsList')">
                             <span class="nav-icon">
                                 <i class="ph-bold ph-person"></i>
-                            </span>    
-                            Recent Visitors
+                            </span>
+                            <span class="nav-link-text">Recent Visitors</span>
                         </a>
                     </li>
                     {% endif %}
@@ -91,7 +95,7 @@
                         <span class="nav-icon">
                             <i class="ph-bold ph-door-open"></i> 
                         </span>
-                        Gate Pass Manage
+                        <span class="nav-link-text">Gate Pass Manage</span>
                     </span>
                     <i class="ph-bold ph-caret-down" style="pointer-events: none;"></i>
                 </a>
@@ -102,7 +106,7 @@
                             <span class="nav-icon">
                                 <i class="ph-bold ph-plus-circle"></i>
                             </span>
-                            Create Gate Pass
+                            <span class="nav-link-text">Create Gate Pass</span>
                         </a>
                     </li>
                     {% endif %}
@@ -111,8 +115,8 @@
                         <a onclick="togglePopup('editGatePassList')">
                             <span class="nav-icon">
                                 <i class="ph-bold ph-pencil"></i>
-                            </span>    
-                            Edit Gate Pass
+                            </span>
+                            <span class="nav-link-text">Edit Gate Pass</span>
                         </a>
                     </li>
                     {% endif %}
@@ -121,8 +125,8 @@
                         <a onclick="togglePopup('requestGatePassList')">
                             <span class="nav-icon">
                                 <i class="ph-bold ph-warning-circle"></i>
-                            </span>    
-                            Approve Gate Pass
+                            </span>
+                            <span class="nav-link-text">Approve Gate Pass</span>
                         </a>
                     </li>
                     {% endif %}
@@ -131,8 +135,8 @@
                         <a onclick="togglePopup('approvedGatePassList')">
                             <span class="nav-icon">
                                 <i class="ph-bold ph-check-circle"></i>
-                            </span>    
-                            Confirm Gate Pass
+                            </span>
+                            <span class="nav-link-text">Confirm Gate Pass</span>
                         </a>
                     </li>
                     {% endif %}
@@ -141,8 +145,8 @@
                         <a onclick="togglePopup('confirmedGatePassList')">
                             <span class="nav-icon">
                                 <i class="ph-bold ph-arrow-circle-right"></i>
-                            </span>    
-                            Gate Pass Out
+                            </span>
+                            <span class="nav-link-text">Gate Pass Out</span>
                         </a>
                     </li>
                     {% endif %}
@@ -151,8 +155,8 @@
                         <a onclick="togglePopup('departedGatePassList')">
                             <span class="nav-icon">
                                 <i class="ph-bold ph-arrow-circle-left"></i>
-                            </span>    
-                            Gate Pass In
+                            </span>
+                            <span class="nav-link-text">Gate Pass In</span>
                         </a>
                     </li>
                     {% endif %}
@@ -161,8 +165,8 @@
                         <a onclick="togglePopup('gatePassForms')">
                             <span class="nav-icon">
                                 <i class="ph-bold ph-door-open"></i>
-                            </span>    
-                            Recent Gate Passes
+                            </span>
+                            <span class="nav-link-text">Recent Gate Passes</span>
                         </a>
                     </li>
                     {% endif %}
@@ -183,8 +187,8 @@
                     <span class="main-nav-link-header">
                         <span class="nav-icon">
                             <i class="ph-bold ph-user"></i>
-                        </span>    
-                        User Manage
+                        </span>
+                        <span class="nav-link-text">User Manage</span>
                     </span>
                 </a>
             </li>
@@ -195,8 +199,8 @@
                     <span class="main-nav-link-header">
                         <span class="nav-icon">
                             <i class="ph-bold ph-identification-badge"></i>
-                        </span>    
-                        Employee Manage
+                        </span>
+                        <span class="nav-link-text">Employee Manage</span>
                     </span>
                 </a>
             </li>
@@ -207,12 +211,22 @@
                     <span class="main-nav-link-header">
                         <span class="nav-icon">
                             <i class="ph-bold ph-scroll"></i>
-                        </span>    
-                        Reports
+                        </span>
+                        <span class="nav-link-text">Reports</span>
                     </span>
                 </a>
             </li>
             {% endif %}
+            <li style="display: none;" class="profileLinkOnSide">
+                <a href="{{ url_for('change_password') }}" id="changePasswordLink">
+                    <span class="main-nav-link-header">
+                        <span class="nav-icon">
+                            <i class="ph-bold ph-password"></i>
+                        </span>
+                        <span class="nav-link-text">Change Password</span>
+                    </span>
+                </a>
+            </li>
         </ul>
     </div>
     <ul class="nav-list">
@@ -221,8 +235,8 @@
                 <span class="main-nav-link-header">
                     <span class="nav-icon">
                         <i class="ph-bold ph-question-mark"></i>
-                    </span>    
-                    Help
+                    </span>
+                    <span class="nav-link-text">Help
                 </span>
             </a>
         </li>
@@ -231,8 +245,8 @@
                 <span class="main-nav-link-header">
                     <span class="nav-icon">
                         <i class="ph-bold ph-sign-out"></i>
-                    </span>    
-                    logout
+                    </span>
+                    <span class="nav-link-text">logout
                 </span>
             </a>
         </li>

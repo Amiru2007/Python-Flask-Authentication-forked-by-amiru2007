@@ -314,13 +314,13 @@ class RegisterForm(FlaskForm):
                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
 
     email = EmailField(validators=[
-                             Length(min=8, max=40)], render_kw={"placeholder": "E-mail"})
+                             InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "E-mail"})
 
     name = StringField(validators=[
-                             Length(min=8, max=40)], render_kw={"placeholder": "Name"})
+                             InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "Name"})
 
     telephoneNo = TelField(validators=[
-                             Length(min=8, max=40)], render_kw={"placeholder": "Telephone Number"})
+                             InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "Telephone Number"})
 
     level = SelectField('Level', choices=[('Admin', 'Admin'), ('Approver', 'Approver'), ('Requester', 'Requester'), ('Gate', 'Gate')])
 
@@ -1981,6 +1981,6 @@ def help():
     return render_template('help.html', user_permissions=user_permissions, pageTitle=pageTitle)
 
 if __name__ == "__main__":
-    app.run("192.168.1.208", port=5000)
+    app.run(port=5000)
 
 db.create_all()

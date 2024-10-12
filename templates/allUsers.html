@@ -38,16 +38,31 @@
                     </button>
                     {% if current_status == 'active' %}
                     <button type="submit" name="deactivate_selected" class="deactivate" onclick="return confirm('Are you sure you want to deactivate the selected users?')">
-                        <span><i class="ph-bold ph-trash"></i> Deactivate</span>
+                        <span>
+                            <i class="ph-bold ph-trash"></i> 
+                            <span class="user-list-control-button-text">
+                                Deactivate
+                            </span>
+                        </span>
                     </button>
                     {% elif current_status == 'inactive' %}
                     <button type="submit" name="activate_selected" class="activate" onclick="return confirm('Are you sure you want to activate the selected users?')">
-                        <span><i class="ph-bold ph-check"></i> Activate</span>
+                        <span>
+                            <i class="ph-bold ph-check"></i> 
+                            <span class="user-list-control-button-text">
+                                Activate
+                            </span>
+                        </span>
                     </button>
                     {% endif %}
                     <a href="{{ url_for('register') }}">
                         <button type="button" class="createUser">
-                            <span><i class="ph-bold ph-plus-circle"></i> Create</span>
+                            <span>
+                                <i class="ph-bold ph-plus-circle"></i> 
+                                <span class="user-list-control-button-text">
+                                    Create
+                                </span>
+                            </span>
                         </button>
                     </a>
                 </div>

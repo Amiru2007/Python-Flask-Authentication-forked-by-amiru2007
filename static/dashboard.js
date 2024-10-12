@@ -126,3 +126,11 @@ function closeHelp() {
     document.getElementById('contactMe').classList.remove('hide');
     document.getElementById('dashboardFooter').classList.remove('hide');
 }
+
+function openSideMenu() {
+    document.getElementById('sideMenu').classList.add('sideMenuOpened');
+}
+
+function closeSideMenu() {
+    document.getElementById('sideMenu').classList.remove('sideMenuOpened');
+}

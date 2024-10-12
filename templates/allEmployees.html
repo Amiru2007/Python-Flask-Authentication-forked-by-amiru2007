@@ -39,16 +39,25 @@
                     </button>
                     {% if current_status == 'active' %}
                         <button type="submit" name="deactivate_selected" class="deactivate" onclick="return confirm('Are you sure you want to deactivate the selected employees?')">
-                            <i class="ph ph-x-circle"></i> <span>Deactivate</span>
+                            <i class="ph ph-x-circle"></i> 
+                            <span class="user-list-control-button-text">
+                                Deactivate
+                            </span>
                         </button>
                     {% elif current_status == 'inactive' %}
                         <button type="submit" name="activate_selected" class="activate" onclick="return confirm('Are you sure you want to activate the selected employees?')">
-                            <i class="ph ph-check-circle"></i> <span>Activate</span>
+                            <i class="ph ph-check-circle"></i> 
+                            <span class="user-list-control-button-text">
+                                Activate
+                            </span>
                         </button>
                     {% endif %}
                     <a href="{{ url_for('new_employee') }}">
                         <button type="button" class="createUser">
-                            <i class="ph ph-plus-circle"></i> <span>Create</span>
+                            <i class="ph ph-plus-circle"></i> 
+                            <span class="user-list-control-button-text">
+                                Create
+                            </span>
                         </button>
                     </a>
                 </div>
