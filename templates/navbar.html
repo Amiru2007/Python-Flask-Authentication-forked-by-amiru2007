@@ -230,6 +230,19 @@
         </ul>
     </div>
     <ul class="nav-list">
+        <li style="display: none;" class="notificationBtnOnSide">
+            <button type="button" class="notification-btn" id="showNotifications" title="Notifications" onclick="togglePopup('notificationsMenu')">
+                <span class="main-nav-link-header">
+                    <span class="nav-icon">
+                        <i class="ph-fill ph-bell-simple-ringing"></i>
+                        {% if g.there_are_notification %}
+                            <div class="thereAreNotificationBubble"></div>
+                        {% endif %}
+                    </span>
+                    <span class="nav-link-text">Notifications</span>
+                </span>
+            </button>
+        </li>
         <li>
             <a href="{{url_for('help')}}">
                 <span class="main-nav-link-header">

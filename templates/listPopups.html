@@ -514,7 +514,21 @@
 </div>
 
 <div id="notificationsMenu" class="popup">
+    <div class="reminderPopupHeader">
+        <h3 style="margin-top: 10px;">Notifications</h3>
+        <button class="closeReminderPopup" id="closeReminderPopup" title="Close Reminder" onclick="closeCurrentPopup()">
+            <i class="ph ph-x"></i>
+        </button>
+    </div>
     <ul class="additionalLinks">
+        <li class="profileLinks">
+            <!-- Visitor Request Reminder -->
+            {% if not g.there_are_notification %}
+                <div class="empty-reminder" id="emptyreminder">
+                    There are no new notifications
+                </div>
+            {% endif %}
+        </li>
         <li class="profileLinks">
             <!-- Visitor Request Reminder -->
             {% if g.visitor_requests_reminder %}

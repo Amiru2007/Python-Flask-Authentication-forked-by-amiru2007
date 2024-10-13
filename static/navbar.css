@@ -86,7 +86,7 @@
 }
 
 /* Style for dropdown links */
-.nav-list li a {
+.nav-list li a, .notificationBtnOnSide button {
     display: block;
     padding: 12px;
     color: var(--textdued);
@@ -100,6 +100,11 @@
     transition: color 0.3s ease;
     font-size: 18px;
     cursor: pointer;
+}
+
+.notificationBtnOnSide button {
+    background: transparent;
+    border: none;
 }
 
 .nav-list li a .nav-icon {
@@ -420,6 +425,7 @@
         top: 0;
         left: 0;
         z-index: 5;
+        overflow: hidden;
     }
 
     .sidebar:hover {
@@ -488,7 +494,7 @@
         justify-content: center;
     }
     
-    .nav-list li a span .nav-icon {
+    .nav-list li a span .nav-icon, .notificationBtnOnSide button .nav-icon {
         margin: 0 20px 0 0 !important;
     }
 
@@ -501,6 +507,11 @@
         opacity: 0;
         visibility: hidden;
         margin: 0 0 0 20px !important;
+    }
+
+    .sidebar .nav-list li a .nav-link-text,
+    .sidebar .nav-list li a .ph-caret-down {
+        margin-left: 20px !important;
     }
 
     /* .sidebar:hover .nav-list:has(a[href*="/help"]) {
@@ -527,7 +538,6 @@
         opacity: 1;
         visibility: visible;
         width: fit-content !important;
-        margin-left: 20px !important;
     }
 
     .sidebar:hover .nav-dropdown .dropdown-menu {
@@ -540,7 +550,8 @@
 }
 
 @media screen and (max-width: 600px) {
-    .profileLinkOnSide {
+    .profileLinkOnSide,
+    .notificationBtnOnSide {
         display: block !important;
     }
 
@@ -553,6 +564,12 @@
         display: none !important;
     }
 
+    .thereAreNotificationBubble {
+        width: 6px;
+        height: 6px;
+        border: 1px solid var(--nav-bg)
+    }
+
     .sidebar-close-btn {
         display: flex !important;
         align-items: center;
@@ -561,15 +578,18 @@
     
     .sidebar,
     .sidebar:hover {
-        opacity: 0;
-        visibility: hidden;
+        transform: translateX(-100%);
+        /* opacity: 0;
+        visibility: hidden; */
         width: calc(100% - 40px) !important;
-        border: none;
+        /* border: none; */
+        transition: all 0.3s ease;
     }
 
     .sidebar.sideMenuOpened {
-        opacity: 1 !important;
-        visibility: visible !important;
+        transform: translateX(0px);
+        /* opacity: 1 !important;
+        visibility: visible !important; */
     }
 
     .main-content {
@@ -612,7 +632,7 @@
         visibility: visible;
     }
 
-    .nav-list li a .nav-icon {
+    .nav-list li a span .nav-icon, .notificationBtnOnSide button .nav-icon {
         position: absolute;
         left: 0 !important;
     }
@@ -627,7 +647,7 @@
         justify-content: center;
     }
     
-    .nav-list li a span .nav-icon {
+    .nav-list li a span .nav-icon, .notificationBtnOnSide button .nav-icon {
         margin: 0 20px 0 0 !important;
     }
 
@@ -636,9 +656,13 @@
         transition: all 0.3s ease;
     }
     
-    .nav-list li a span .nav-link-text {
+    .nav-list li a span .nav-link-text, .notificationBtnOnSide button .nav-link-text {
         opacity: 1;
         visibility: visible;
         margin: 0 0 0 20px !important;
+    }
+
+    .nav-dropdown .dropdown-menu {
+        margin-left: 10px;
     }
 }
