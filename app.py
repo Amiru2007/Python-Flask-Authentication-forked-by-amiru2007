@@ -466,16 +466,20 @@ def login():
 
 @app.before_request
 def check_outer_user_access():
-    # Skip permission check for login, logout, registration pages
+    # Skip permission check for login, logout, static files
     public_routes = ['login', 'static', 'logout']
     
     if request.endpoint in public_routes:
         return  # Don't enforce permission checks for public routes
     
+    # If the user is logged in and is an outer user
     if current_user.is_authenticated and current_user.permissions.outerUser:
-        allowed_routes = ['some_allowed_route', 'another_allowed_route']
+        # List of routes outer users are allowed to access
+        allowed_routes = ['new_visitor', 'some_other_allowed_route']
+        
+        # If trying to access a restricted page, block it with a 404
         if request.endpoint not in allowed_routes:
-            abort(404)  # Block access to all other pages for outer users
+            abort(404)  # Outer users should not access these routes
 
 
 @app.before_request
@@ -546,10 +550,6 @@ def has_permission(permission_name):
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
-
-    if has_permission('outerUser'):
-        return redirect(url_for('new_visitor'))
-
     pageTitle = 'Dashboard'
     
     # --- Visitors Charts ---
@@ -808,6 +808,7 @@ def dashboard():
 # Register route
 @app.route('/register', methods=['GET', 'POST'])
 @login_required
+@permission_required('Create_User')
 def register():
     form = RegisterForm()
     form2 = PermissionsForm()
@@ -873,6 +874,7 @@ def register():
 
 @app.route('/arrive_visitor', methods=['POST'])
 @login_required
+@permission_required('In_Visitor')
 def arrive_visitor():
     visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
@@ -917,6 +919,7 @@ def arrive_visitor():
 
 @app.route('/depart_visitor', methods=['POST'])
 @login_required
+@permission_required('Out_Visitor')
 def depart_visitor():
     visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
@@ -966,6 +969,7 @@ def serve_uploaded_image(filename):
         
 @app.route('/get_visitor', methods=['POST'])
 @login_required
+@permission_required('Approve_Visitor')
 def get_visitor():
     visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
@@ -1017,6 +1021,7 @@ def get_visitor():
 
 @app.route('/editrequest', methods=['POST'])
 @login_required
+@permission_required('Edit_Visitor')
 def edit_request():
     visitor_no = request.form.get('visitor_no')
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
@@ -1072,6 +1077,7 @@ def edit_request():
 
 @app.route('/visitor', methods=['GET', 'POST'])
 @login_required
+@permission_required('Create_Visitor')
 def visitor():
     if request.method == 'POST':
         visitor_no = request.form.get('visitor_no')
@@ -1106,6 +1112,7 @@ def logout():
 
 @app.route('/all_users', methods=['GET', 'POST'])
 @login_required
+@permission_required('Create_User')
 def all_users():
     page = request.args.get('page', 1, type=int)
     rows_per_page = request.args.get('rows_per_page', 10, type=int)
@@ -1178,7 +1185,8 @@ def get_filtered_users(search_query):
 
 # Register route
 @app.route('/new_employee', methods=['GET', 'POST'])
-# @login_required
+@login_required
+@permission_required('Create_User')
 def new_employee():
     form = EmployeeForm()
     
@@ -1207,6 +1215,7 @@ def new_employee():
 
 @app.route('/all_employees', methods=['GET', 'POST'])
 @login_required
+@permission_required('Create_User')
 def all_employees():
     page = request.args.get('page', 1, type=int)
     rows_per_page = request.args.get('rows_per_page', 10, type=int)
@@ -1283,6 +1292,7 @@ def get_filtered_employees(search_query):
     
 @app.route('/update_employee', methods=['POST'])
 @login_required
+@permission_required('Edit_User')
 def update_employee():
     if request.method == 'POST':
         employeeNo = request.form.get('employeeNo')
@@ -1304,6 +1314,7 @@ def update_employee():
 
 @app.route('/edit/employee/<employeeNo>', methods=['GET'])
 @login_required
+@permission_required('Edit_User')
 def get_employee_by_number(employeeNo):
     employee = Employee.query.filter_by(employeeNo=employeeNo).first()
 
@@ -1314,6 +1325,7 @@ def get_employee_by_number(employeeNo):
 
 @app.route('/update_user', methods=['POST'])
 @login_required
+@permission_required('Edit_User')
 def update_user():
     if request.method == 'POST':
         # Get the form data
@@ -1376,6 +1388,7 @@ def update_user():
 
 @app.route('/edit/user/<username>', methods=['GET'])
 @login_required
+@permission_required('Edit_User')
 def get_user_by_username(username):
     user = User.query.filter_by(username=username).first()
     permissions = Permissions.query.filter_by(username=username).first()
@@ -1391,6 +1404,8 @@ def get_user_by_username(username):
         return "User not found", 404
     
 @app.route('/export_excel/user', methods=['POST'])
+@login_required
+@permission_required('Create_Reports')
 def export_excel_user():
     # Fetch data from the database
     data = User.query.all()
@@ -1442,6 +1457,8 @@ def export_excel_user():
     )
 
 @app.route('/export_excel/visitor', methods=['POST'])
+@login_required
+@permission_required('Create_Reports')
 def export_excel_visitor():
     # Get start and end dates from the form
     start_date = request.form.get('startDate')
@@ -1521,6 +1538,8 @@ def export_excel_visitor():
     )
 
 @app.route('/export_excel/employee_gate_pass', methods=['POST'])
+@login_required
+@permission_required('Create_Reports')
 def export_excel_employee_gate_pass():
     # Get start and end dates from the form
     employee_no = request.form.get('reportEmployeeNo')
@@ -1601,6 +1620,8 @@ def export_excel_employee_gate_pass():
 
 
 @app.route('/export_excel/gate_pass_list', methods=['POST'])
+@login_required
+@permission_required('Create_Reports')
 def export_excel_gate_pass_list():
     # Get start and end dates from the form
     start_date = request.form.get('startDate')
@@ -1702,6 +1723,7 @@ def profile():
 
 @app.route('/gatepass', methods=['GET', 'POST'])
 @login_required
+@permission_required('Create_Gate_Pass')
 def gate_pass():
     
     user_permissions = current_user.permissions
@@ -1818,6 +1840,7 @@ def generate_gatePassId():
 
 @app.route('/approve_gatepass', methods=['POST'])
 @login_required
+@permission_required('Approve_Gate_Pass')
 def approve_gatepass():
     gatePassId = request.form.get('gatePassId')
     employeeFormStatus = request.form.get('employeeFormStatus')
@@ -1859,6 +1882,7 @@ def approve_gatepass():
 
 @app.route('/confirm_gatepass', methods=['POST'])
 @login_required
+@permission_required('Confirmed_Gate_Pass')
 def confirm_gatepass():
     gatePassId = request.form.get('gatePassId')
     employeeFormStatus = request.form.get('employeeFormStatus')
@@ -1895,6 +1919,7 @@ def confirm_gatepass():
 
 @app.route('/out_gatepass', methods=['POST'])
 @login_required
+@permission_required('Out_Gate_Pass')
 def out_gatepass():
     gatePassId = request.form.get('gatePassId')
     employeeFormStatus = request.form.get('employeeFormStatus')
@@ -1925,6 +1950,7 @@ def out_gatepass():
     
 @app.route('/in_gatepass', methods=['POST'])
 @login_required
+@permission_required('In_Gate_Pass')
 def in_gatepass():
     gatePassId = request.form.get('gatePassId')
     employeeFormStatus = request.form.get('employeeFormStatus')
@@ -1955,6 +1981,7 @@ def in_gatepass():
     
 @app.route('/edit_gatepass', methods=['POST'])
 @login_required
+@permission_required('Edit_Gate_Pass')
 def edit_gatepass():
     gatePassId = request.form.get('gatePassId')
     gatePassForm = GatePass.query.filter_by(gatePassId=gatePassId).first()
@@ -1991,6 +2018,7 @@ def edit_gatepass():
 
 @app.route('/gate_pass_form', methods=['GET', 'POST'])
 @login_required
+@permission_required('Create_Gate_Pass')
 def gate_pass_form():
     if request.method == 'POST':
         gatePassId = request.form.get('gatePassId')
@@ -2021,6 +2049,19 @@ def help():
     user_permissions = current_user.permissions
     
     return render_template('help.html', user_permissions=user_permissions, pageTitle=pageTitle)
+
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    if current_user.is_authenticated:
+        # Show the custom 404 page for logged-in users
+        return render_template('404.html', error_message="The page you're looking for doesn't exist or you don't have access."), 404
+    else:
+        # Redirect to login for non-authenticated users
+        return redirect(url_for('login'))
+
+
 
 if __name__ == "__main__":
     app.run(port=5000, debug=True)
