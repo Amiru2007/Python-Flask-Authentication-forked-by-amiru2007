@@ -61,9 +61,11 @@
                         <h4 class="input-head">Permissions</h4>
                     </div> -->
                 <div class="form-sections submit">
-                    {{ form.submit(class="login-btn") }}
-
-                    <a href="{{ url_for('all_users') }}"><input type="button" style="margin-left: 15px;" class="btn-cancel login-btn" id="cancel" value="Cancel"></a>
+                    <div class="main-regsiter-submit-buttons">
+                        {{ form.submit(class="login-btn") }}
+    
+                        <a href="{{ url_for('all_users') }}"><input type="button" style="margin-left: 15px;" class="btn-cancel login-btn" id="cancel" value="Cancel"></a>
+                    </div>
                     <button type="button" id="showPermissionsList"  onclick="openPermissionsList()" title="show permission list">Permissions</button>
                 </div>
             </div>
@@ -116,11 +118,55 @@
                     <div class="permission">
                         {{ form2.hod.label }} {{ form2.hod(class="check") }}
                     </div>
+                    <div class="permission">
+                        {{ form2.outerUser.label }} {{ form2.outerUser(class="check") }}
+                    </div>
                 </div>
             </div>
         </form>
     </div>
     <script>
+        const outerUserCheckbox = document.getElementById('outerUser');
+        const createVisitorCheckbox = document.getElementById('Create_Visitor');
+        const editVisitorCheckbox = document.getElementById('Edit_Visitor');
+        
+        const otherCheckboxes = [
+            'Approve_Visitor', 'In_Visitor', 'Out_Visitor', 'Create_Gate_Pass', 
+            'Edit_Gate_Pass', 'Approve_Gate_Pass', 'Confirmed_Gate_Pass',
+            'In_Gate_Pass', 'Out_Gate_Pass', 'Create_User', 'Create_Reports', 'hod', /* Add the rest of the checkbox IDs here */
+        ].map(id => document.getElementById(id));
+    
+        function handleOuterUserToggle() {
+            if (outerUserCheckbox.checked) {
+                // Check 'Create_Visitor' and 'Edit_Visitor' and disable them
+                createVisitorCheckbox.checked = true;
+                editVisitorCheckbox.checked = true;
+                createVisitorCheckbox.disabled = true;
+                editVisitorCheckbox.disabled = true;
+    
+                // Disable all other checkboxes
+                otherCheckboxes.forEach(checkbox => {
+                    checkbox.checked = false;
+                    checkbox.disabled = true;
+                });
+            } else {
+                // Enable 'Create_Visitor' and 'Edit_Visitor'
+                createVisitorCheckbox.disabled = false;
+                editVisitorCheckbox.disabled = false;
+    
+                // Enable all other checkboxes
+                otherCheckboxes.forEach(checkbox => {
+                    checkbox.disabled = false;
+                });
+            }
+        }
+    
+        // Attach the event listener
+        outerUserCheckbox.addEventListener('change', handleOuterUserToggle);
+        
+        // Ensure that the logic is applied on page load if 'Outer User' is already checked
+        document.addEventListener('DOMContentLoaded', handleOuterUserToggle);
+
         function openPermissionsList() {
             document.getElementById('permissionPopupOverlay').classList.add('visible');
             document.getElementById('permissionList').classList.add('visible');

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session, send_file, send_from_directory, g
+from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session, send_file, send_from_directory, abort, g
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import or_, func
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
@@ -17,6 +17,7 @@ from io import BytesIO
 from werkzeug.utils import secure_filename
 import os
 import pandas as pd
+from functools import wraps
 # from werkzeug.security import check_password_hash, generate_password_hash
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -131,6 +132,7 @@ class Permissions(db.Model):
     Create_Reports = db.Column(db.Boolean, default=False)
 
     hod = db.Column(db.Boolean, default=False)
+    outerUser = db.Column(db.Boolean, default=False)
 
 class GatePass(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -161,6 +163,16 @@ def allowed_file(filename):
 def get_file_extension(filename):
     return os.path.splitext(filename)[1]
 
+def permission_required(permission_name):
+    def decorator(f):
+        @wraps(f)
+        def decorated_function(*args, **kwargs):
+            if not g.user_permissions or not getattr(g.user_permissions, permission_name, False):
+                abort(404)  # Show 404 if the user doesn't have the permission
+            return f(*args, **kwargs)
+        return decorated_function
+    return decorator
+
 @app.after_request
 def add_cache_control(response):
     if request.endpoint == 'static':
@@ -172,6 +184,7 @@ def add_cache_control(response):
 # Route for the form
 @app.route('/newvisitor', methods=['GET', 'POST'])
 @login_required
+@permission_required('Create_Visitor')
 def new_visitor():
     # visitor = Visitor.query.filter_by(visitorNo=visitor_id).first()
 
@@ -305,6 +318,7 @@ class PermissionsForm(FlaskForm):
     Edit_User = BooleanField('Edit User')
     Create_Reports = BooleanField('Create Reports')
     hod = BooleanField('HOD')
+    outerUser = BooleanField('Outer User')
 
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
@@ -420,7 +434,13 @@ def login():
         if user and user.check_password(form.password.data):
             if user.status:  # Check if user status is active
                 login_user(user)
-                return redirect(url_for('dashboard'))
+                
+                # Redirect based on the user's permission
+                if user.permissions.outerUser:
+                    return redirect(url_for('new_visitor'))
+                
+                return redirect(url_for('dashboard'))  # Redirect normal users to dashboard
+                
             else:
                 flash('Your account is not activated. Please contact support or check your email for activation instructions.', 'warning')
         else:
@@ -442,6 +462,21 @@ def login():
     #     else:
     #         print(f"User {form.username.data} not found")  # Debug statement
     # return render_template('login.html', form=form)
+
+
+@app.before_request
+def check_outer_user_access():
+    # Skip permission check for login, logout, registration pages
+    public_routes = ['login', 'static', 'logout']
+    
+    if request.endpoint in public_routes:
+        return  # Don't enforce permission checks for public routes
+    
+    if current_user.is_authenticated and current_user.permissions.outerUser:
+        allowed_routes = ['some_allowed_route', 'another_allowed_route']
+        if request.endpoint not in allowed_routes:
+            abort(404)  # Block access to all other pages for outer users
+
 
 @app.before_request
 def set_global_variables():
@@ -511,6 +546,10 @@ def has_permission(permission_name):
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
+
+    if has_permission('outerUser'):
+        return redirect(url_for('new_visitor'))
+
     pageTitle = 'Dashboard'
     
     # --- Visitors Charts ---
@@ -666,8 +705,8 @@ def dashboard():
 
     return render_template(
         'dashboard.html',
-        labels=labels,
         values=values,
+        labels=labels,
         labels_30_days=labels_30_days,
         values_30_days=values_30_days,
         labels_gatepass=labels_gatepass,
@@ -772,11 +811,11 @@ def dashboard():
 def register():
     form = RegisterForm()
     form2 = PermissionsForm()
-    
+
     pageTitle = 'New User'
-    
+
     user_permissions = current_user.permissions
-    
+
     if form.validate_on_submit():
         hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
 
@@ -796,25 +835,29 @@ def register():
             status=1
         )
 
-        # Create a new Permissions entry
+        # Determine permissions
+        outer_user_checked = form2.outerUser.data
+        
+        # Handle permissions based on whether 'outerUser' is checked
         permissions = Permissions(
             username=new_user.username,
-            Create_Visitor=1 if form2.Create_Visitor.data else 0,
-            Edit_Visitor=1 if form2.Edit_Visitor.data else 0,
-            Approve_Visitor=1 if form2.Approve_Visitor.data else 0,
-            In_Visitor=1 if form2.In_Visitor.data else 0,
-            Out_Visitor=1 if form2.Out_Visitor.data else 0,
-            Create_Gate_Pass=1 if form2.Create_Gate_Pass.data else 0,
-            Edit_Gate_Pass=1 if form2.Edit_Gate_Pass.data else 0,
-            Approve_Gate_Pass=1 if form2.Approve_Gate_Pass.data else 0,
-            Confirmed_Gate_Pass=1 if form2.Confirmed_Gate_Pass.data else 0,
-            In_Gate_Pass=1 if form2.In_Gate_Pass.data else 0,
-            Out_Gate_Pass=1 if form2.Out_Gate_Pass.data else 0,
-            Create_User=1 if form2.Create_User.data else 0,
-            Delete_User=1 if form2.Delete_User.data else 0,
-            Edit_User=1 if form2.Edit_User.data else 0,
-            Create_Reports=1 if form2.Create_Reports.data else 0,
-            hod=1 if form2.hod.data else 0
+            Create_Visitor=1 if outer_user_checked or form2.Create_Visitor.data else 0,
+            Edit_Visitor=1 if outer_user_checked or form2.Edit_Visitor.data else 0,
+            Approve_Visitor=0 if outer_user_checked else 1 if form2.Approve_Visitor.data else 0,
+            In_Visitor=0 if outer_user_checked else 1 if form2.In_Visitor.data else 0,
+            Out_Visitor=0 if outer_user_checked else 1 if form2.Out_Visitor.data else 0,
+            Create_Gate_Pass=0 if outer_user_checked else 1 if form2.Create_Gate_Pass.data else 0,
+            Edit_Gate_Pass=0 if outer_user_checked else 1 if form2.Edit_Gate_Pass.data else 0,
+            Approve_Gate_Pass=0 if outer_user_checked else 1 if form2.Approve_Gate_Pass.data else 0,
+            Confirmed_Gate_Pass=0 if outer_user_checked else 1 if form2.Confirmed_Gate_Pass.data else 0,
+            In_Gate_Pass=0 if outer_user_checked else 1 if form2.In_Gate_Pass.data else 0,
+            Out_Gate_Pass=0 if outer_user_checked else 1 if form2.Out_Gate_Pass.data else 0,
+            Create_User=0 if outer_user_checked else 1 if form2.Create_User.data else 0,
+            Delete_User=0 if outer_user_checked else 1 if form2.Delete_User.data else 0,
+            Edit_User=0 if outer_user_checked else 1 if form2.Edit_User.data else 0,
+            Create_Reports=0 if outer_user_checked else 1 if form2.Create_Reports.data else 0,
+            hod=0 if outer_user_checked else 1 if form2.hod.data else 0,
+            outerUser=1 if form2.outerUser.data else 0
         )
 
         with app.app_context():
@@ -823,12 +866,10 @@ def register():
             db.session.commit()
         flash('Account created successfully', 'success')
         return redirect(url_for('all_users'))
-        pass
 
     return render_template('register.html', form=form, form2=form2,
                            user_permissions=user_permissions,
                            pageTitle=pageTitle)
-
 
 @app.route('/arrive_visitor', methods=['POST'])
 @login_required
@@ -1319,6 +1360,7 @@ def update_user():
             permissions.Edit_User = 1 if request.form.get('Edit_User') else 0
             permissions.Create_Reports = 1 if request.form.get('Create_Reports') else 0
             permissions.hod = 1 if request.form.get('hod') else 0
+            permissions.outerUser = 1 if request.form.get('outerUser') else 0
             
             # Add or update permissions entry
             db.session.add(permissions)
@@ -1981,6 +2023,6 @@ def help():
     return render_template('help.html', user_permissions=user_permissions, pageTitle=pageTitle)
 
 if __name__ == "__main__":
-    app.run(port=5000)
+    app.run(port=5000, debug=True)
 
 db.create_all()

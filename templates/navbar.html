@@ -11,7 +11,7 @@
         </div>
         <ul class="nav-list">
             <!-- Visitor Management Dropdown -->
-            {% if user_permissions.Edit_Visitor or user_permissions.Approve_Visitor or user_permissions.In_Visitor or user_permissions.Out_Visitor or user_permissions.Create_Visitor %}
+            {% if user_permissions is defined and (user_permissions.Edit_Visitor or user_permissions.Approve_Visitor or user_permissions.In_Visitor or user_permissions.Out_Visitor or user_permissions.Create_Visitor or user_permissions.OuterUser or user_permissions.hod) %}
             <li class="nav-dropdown">
                 <a class="dropdown-toggle" onclick="toggleDropdown('visitor-management-dropdown')">
                     <span class="main-nav-link-header" style="pointer-events: none;">
@@ -73,7 +73,7 @@
                         </a>
                     </li>
                     {% endif %}
-                    {% if user_permissions.Create_Visitor %}
+                    {% if user_permissions.Create_Visitor and not user_permissions.outerUser %}
                     <li>
                         <a onclick="togglePopup('visitorsList')">
                             <span class="nav-icon">
