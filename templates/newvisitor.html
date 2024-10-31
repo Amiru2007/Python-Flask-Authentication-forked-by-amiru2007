@@ -1,1 +1,335 @@
-c
+@ -1,330 +1 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
+    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
+    <title>New Vistor Form</title>
+</head>
+
+<body class="visitorPage">
+    {% extends 'base.html' %}
+
+    {% block content %}
+    <div class="content visitor">
+        <form method="POST" action="{{ url_for('new_visitor') }}" class="visitorForm" enctype="multipart/form-data">
+            
+            <div class="visitordetails">
+                <div class="names">
+                    <div class="lastname">
+                        <label for="lastName">Last Name</label>
+                        <input type="text" id="lastName" name="lastName">
+                    </div>
+                    <div class="firstname">
+                        <label for="firstName">First Name</label>
+                        <input type="text" id="firstName" name="firstName">
+                    </div>
+                </div>
+                <div class="names">
+                    <div class="company">
+                        <label for="companyName">Company Name</label>
+                        <input type="text" id="companyName" name="companyName">
+                    </div>
+                    <div class="id">
+                        <label for="VisitorId">Visitor Id No.</label>
+                        <input type="text" id="VisitorId" name="VisitorId" pattern=".{6,15}" title="Visitor Id must be between 8 and 15 characters" required>
+                    </div>
+                </div>
+            </div>
+            <div class="visitdetails">
+                <div class="left">
+                    <h4>Visit Details</h4>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="arrivingDate">Arriving Date</label>
+                            <input type="date" id="arrivingDate" name="arrivingDate">
+                        </div>
+                        <div class="enterDetail">
+                            <label for="arrivingTime">Arriving Time</label>
+                            <input type="time" id="arrivingTime" name="arrivingTime">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="departingDate">Departing Date</label>
+                            <input type="date" id="departingDate" name="departingDate">
+                        </div>
+                        <div class="enterDetail">
+                            <label for="departingTime">Departing Time</label>
+                            <input type="time" id="departingTime" name="departingTime">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="vehicleNo">Vehicle No.</label>
+                            <input type="text" id="vehicleNo" name="vehicleNo">
+                        </div>
+                        <div class="enterDetail">
+                            <label for="visitorNo">Visitor No.</label>
+                            <input type="text" id="visitorNo" name="visitorNo" value="{{ visitorNo }}" readonly>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="phoneNumber">Phone Number</label>
+                            <input type="text" id="phoneNumber" name="phoneNumber">
+                        </div>
+                        <div class="enterDetail">
+                            <label for="emailAddress">E-mail Address</label>
+                            <input type="text" id="emailAddress" name="emailAddress">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="requester">Requester</label>
+                            <input type="text" id="requester" name="requester" value="{{ requester }}" readonly>
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="noOfVisitors">No. of visitors</label>
+                            <input type="text" id="noOfVisitors" name="noOfVisitors">
+                        </div>
+                    </div>
+                    <div class="container">
+                        <div class="enterDetail">
+                            <label for="remarks">Remarks</label>
+                            <div class="dropdown">
+                                <input type="text" id="remarks" name="remarks">
+                                <div class="dropdown-content" id="dropdownOptions">
+                                    <div class="option" onclick="selectOption('To Rent a machine')">To Rent a machine</div>
+                                    <div class="option" onclick="selectOption('To Return a machine')">To Return a machine</div>
+                                    <div class="option" onclick="selectOption('To Purchase a machine')">To Purchase a machine</div>
+                                    <div class="option" onclick="selectOption('Supplier')">Supplier</div>
+                                    <div class="option" onclick="selectOption('To an official work')">To an official work</div>
+                                    <div class="option" onclick="selectOption('To meet an employee / Visitor')">To meet an employee / Visitor</div>
+                                    <div class="option" onclick="selectOption('Other')">Other</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container single">
+                        <div class="enterDetail">
+                            <label for="history">History</label>
+                            <input type="text" id="history" name="history">
+                        </div>
+                    </div>
+                    <div class="container buttons">
+                        <div class="enterDetail">
+                            <div class="visitorStatusUpdates">
+                                <label for="statusbtn">Visitor Status</label>
+                                <input type="text" id="statusbtn" value="Pending" style="cursor: auto;" name="statusbtn" readonly>
+                            </div>
+                            <div class="visitorStatusUpdates">
+                                <input type="button" class="btn-status" id="arrived" value="Arrived" disabled>
+                                <input type="button" class="btn-status" id="departed" value="Departed" disabled>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="right">
+                    <div class="visitor-photo">
+                        <div class="photo-wrapper" ondrop="dropHandler(event)" ondragover="dragOverHandler(event)">
+                            <img id="uploadedImage" src="../static/visitor-photo.png" alt="Uploaded Image">
+                        </div>
+                        <div class="photo-controls">
+                            <input type="button" class="btn-live" id="live" value="Live" onclick="openCamera()">
+                            <label for="profilePhoto" class="file-upload-label">Choose File</label>
+                            <input type="file" class="btn-import" id="profilePhoto" name="pic" accept="image/*" onchange="validateImage()">
+                                                        
+                            <!-- Modal for camera input -->
+                            <div id="cameraModal" class="modal">
+                                <div class="modal-content">
+                                    <div>
+                                        <video id="player" controls autoplay></video>
+                                    </div>
+                                    <div>
+                                        <button id="capture">Capture</button>
+                                    </div>
+                                    <button type="button" onclick="closeCamera()"><span>X</span></button>
+                                    <canvas id="canvas" width="320" height="240"></canvas>
+                                    <img src="" alt="" id="outputImg">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="photo-wrapper">
+                        <img src="/static/logo2.jpg" alt="visitor photo">
+                    </div>
+                </div>
+            </div>
+            <div class="footer">
+                <div class="approveOrReject">
+                    <input type="button" class="btn-approve" id="approve" value="Approve" disabled>
+                    <input type="button" class="btn-reject" id="reject" value="Reject" disabled>
+                </div>
+                <div class="saveOrCancel">
+                    <!-- <input type="button" class="btn-help" id="help" value="Help?"> -->
+                    <input type="submit" class="btn-save" id="save" value="Save" style="cursor: pointer; background-color: #0078d4; color: #ffffff;">
+                    {% if not current_user.permissions.outerUser %}
+                        <a href="{{ url_for('dashboard') }}"><input type="button" class="btn-cancel" id="cancel" value="Cancel"></a>
+                    {% elif current_user.permissions.outerUser %}
+                        <a href="{{ url_for('welcome') }}"><input type="button" class="btn-cancel" id="cancel" value="Cancel"></a>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="overlay" id="errorOverlay" onclick="closeErrorMessage()"></div>
+            <div id="error-message">
+                <p id="error-text"></p>
+            </div>
+        </form>
+    </div>
+    <script>
+        // JavaScript to dynamically update the uploaded image
+        document.getElementById('profilePhoto').addEventListener('change', function(event) {
+            var fileInput = event.target;
+            var uploadedImage = document.getElementById('uploadedImage');
+    
+            if (fileInput.files && fileInput.files[0]) {
+                var reader = new FileReader();
+    
+                reader.onload = function(e) {
+                    uploadedImage.src = e.target.result;
+                };
+    
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                uploadedImage.src = "";  // Clear the image if no file selected
+            }
+        });
+
+        function validateForm() {
+            // Get the value of visitorId input
+            var visitorId = document.getElementById('VisitorId').value;
+
+            // Check if visitorId is empty
+            if (visitorId.trim() === '') {
+                // Display the error message
+                var errorMessageDiv = document.getElementById('errorMessage');
+                errorMessageDiv.innerHTML = 'Please enter a Visitor ID.';
+                errorMessageDiv.style.display = 'block';
+
+                // Prevent the form from submitting
+                return false;
+            } else {
+                // Clear the error message if the visitorId is not empty
+                var errorMessageDiv = document.getElementById('errorMessage');
+                errorMessageDiv.innerHTML = '';
+                errorMessageDiv.style.display = 'none';
+
+                // Allow the form to submit
+                return true;
+            }
+        }
+        
+        function validateImage() {
+            var input = document.getElementById('profilePhoto');
+            var errorMessage = document.getElementById('error-message');
+            var errorText = document.getElementById('error-text');
+            
+            if (input.files.length > 0) {
+                var fileSize = input.files[0].size; // in bytes
+                var maxSize = 100 * 1024; // 100 KB
+
+                if (fileSize > maxSize) {
+                    document.getElementById('errorOverlay').classList.add('visible');
+                    document.getElementById('error-message').classList.add('visible');
+                    errorText.innerHTML = 'Image size must be less than 100 KB.';
+                    input.value = ''; // Clear the input to prevent submission
+                } else {
+                    errorMessage.innerHTML = '';
+                }
+            }
+        }
+
+        function closeErrorMessage() {
+            document.getElementById('errorOverlay').classList.remove('visible');
+            document.getElementById('error-message').classList.remove('visible');
+        }
+        
+        // function dropHandler(event) {
+        //     event.preventDefault();
+        //     const file = event.dataTransfer.files[0];
+        //     if (file.type.match('image.*')) {
+        //         const reader = new FileReader();
+        //         reader.onload = function (e) {
+        //             const image = new Image();
+        //             image.src = e.target.result;
+        //             document.getElementById('uploadedImage').src = e.target.result;
+        //             const fileInput = document.getElementById('profilePhoto');
+        //             fileInput.files = [file];
+        //         };
+        //         reader.readAsDataURL(file);
+        //     } else {
+        //         alert('Please drop an image file.');
+        //     }
+        // }
+
+        // function dragOverHandler(event) {
+        //     event.preventDefault();
+        // }
+        
+        // function openCamera() {
+        //     document.getElementById('cameraModal').classList.add('visible');
+        // }
+
+        // function closeCamera() {
+        //     document.getElementById('cameraModal').classList.remove('visible');
+        // }
+
+        // const player = document.getElementById('player');
+        // const canvas = document.getElementById('canvas');
+        // const context = canvas.getContext('2d');
+        // const captureButton = document.getElementById('capture');
+        // const imgTag = document.getElementById('uploadedImage');
+
+        // const constraints = {
+        //     video: true,
+        // };
+
+        // captureButton.addEventListener('click', () => {
+        //     context.drawImage(player, 0, 0, canvas.width, canvas.height);
+
+        //     // Convert canvas content to an image and set it as the src of img tag
+        //     imgTag.src = canvas.toDataURL();
+        // });
+
+        // // Attach the video stream to the video element and autoplay.
+        // navigator.mediaDevices.getUserMedia(constraints).then((stream) => {
+        //     player.srcObject = stream;
+        // });
+
+        document.addEventListener("DOMContentLoaded", function() {
+            const dropdown = document.querySelector(".dropdown");
+            const inputRemarks = document.getElementById("remarks");
+            const dropdownContent = document.querySelector(".dropdown-content");
+
+            dropdown.addEventListener("click", function() {
+                dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
+            });
+
+            function selectOption(option) {
+                if (option === 'Other') {
+                    inputRemarks.value = '';
+                    document.getElementById('dropdownOptions').classList.add('hide');
+                } else {
+                    inputRemarks.value = option;
+                }
+                dropdownContent.style.display = "none";
+            }
+
+            window.selectOption = selectOption;
+
+            document.addEventListener("click", function(event) {
+                if (!dropdown.contains(event.target) && !inputRemarks.contains(event.target) && dropdownContent.style.display === "block") {
+                    dropdownContent.style.display = "none";
+                }
+            });
+        });
+    </script>
+    {% endblock %}
+</body>
+</html>

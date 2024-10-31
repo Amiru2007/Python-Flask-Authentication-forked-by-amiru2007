@@ -160,7 +160,9 @@
                     <!-- <input type="submit" class="btn-save" id="" value="" disabled> -->
                     <!-- Conditionally render the Cancel link based on user permissions -->
                     {% if not current_user.permissions.outerUser %}
-                        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                        <a href="{{ url_for('dashboard') }}"><input type="button" class="btn-cancel" id="cancel" value="Cancel"></a>
+                    {% elif current_user.permissions.outerUser %}
+                        <a href="{{ url_for('welcome') }}"><input type="button" class="btn-cancel" id="cancel" value="Cancel"></a>
                     {% endif %}
                 </div>
             </div>
