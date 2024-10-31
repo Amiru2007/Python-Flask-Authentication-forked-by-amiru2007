@@ -182,6 +182,7 @@
     padding: 16px 34px;
     border-bottom: 2px solid var(--popup-border);
     position: fixed;
+    z-index: 9999;
 }
 
 .horizontal-global-nav .nav-left {
@@ -424,8 +425,8 @@
         position: absolute;
         top: 0;
         left: 0;
-        z-index: 5;
-        overflow: auto;
+        z-index: 10000;
+        overflow: hidden;
     }
 
     .sidebar:hover {
@@ -664,5 +665,16 @@
 
     .nav-dropdown .dropdown-menu {
         margin-left: 10px;
+    }
+}
+
+@media screen and (max-width: 450px) {
+    h3#pageTitle,
+    #navVisitorNo{
+        font-size: 16px;
+    }
+
+    .horizontal-global-nav .breakerLine {
+        width: 20px;
     }
 }

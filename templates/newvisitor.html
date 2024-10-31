@@ -97,7 +97,7 @@
                     <div class="container">
                         <div class="enterDetail">
                             <label for="remarks">Remarks</label>
-                            <div class="dropdown">
+                            <div class="dropdown" style="margin-right: 0;">
                                 <input type="text" id="remarks" name="remarks">
                                 <div class="dropdown-content" id="dropdownOptions">
                                     <div class="option" onclick="selectOption('To Rent a machine')">To Rent a machine</div>
@@ -113,7 +113,9 @@
                     </div>
                     <div class="container single">
                         <div class="enterDetail">
-                            <label for="history">History</label>
+                            <div class="historyLabelContainer">
+                                <label for="history" class="historyLabel">History</label>
+                            </div>
                             <input type="text" id="history" name="history">
                         </div>
                     </div>

@@ -401,10 +401,11 @@ def change_password():
 
         with app.app_context():
             db.session.commit()
-        # if user:
-        #     if bcrypt.check_password_hash(user.password, form.password.data):
-        #         login_user(user)
-        return redirect(url_for('dashboard'))
+                
+        if current_user.permissions.outerUser:
+            return redirect(url_for('welcome'))
+        else:
+            return redirect(url_for('dashboard'))
     
     return render_template('change_password.html', form=form, user_permissions=user_permissions)
 
@@ -461,7 +462,7 @@ def check_outer_user_access():
         return
     
     if current_user.is_authenticated and current_user.permissions.outerUser:
-        allowed_routes = ['new_visitor', 'edit_request', 'welcome']
+        allowed_routes = ['new_visitor', 'edit_request', 'welcome', 'change_password']
         if request.endpoint not in allowed_routes:
             abort(404)
 

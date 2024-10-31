@@ -37,6 +37,8 @@
     font-family: "DM Sans", sans-serif;
 }
 
+h3#pageTitle {}
+
 span.nav-link-text {
     display: contents;
     width: -webkit-fill-available;
@@ -690,11 +692,12 @@ select#level {
     display: flex;
     align-items: center;
     justify-content: flex;
+    height: fit-content;
 }
 
 .visitdetails .left {
     flex-grow: 1;
-    height: 500px;
+    height: fit-content;
     background: var(--main-bg-color);
     border-radius: 10px;
     margin: 4px 0px 4px 8px;
@@ -709,7 +712,7 @@ select#level {
 .visitorForm .names,
 .visitdetails .left .container {
     width: 100%;
-    height: 50px;
+    height: fit-content;
     background: var(--main-bg-color);
     display: flex;
     align-items: center;
@@ -721,7 +724,7 @@ select#level {
 .visitorForm .visitordetails .names .company,
 .visitorForm .visitordetails .names .id {
     width: 50%;
-    padding: 20px;
+    padding: 10px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -729,20 +732,22 @@ select#level {
 
 .visitdetails .left .enterDetail {
     width: 100%;
-    padding: 20px;
+    padding: 10px 20px;
     display: flex;
     align-items: center;
     justify-content: space-between;
+    position: relative;
 }
 
 .visitdetails .left .enterDetail .visitorStatusUpdates {
     width: auto;
     display: flex;
     align-items: center;
+    gap: 22px;
 }
 
 .visitdetails .left .enterDetail .visitorStatusUpdates label {
-    width: 167px;
+    width: 160px;
 }
 
 .gatePassPage label,
@@ -750,7 +755,18 @@ select#level {
 .container label {
     float: left;
     width: 160px;
-    font-weight: 500;
+    font-weight: 500;;
+}
+
+.container label.historyLabel {
+    /* height: 100vh !important; */
+    display: inline-block !important;
+    position: absolute;
+    top: 10px;
+}
+
+.container label label[for*="history"] {
+    height: 100% !important;;
 }
 
 .gatePassPage input,
@@ -770,6 +786,11 @@ button.exportVisitorExcel {
     transition: border-color 0.3s ease, box-shadow 0.3s ease;
 }
 
+textarea#history {
+    resize: vertical;
+    min-height: 18px;
+}
+
 .main-regsiter-submit-buttons .login-btn {
     width: fit-content;
 }
@@ -779,6 +800,7 @@ button.exportVisitorExcel {
     color: var(--text-main);
     transition: background-color 0.3s, box-shadow 0.3s;
     margin-top: auto;
+    border: 1px solid var(--accent);
 }
 
 .buttons input,
@@ -786,18 +808,15 @@ button.exportVisitorExcel {
     width: 90px;
 }
 
-.visitorStatusUpdates #departed {
-    margin-left: 14px;
-}
-
 #statusbtn {
-    width: fit-content;
+    width: calc(100% - 183px);
     background-color: var(--accent);
     color: var(--text-main);
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, box-shadow 0.3s;
     margin-top: auto;
     text-align: center;
+    border: 1px solid var(--accent);
 }
 
 .btn-status {
@@ -806,7 +825,7 @@ button.exportVisitorExcel {
 
 .right {
     width: auto;
-    height: 500px;
+    height: fit-content;
     background: var(--main-bg-color);
     border-radius: 10px;
     margin: 8px;
@@ -1616,7 +1635,7 @@ button.exportVisitorExcel {
 .dropdown {
     position: relative;
     width: calc(100% - 182px);
-    margin-right: 15px;
+    margin-right: 14px;
 }
 
 #remarks {
@@ -2403,6 +2422,20 @@ span.secondary-icon i {
         grid-row-gap: 10px;
         font-size: 14px;
         margin: 20px;
+    }
+
+    .visitdetails .right,
+    .footer {
+        flex-direction: column;
+    }
+    
+    .footer {
+        gap: 10px;
+    }
+
+    .footer .approveOrReject, .footer .saveOrCancel {
+        width: 100%;
+        justify-content: center;
     }
 }
 
