@@ -158,7 +158,10 @@
                     <!-- <input type="button" class="btn-help" id="help" value="Help?"> -->
                     <input type="submit" class="btn-save" name="changeStatus" id="save" value="Save">
                     <!-- <input type="submit" class="btn-save" id="" value="" disabled> -->
-                    <a href="{{ url_for('dashboard') }}"><input type="button" class="btn-cancel" id="cancel" value="Cancel"></a>
+                    <!-- Conditionally render the Cancel link based on user permissions -->
+                    {% if not current_user.permissions.outerUser %}
+                        <a href="{{ url_for('dashboard') }}">Dashboard</a>
+                    {% endif %}
                 </div>
             </div>
             <!-- <ul class="toApprove">

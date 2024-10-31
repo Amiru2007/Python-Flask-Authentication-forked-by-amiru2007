@@ -272,6 +272,12 @@ def new_visitor():
             try:
                 db.session.add(new_visitor)
                 db.session.commit()
+                
+                if current_user.permissions.outerUser:
+                    return redirect(url_for('welcome'))
+                else:
+                    return redirect(url_for('dashboard'))
+                
             except Exception as e:
                 db.session.rollback()
                 return f"Error committing to database: {e}"
@@ -413,18 +419,18 @@ class LoginForm(FlaskForm):
     submit = SubmitField('Login')
 
 
-
-# @app.route('/', methods=['GET', 'POST'])
-# def login():
-#     form = LoginForm()
-#     if form.validate_on_submit():
-#         user = User.query.filter_by(username=form.username.data).first()
-#         if user:
-#             if bcrypt.check_password_hash(user.password, form.password.data):
-#                 login_user(user)
-#                 next_url = request.args.get('next')
-#                 return redirect(next_url) if next_url else redirect(url_for('dashboard'))
-#     return render_template('login.html', form=form)
+# Route for the form
+@app.route('/welcome', methods=['GET', 'POST'])
+@login_required
+def welcome():
+    
+    pageTitle = 'Welcome'
+    
+    user_permissions = current_user.permissions
+    
+    return render_template('outerUserWelcome.html',
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -437,7 +443,7 @@ def login():
                 
                 # Redirect based on the user's permission
                 if user.permissions.outerUser:
-                    return redirect(url_for('new_visitor'))
+                    return redirect(url_for('welcome'))
                 
                 return redirect(url_for('dashboard'))  # Redirect normal users to dashboard
                 
@@ -446,46 +452,23 @@ def login():
         else:
             flash('Invalid username or password', 'danger')
     return render_template('login.html', form=form)
-    # form = LoginForm()
-    # if form.validate_on_submit():
-    #     user = User.query.filter_by(username=form.username.data).first()
-    #     if user:
-    #         print(f"Checking password for user {form.username.data}")  # Debug statement
-    #         # if user.check_password(form.password.data):
-    #         if bcrypt.check_password_hash(user.password, form.password.data):
-    #             print(f"Password valid for user {form.username.data}")  # Debug statement
-    #             login_user(user)
-    #             next_url = request.args.get('next')
-    #             return redirect(next_url) if next_url else redirect(url_for('dashboard'))
-    #         else:
-    #             print(f"Invalid password for user {form.username.data}")  # Debug statement
-    #     else:
-    #         print(f"User {form.username.data} not found")  # Debug statement
-    # return render_template('login.html', form=form)
-
 
 @app.before_request
 def check_outer_user_access():
-    # Skip permission check for login, logout, static files
     public_routes = ['login', 'static', 'logout']
     
     if request.endpoint in public_routes:
-        return  # Don't enforce permission checks for public routes
+        return
     
-    # If the user is logged in and is an outer user
     if current_user.is_authenticated and current_user.permissions.outerUser:
-        # List of routes outer users are allowed to access
-        allowed_routes = ['new_visitor', 'some_other_allowed_route']
-        
-        # If trying to access a restricted page, block it with a 404
+        allowed_routes = ['new_visitor', 'edit_request', 'welcome']
         if request.endpoint not in allowed_routes:
-            abort(404)  # Outer users should not access these routes
+            abort(404)
 
 
 @app.before_request
 def set_global_variables():
     if current_user.is_authenticated:
-        # Proceed with setting global variables
         fourteen_days_ago = datetime.utcnow() - timedelta(days=14)
         
         g.pending_visitors = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester != current_user.username).all()
@@ -536,8 +519,6 @@ def set_global_variables():
 
         g.user_permissions = current_user.permissions
     else:
-        # Handle the case when the user is not authenticated
-        # For example, set global variables for anonymous users, or set them to None
         g.user_permissions = None
 
 
@@ -553,152 +534,116 @@ def dashboard():
     pageTitle = 'Dashboard'
     
     # --- Visitors Charts ---
-    
-    # Get today's date
+
     today = datetime.now().strftime('%Y-%m-%d')
     start_of_today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     
-    # Query all visitor data and filter by today's date
     data = Visitor.query.filter(
-        Visitor.arrivedTime.like(f'{today}%')  # Filter records with today’s date
+        Visitor.arrivedTime.like(f'{today}%')
     ).all()
 
-    # Convert the data into a Pandas DataFrame
     df = pd.DataFrame([(d.arrivedTime) for d in data], columns=['arrivedTime'])
     
-    # Convert arrivedTime to datetime and extract the hour
     df['arrivedTime'] = pd.to_datetime(df['arrivedTime'], format='%Y-%m-%d %H:%M:%S').dt.hour
 
-    # Filter for time range between 8 AM (8) and 6 PM (18)
     df = df[(df['arrivedTime'] >= 8) & (df['arrivedTime'] <= 18)]
 
-    # Group by the hour and count the number of visitors for each hour
     chart_data = df.groupby('arrivedTime').size().reset_index(name='count')
 
-    # Ensure all hours from 8 to 18 are represented in the data
     full_range = pd.DataFrame({'arrivedTime': range(8, 19)})
     chart_data = pd.merge(full_range, chart_data, left_on='arrivedTime', right_on='arrivedTime', how='left').fillna(0)
 
-    # Prepare data for rendering the hourly chart
     labels = chart_data['arrivedTime'].astype(str).tolist()
     values = chart_data['count'].tolist()
 
-    # Get the date 30 days ago
     start_date = (datetime.now() - timedelta(days=30)).strftime('%Y-%m-%d')
 
-    # Query visitor data for the last 30 days
     data_30_days = Visitor.query.filter(
         Visitor.arrivedTime >= start_date
     ).all()
 
-    # Convert the data into a Pandas DataFrame
     df_30_days = pd.DataFrame([(d.arrivedTime) for d in data_30_days], columns=['arrivedTime'])
 
-    # Convert arrivedTime to datetime and extract the date
     df_30_days['arrivedTime'] = pd.to_datetime(df_30_days['arrivedTime'], format='%Y-%m-%d %H:%M:%S').dt.date
 
-    # Group by the date and count the number of visitors for each date
     chart_data_30_days = df_30_days.groupby('arrivedTime').size().reset_index(name='count')
 
-    # Ensure all dates in the last 30 days are represented in the data
     full_range_30_days = pd.date_range(start=start_date, end=today).date
     full_range_df_30_days = pd.DataFrame({'arrivedTime': full_range_30_days})
     chart_data_30_days = pd.merge(full_range_df_30_days, chart_data_30_days, on='arrivedTime', how='left').fillna(0)
 
-    # Convert counts to integers
     chart_data_30_days['count'] = chart_data_30_days['count'].astype(int)
 
-    # Prepare data for rendering the 30-day chart
     labels_30_days = chart_data_30_days['arrivedTime'].astype(str).tolist()
     values_30_days = chart_data_30_days['count'].tolist()
 
     # --- Exit Permits Charts ---
     
-    # Query all gate pass data and filter by today's date
     gatepass_data = GatePass.query.filter(
-        GatePass.committedDate.like(f'{today}%')  # Filter records with today’s date
+        GatePass.committedDate.like(f'{today}%')
     ).all()
 
-    # Convert the data into a Pandas DataFrame
     df_gatepass = pd.DataFrame([(d.committedDate) for d in gatepass_data], columns=['committedDate'])
     
-    # Convert committedDate to datetime and extract the hour
     df_gatepass['committedDate'] = pd.to_datetime(df_gatepass['committedDate'], format='%Y-%m-%d %H:%M:%S').dt.hour
 
-    # Filter for time range between 8 AM (8) and 6 PM (18)
     df_gatepass = df_gatepass[(df_gatepass['committedDate'] >= 8) & (df_gatepass['committedDate'] <= 18)]
 
-    # Group by the hour and count the number of gate passes for each hour
     chart_data_gatepass = df_gatepass.groupby('committedDate').size().reset_index(name='count')
 
-    # Ensure all hours from 8 to 18 are represented in the data
     full_range_gatepass = pd.DataFrame({'committedDate': range(8, 19)})
     chart_data_gatepass = pd.merge(full_range_gatepass, chart_data_gatepass, left_on='committedDate', right_on='committedDate', how='left').fillna(0)
 
-    # Prepare data for rendering the hourly chart for gate passes
     labels_gatepass = chart_data_gatepass['committedDate'].astype(str).tolist()
     values_gatepass = chart_data_gatepass['count'].tolist()
 
-    # Query gate pass data for the last 30 days
     gatepass_data_30_days = GatePass.query.filter(
         GatePass.committedDate >= start_date
     ).all()
 
-    # Convert the data into a Pandas DataFrame
     df_gatepass_30_days = pd.DataFrame([(d.committedDate) for d in gatepass_data_30_days], columns=['committedDate'])
 
-    # Convert committedDate to datetime and extract the date
     df_gatepass_30_days['committedDate'] = pd.to_datetime(df_gatepass_30_days['committedDate'], format='%Y-%m-%d %H:%M:%S').dt.date
 
-    # Group by the date and count the number of gate passes for each date
     chart_data_gatepass_30_days = df_gatepass_30_days.groupby('committedDate').size().reset_index(name='count')
 
-    # Ensure all dates in the last 30 days are represented in the data
     full_range_gatepass_30_days = pd.date_range(start=start_date, end=today).date
     full_range_df_gatepass_30_days = pd.DataFrame({'committedDate': full_range_gatepass_30_days})
     chart_data_gatepass_30_days = pd.merge(full_range_df_gatepass_30_days, chart_data_gatepass_30_days, on='committedDate', how='left').fillna(0)
 
-    # Convert counts to integers
     chart_data_gatepass_30_days['count'] = chart_data_gatepass_30_days['count'].astype(int)
 
-    # Prepare data for rendering the 30-day chart for gate passes
     labels_gatepass_30_days = chart_data_gatepass_30_days['committedDate'].astype(str).tolist()
     values_gatepass_30_days = chart_data_gatepass_30_days['count'].tolist()
 
     # --- Gate Pass Management Counts ---
     
-    # 1. Count the employees who went out today (status = 'Out')
     out_count = GatePass.query.filter(
         GatePass.employeeDepartingDate.like(f'{today}%')
     ).count()
 
-    # 2. Count the employees who returned today (status = 'In')
     returned_count = GatePass.query.filter(
         GatePass.employeeFormStatus == 'In',
         GatePass.employeeDepartingDate.like(f'{today}%')
     ).count()
 
-    # 3. Count the employees who are currently out of the office (status = 'Out')
     out_of_office_count = out_count - returned_count
 
     # --- Visitor Management Counts ---
     
-    # 1. Count the visitors who arrived today (status = 'Arrived') - this count will only increase
     arrived_count = Visitor.query.filter(
         Visitor.arrivedTime.like(f'{today}%')
     ).count()
 
-    # 2. Count the visitors who departed today (status = 'Departed')
     departed_count = Visitor.query.filter(
         Visitor.status == 'Departed',
         Visitor.departedTime.like(f'{today}%')
     ).count()
 
-    # 3. Count the visitors who are currently in the premises (status = 'Arrived' and not 'Departed')
     in_premises_count = Visitor.query.filter(
         Visitor.status == 'Arrived',
         Visitor.arrivedTime.like(f'{today}%'),
-        Visitor.departedTime.is_(None)  # Check that there's no departed time (i.e., they haven't left)
+        Visitor.departedTime.is_(None)
     ).count()
 
     user_permissions = current_user.permissions
@@ -724,88 +669,6 @@ def dashboard():
         in_premises_count=in_premises_count
     )
 
-
-    # try:
-    #     # Query to retrieve visitorNos where the status is 'Pending'
-    #     pending_visitors = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester != current_user.username).all()
-    #     # Query to retrieve visitorNos where the status is 'Approved'
-    #     approved_visitors = Visitor.query.filter(Visitor.status == 'Approved').all()
-    #     # Query to retrieve visitorNos where the status is 'Arrived'
-    #     arrived_visitors = Visitor.query.filter(Visitor.status == 'Arrived').all()
-
-    #     request_list = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester == current_user.username).all()
-    #     # Calculate the date 14 days ago
-    #     fourteen_days_ago = datetime.utcnow() - timedelta(days=14)
-    #     # Query visitors added within the last 14 days
-    #     visitors_list = Visitor.query.filter(Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
-          
-
-    #     if has_permission('hod'):
-    #         pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending').all()
-            
-    #         approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved').all()
-            
-    #         confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed').all()
-    #     else:
-    #         pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester != current_user.username).all()
-            
-    #         approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved', GatePass.gatePassRequester != current_user.username).all()
-            
-    #         confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed', GatePass.gatePassRequester != current_user.username).all()
-        
-    #     departed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester != current_user.username).all()
-
-    #     edit_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester == current_user.username).all()
-
-    #     gate_pass_forms = GatePass.query.filter(GatePass.committedDate >= fourteen_days_ago).order_by(GatePass.gatePassId.desc()).all()
-        
-    #     gate_pass_requests_reminder = False
-    #     visitor_requests_reminder = False
-    #     gate_pass_gate_reminder = False
-    #     visitor_gate_reminder = False
-    #     approved_gate_pass_reminder = False
-
-    #     if pending_gate_pass and has_permission('Approve_Gate_Pass'):
-    #         gate_pass_requests_reminder = True
-        
-    #     if pending_visitors and has_permission('Approve_Visitor'):
-    #         visitor_requests_reminder = True
-
-    #     if approved_gate_pass and has_permission('Confirmed_Gate_Pass'):
-    #         gate_pass_gate_reminder = True
-        
-    #     if approved_visitors and has_permission('In_Visitor'):
-    #         visitor_gate_reminder = True
-
-    #     if confirmed_gate_pass and has_permission('Out_Gate_Pass'):
-    #         approved_gate_pass_reminder = True
-
-
-    # except Exception as e:
-    #     return jsonify({'error': str(e)})
-    
-    # return render_template('dashboard.html',
-    #                        pending_visitor_numbers=pending_visitors,
-    #                     #    pending_visitor_requesters=pending_visitor_requesters_list,
-    #                        approved_visitor_numbers=approved_visitors,
-    #                        arrived_visitor_numbers=arrived_visitors,
-    #                        request_list=request_list,
-    #                        visitors_list=visitors_list,
-    #                        user_permissions=user_permissions,
-    #                        pageTitle=pageTitle,
-    #                        pending_gate_pass=pending_gate_pass,
-    #                        edit_gate_pass=edit_gate_pass,
-    #                        approved_gate_pass=approved_gate_pass,
-    #                        confirmed_gate_pass=confirmed_gate_pass,
-    #                        departed_gate_pass=departed_gate_pass,
-    #                        gate_pass_requests_reminder=gate_pass_requests_reminder,
-    #                        visitor_requests_reminder=visitor_requests_reminder,
-    #                        gate_pass_gate_reminder=gate_pass_gate_reminder,
-    #                        visitor_gate_reminder=visitor_gate_reminder,
-    #                        approved_gate_pass_reminder=approved_gate_pass_reminder,
-    #                        gate_pass_forms=gate_pass_forms)
-
-# Register route
 @app.route('/register', methods=['GET', 'POST'])
 @login_required
 @permission_required('Create_User')
@@ -1063,7 +926,11 @@ def edit_request():
             visitor.history = updated_history
 
             db.session.commit()
-            return redirect(url_for('dashboard'))
+
+            if current_user.permissions.outerUser:
+                return redirect(url_for('welcome'))
+            else:
+                return redirect(url_for('dashboard'))
 
         # Read the image file path from the database
         image_path = visitor.profilePhoto
