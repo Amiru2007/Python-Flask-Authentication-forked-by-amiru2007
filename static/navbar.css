@@ -43,6 +43,12 @@
     flex-direction: column;
 }
 
+.dropdown-menu i {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .nav-logo-container {
     padding: 30px 0 40px 0;
     text-align: center;
@@ -109,6 +115,9 @@
 
 .nav-list li a .nav-icon {
     margin: 0 10px 0 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
     
 .nav-list li a .ph-caret-down {
@@ -162,6 +171,14 @@
     padding: 10px 10px 10px 15px !important;
     font-size: 16px !important;
 }
+
+span.absolute-icon-contains {
+    position: relative;
+    left: -2px !important;
+    top: -2px !important;
+}
+
+span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size: 13px;bottom: -4px;right: -4px;background: white;border-radius: 50%;height: 13px;width: 13px;border: 1px solid white;}
 
 /* .dropdown-menu li a:hover {
     background-color: #6c757d;

@@ -37,6 +37,11 @@
     font-family: "DM Sans", sans-serif;
 }
 
+span.main-nav-link-header {
+    display: flex;
+    flex-direction: row;
+}
+
 h3#pageTitle {}
 
 span.nav-link-text {

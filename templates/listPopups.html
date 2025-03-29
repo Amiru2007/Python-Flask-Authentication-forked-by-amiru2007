@@ -307,6 +307,69 @@
     </ul>
 </div>
 
+
+<!-- <div class="overlay" id="editGatePassListOverlay" onclick="closeEditGatePassList()"></div> -->
+<div class="popup" id="requestedDriverGatePassList">
+    <div class="popupHeader">
+        <h3>Mark Driver Gate Pass out</h3>
+        <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
+    </div>
+    <ul class="toApprove">
+        {% for driver in g.requested_driver_gate_pass %}
+            <li>
+                <form method="post" action="{{ url_for('out_drivergatepass') }}">
+                    <input type="hidden" name="driverGatePassId" value="{{ driver.driverGatePassId }}">
+                    <input type="hidden" name="driverFormStatus" value="{{ driver.driverFormStatus }}">
+                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                        <span class="visitorsListDetail">{{ driver.driverNo }}</span>
+                        {% if driver.driverName %}
+                            <span class="visitorsListDetail" style="flex:5;">{{ driver.driverName }}</span>
+                        {% else %}
+                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                        {% endif %}
+                        {% if driver.driverDepartingTime %}
+                            <span class="visitorsListDetail">{{ driver.driverDepartingTime }}</span>
+                        {% else %}
+                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                        {% endif %}
+                    </button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
+<!-- <div class="overlay" id="editGatePassListOverlay" onclick="closeEditGatePassList()"></div> -->
+<div class="popup" id="outDriverGatePassList">
+    <div class="popupHeader">
+        <h3>Mark Driver Gate Pass In</h3>
+        <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
+    </div>
+    <ul class="toApprove">
+        {% for driver in g.departed_driver_gate_pass %}
+            <li>
+                <form method="post" action="{{ url_for('in_drivergatepass') }}">
+                    <input type="hidden" name="driverGatePassId" value="{{ driver.driverGatePassId }}">
+                    <input type="hidden" name="driverFormStatus" value="{{ driver.driverFormStatus }}">
+                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                        <span class="visitorsListDetail">{{ driver.driverNo }}</span>
+                        {% if driver.driverName %}
+                            <span class="visitorsListDetail" style="flex:5;">{{ driver.driverName }}</span>
+                        {% else %}
+                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                        {% endif %}
+                        {% if driver.driverDepartingTime %}
+                            <span class="visitorsListDetail">{{ driver.driverDepartingTime }}</span>
+                        {% else %}
+                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                        {% endif %}
+                    </button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
 <!-- <div class="overlay" id="gatePassFormsOverlay" onclick="closeGatePassForms()"></div> -->
 <div class="popup" id="gatePassForms">
     <div class="popupHeader">
@@ -364,36 +427,6 @@
         {% endfor %}            
     </ul>            
 </div>
-
-
-
-
-
-<!-- <div id="fullscreenOverlay">
-<div id="closeButton" onclick="closeFullscreen()">&#x2715;</div>
-<img id="fullscreenImage" src="" alt="Fullscreen Image">
-</div>
-<div class="dashboard-footer" id="dashboardFooter">
-<a href="{{url_for('logout')}}"><button type="button">logout</button></a>
-<button type="button" id="showReportButtons" onclick="openHelp()">Help?</button>
-</div>
-<div class="contactMe" id="contactMe">
-<div class="innerContainer">
-    <p style="padding-right: 20px;">Designed & developed By Amiru Weerathunga</p>
-    <div class="contactInfo">
-        <span>0768452122</span>
-        <div class="socialLinks">
-            <a href="https://www.linkedin.com/in/amiru-weerathunga-499878280/" target="_blank"><i class="fa-brands fa-linkedin" style="color: #0077b5;"></i> <span class="linkText">LinkedIn</span></a>
-            <a href="https://www.youtube.com/@Amiru_Weerathunga/featured" target="_blank"><i class="fa-brands fa-youtube" style="color: #CD201F;"></i> <span class="linkText">YouTube</span></a>
-            <a href="https://github.com/Amiru2007" target="_blank"><i class="fa-brands fa-github" style="color: #000000;"></i> <span class="linkText">GitHub</span></a>
-        </div>
-    </div>
-</div>
-</div> -->
-
-
-
-
 
 
 
@@ -599,5 +632,19 @@
                 </div>
             {% endif %}    
         </li>        
+        <li class="profileLinks">
+            <!-- Gate Pass Gate Reminder -->
+            {% if g.requested_driver_gate_pass_gate_reminder %}
+                <div class="requests-reminder" id="requestedGatePassReminder">
+                    <div class="text-container">
+                        <h3>Reminder</h3>
+                        <p class="reminder-message">There are Requested driver gate passes</p>
+                    </div>
+                    <div class="nav-btn-container">
+                        <button type="button" id="showAnotherRequestList1" onclick="togglePopup('requestedDriverGatePassList')"><i class="ph-fill ph-arrow-circle-right"></i></button>
+                    </div>
+                </div>
+            {% endif %}    
+        </li>  
     </ul>
 </div>

@@ -23,16 +23,24 @@
             </div>
             <div class="twosections">
                 <div class="sections-container">
-                    <div class="section">
+                    <div class="section" style="gap: 24px; display: flex; flex-direction: column;">
                         <div class="form-sections">
                             <h4 class="input-head">Employee No.</h4>
                             <input type="text" class="login-input" id="username" name="employeeNo" value="{{ employee.employeeNo }}" readonly>
                         </div>
-                    </div>
-                    <div class="section">
                         <div class="form-sections">
                             <h4 class="input-head">Name with initials</h4>
                             <input type="text" class="login-input" id="name" name="nameWithInitials" value="{{ employee.nameWithInitials }}">
+                        </div>
+                    </div>
+                    <div class="section" style="gap: 24px; display: flex; flex-direction: column;">
+                        <div class="form-sections">
+                            <h4 class="input-head">Designation</h4>
+                            <input type="text" class="login-input" id="username" name="employeeDesignation" value="{{ employee.employeeDesignation }}">
+                        </div>
+                        <div class="form-sections">
+                            <h4 class="input-head">Telephone</h4>
+                            <input type="text" class="login-input" id="name" name="employeeTelephone" value="{{ employee.employeeTelephone }}">
                         </div>
                     </div>
                 </div>

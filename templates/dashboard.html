@@ -92,6 +92,34 @@
                 </div>
             </div>
         </div>
+        <div class="dashboard-charts">
+            <h4 class="chart-catogary">Driver Attendance</h4>
+            <div class="charts-status">
+                <h5 class="chart-header">
+                    Curent Status
+                </h5>
+                <div class="status-chart">
+                    <div class="status-detail-block">
+                        <p>Out</p>
+                        <div class="status-card">
+                            <p>{{ out_count }}</p>
+                        </div>
+                    </div>
+                    <div class="status-detail-block">
+                        <p>Returned</p>
+                        <div class="status-card">
+                            <p>{{ returned_count }}</p>
+                        </div>
+                    </div>
+                    <div class="status-detail-block">
+                        <p>Out of Office</p>
+                        <div class="status-card">
+                            <p>{{ out_of_office_count }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- <div>
         <canvas id="myChart" width="400" height="200"></canvas>

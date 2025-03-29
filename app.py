@@ -1,22 +1,22 @@
-from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session, send_file, send_from_directory, abort, g
-from flask_sqlalchemy import SQLAlchemy
-from sqlalchemy import or_, func
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user
-from flask_wtf import FlaskForm
-from flask_wtf.file import FileField, FileAllowed
-from flask_wtf.csrf import CSRFProtect
-from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField, TelField, SelectMultipleField, FormField, BooleanField, FieldList
-from wtforms.validators import InputRequired, Length, ValidationError, EqualTo
-from flask_bcrypt import Bcrypt
+from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session, send_file, send_from_directory, abort, g # type: ignore
+from flask_sqlalchemy import SQLAlchemy # type: ignore
+from sqlalchemy import or_, func # type: ignore
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user # type: ignore
+from flask_wtf import FlaskForm # type: ignore
+from flask_wtf.file import FileField, FileAllowed # type: ignore
+from flask_wtf.csrf import CSRFProtect # type: ignore
+from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField, TelField, SelectMultipleField, FormField, BooleanField, FieldList # type: ignore
+from wtforms.validators import InputRequired, Length, ValidationError, EqualTo # type: ignore
+from flask_bcrypt import Bcrypt # type: ignore
 # from flask_migrate import Migrate
 from datetime import datetime, timedelta
 from base64 import b64encode
-import openpyxl
-from openpyxl.worksheet.table import Table, TableStyleInfo
+import openpyxl # type: ignore
+from openpyxl.worksheet.table import Table, TableStyleInfo # type: ignore
 from io import BytesIO
-from werkzeug.utils import secure_filename
+from werkzeug.utils import secure_filename # type: ignore
 import os
-import pandas as pd
+import pandas as pd # type: ignore
 from functools import wraps
 # from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -103,6 +103,8 @@ class Employee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     employeeNo = db.Column(db.String(10), nullable=False, unique=True)
     nameWithInitials = db.Column(db.String(120), nullable=False, unique=True)
+    employeeDesignation = db.Column(db.String(120), nullable=False, unique=True)
+    employeeTelephone = db.Column(db.String(120), nullable=False, unique=True)
     status = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
@@ -153,6 +155,24 @@ class GatePass(db.Model):
     employeeInMark = db.Column(db.String(80))
     committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
     gatePassRequester = db.Column(db.String(80), nullable=False)
+
+class DriverGatePass(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    driverGatePassId = db.Column(db.String(20), nullable=False, unique=True)
+    driverNo = db.Column(db.String(10), nullable=False)
+    driverName = db.Column(db.String(120), nullable=False)
+    driverCompany = db.Column(db.String(120), nullable=False)
+    driverDepartingTime = db.Column(db.String(50))
+    driverDepartingDate = db.Column(db.String(50))
+    driverArrivalTime = db.Column(db.String(50))
+    driverVehicleNo = db.Column(db.String(30))
+    driverDepartingReason = db.Column(db.String(200))
+    driverDepartingDestinationRemark = db.Column(db.String(200))
+    driverFormStatus = db.Column(db.String(20), nullable=False)
+    driverOutMark = db.Column(db.String(80))
+    driverInMark = db.Column(db.String(80))
+    committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
+    driverGatePassRequester = db.Column(db.String(80), nullable=False)
 
 class ImageUploadForm(FlaskForm):
     profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
@@ -368,6 +388,12 @@ class EmployeeForm(FlaskForm):
     nameWithInitials = StringField(validators=[
                              InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Name with initials"})
 
+    employeeDesignation = StringField(validators=[
+                             InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Destination"})
+
+    employeeTelephone = StringField(validators=[
+                             InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Phone Number"})
+
     submit = SubmitField('Create')
 
 class ChangePasswordForm(FlaskForm):
@@ -491,11 +517,17 @@ def set_global_variables():
         g.edit_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester == current_user.username).all()
         g.gate_pass_forms = GatePass.query.filter(GatePass.committedDate >= fourteen_days_ago).order_by(GatePass.gatePassId.desc()).all()
 
+        g.requested_driver_gate_pass = DriverGatePass.query.filter(DriverGatePass.driverFormStatus == 'Requested', DriverGatePass.driverGatePassRequester != current_user.username).all()
+        g.departed_driver_gate_pass = DriverGatePass.query.filter(DriverGatePass.driverFormStatus == 'Out', DriverGatePass.driverGatePassRequester != current_user.username).all()
+        g.edit_driver_gate_pass = DriverGatePass.query.filter(DriverGatePass.driverFormStatus == 'Requested', DriverGatePass.driverGatePassRequester == current_user.username).all()
+
         g.gate_pass_requests_reminder = False
         g.visitor_requests_reminder = False
         g.gate_pass_gate_reminder = False
         g.visitor_gate_reminder = False
         g.approved_gate_pass_reminder = False
+
+        g.requested_driver_gate_pass_gate_reminder = False
 
         g.there_are_notification = False
 
@@ -514,8 +546,12 @@ def set_global_variables():
         if g.confirmed_gate_pass and has_permission('Out_Gate_Pass'):
             g.approved_gate_pass_reminder = True
 
+
+        if g.requested_driver_gate_pass and has_permission('Out_Gate_Pass'):
+            g.requested_driver_gate_pass_gate_reminder = True
         
-        if g.gate_pass_requests_reminder or g.visitor_requests_reminder or g.gate_pass_gate_reminder or g.visitor_gate_reminder or g.approved_gate_pass_reminder:
+        
+        if g.gate_pass_requests_reminder or g.visitor_requests_reminder or g.gate_pass_gate_reminder or g.visitor_gate_reminder or g.approved_gate_pass_reminder or g.requested_driver_gate_pass_gate_reminder:
             g.there_are_notification = True
 
         g.user_permissions = current_user.permissions
@@ -1066,6 +1102,8 @@ def new_employee():
         new_employee = Employee(
             employeeNo=form.employeeNo.data,
             nameWithInitials=form.nameWithInitials.data,
+            employeeDesignation=form.employeeDesignation.data,
+            employeeTelephone=form.employeeTelephone.data,
             status=1
         )
 
@@ -1155,7 +1193,9 @@ def get_filtered_employees(search_query):
     # Assuming you have a method to filter users based on a search query
     return Employee.query.filter(
         (Employee.employeeNo.like(f'%{search_query}%')) |
-        (Employee.nameWithInitials.like(f'%{search_query}%'))
+        (Employee.nameWithInitials.like(f'%{search_query}%')) |
+        (Employee.employeeDesignation.like(f'%{search_query}%')) |
+        (Employee.employeeTelephone.like(f'%{search_query}%'))
     ).all()
     
 @app.route('/update_employee', methods=['POST'])
@@ -1165,12 +1205,16 @@ def update_employee():
     if request.method == 'POST':
         employeeNo = request.form.get('employeeNo')
         nameWithInitials = request.form.get('nameWithInitials')
+        employeeDesignation = request.form.get('employeeDesignation')
+        employeeTelephone = request.form.get('employeeTelephone')
 
         employee = Employee.query.filter_by(employeeNo=employeeNo).first()
 
         if employee:
             employee.employeeNo = employeeNo
             employee.nameWithInitials = nameWithInitials
+            employee.employeeDesignation = employeeDesignation
+            employee.employeeTelephone = employeeTelephone
 
             db.session.commit()
 
@@ -1186,8 +1230,11 @@ def update_employee():
 def get_employee_by_number(employeeNo):
     employee = Employee.query.filter_by(employeeNo=employeeNo).first()
 
+    user_permissions = current_user.permissions
+    
     if employee:
-        return render_template('editEmployee.html', employee=employee)
+        return render_template('editEmployee.html', employee=employee,
+                           user_permissions=user_permissions)
     else:
         return "User not found", 404
 
@@ -1599,12 +1646,11 @@ def gate_pass():
     pageTitle = 'New Gate Pass'
     
     employee_list = Employee.query.filter().all()
-    # visitor_code = generate_visitorCode()
+    
     gate_pass_code = generate_gatePassId()
-    # form = ImageUploadForm()
+    
     if request.method == 'POST':
         print("Form submitted")
-        # Get form data using request.form.get to avoid BadRequestKeyError
         employee_no = request.form.get('employeeNo', '')
         employee_name = request.form.get('employeeName', '')
         employee_company = request.form.get('employeeCompany', '')
@@ -1620,35 +1666,10 @@ def gate_pass():
         gatePassRequester = current_user.username
         gatePassId = gate_pass_code
         print(gatePassId)
-        # Print form data
-        # request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         
         if not employee_no:
-            # Render the template with an error message
             return render_template('newGatePass.html', 
-                                #    requester=current_user.username, 
-                                #    visitorNo=visitor_code,
                                    error_message='You must enter a Employee ID')
-
-        # pic = request.files['pic']
-        # visitor_no = request.form.get('visitorNo', '')
-
-        # if pic and visitor_no:
-        #     upload_folder = 'uploads'
-        #     os.makedirs(upload_folder, exist_ok=True)
-            
-        #     # Securely generate a new filename using the visitorNo value
-        #     original_extension = get_file_extension(pic.filename)
-        #     filename = secure_filename(f"{visitor_no}{original_extension}")
-        #     file_path = os.path.join(upload_folder, filename)
-            
-        #     pic.save(file_path)
-        # else:
-        #     # Handle the case where no image is uploaded
-        #     # Save a blank or default image to the database
-        #     filename = 'none'
-
-        # filename = secure_filename(pic.filename)
         
         gatepass = GatePass(
             employeeNo=employee_no,
@@ -1706,6 +1727,153 @@ def generate_gatePassId():
     gate_pass_code = f'{today_gate_pass}{gate_pass_counter}'
     return gate_pass_code
 
+@app.route('/drivergatepass', methods=['GET', 'POST'])
+@login_required
+@permission_required('Create_Gate_Pass')
+def driver_gate_pass():
+    
+    user_permissions = current_user.permissions
+    pageTitle = 'New Driver Gate Pass'
+    
+    driver_list = Employee.query.filter(Employee.employeeDesignation == 'Driver').all()
+    
+    driver_gate_pass_code = generate_driverGatePassId()
+    
+    if request.method == 'POST':
+        print("Form submitted")
+        driver_no = request.form.get('driverNo', '')
+        driver_name = request.form.get('driverName', '')
+        driver_company = request.form.get('driverCompany', '')
+        driver_departing_time = request.form.get('driverDepartingTime', '')
+        driver_departing_date = request.form.get('driverDepartingDate', '')
+        driver_arrival_time = request.form.get('driverArrivalTime', '')
+        driver_vehicle_no = request.form.get('driverVehicleNo', '')
+        driver_departing_reason = request.form.get('driverDepartingReason', '')
+        driver_departing_destination_remark = request.form.get('driverDepartingDestinationRemark', '') 
+        driver_status = 'Requested'
+        driverGatePassRequester = current_user.username
+        driverGatePassId = driver_gate_pass_code
+        print(driverGatePassId)
+        
+        if not driver_no:
+            return render_template('newDriverGatePass.html', 
+                                   error_message='You must enter an driver ID')
+        
+        driver_gate_pass = DriverGatePass(  # Updated model reference
+            driverNo=driver_no,
+            driverName=driver_name,
+            driverCompany=driver_company,
+            driverDepartingTime=driver_departing_time,
+            driverDepartingDate=driver_departing_date,
+            driverArrivalTime=driver_arrival_time,
+            driverVehicleNo=driver_vehicle_no,
+            driverDepartingReason=driver_departing_reason,
+            driverDepartingDestinationRemark=driver_departing_destination_remark,
+            driverFormStatus=driver_status,
+            committedDate=datetime.utcnow(),
+            driverGatePassRequester=driverGatePassRequester,
+            driverGatePassId=driverGatePassId  # Updated ID reference
+        )
+
+        with app.app_context():
+            try:
+                db.session.add(driver_gate_pass)
+                db.session.commit()
+            except Exception as e:
+                db.session.rollback()
+                return f"Error committing to database: {e}"
+
+        return redirect(url_for('dashboard'))
+
+    return render_template('newDriverGatePass.html', driver_list=driver_list,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
+
+def generate_driverGatePassId():
+    # Get the current date in YYYYMMDD format
+    today_driver_gate_pass = datetime.now().strftime('%Y%m%d')
+
+    # Query the latest gate pass for the current date
+    latest_driverGate_pass = DriverGatePass.query.filter(
+        DriverGatePass.driverGatePassId.like(f'D{today_driver_gate_pass}%')
+    ).order_by(
+        DriverGatePass.driverGatePassId.desc()  # Fixed incorrect model reference
+    ).first()
+
+    if latest_driverGate_pass:
+        # Extract and increment the counter part of the gate pass ID
+        current_driver_gate_pass_counter = int(latest_driverGate_pass.driverGatePassId[-4:])
+        driver_gate_pass_counter = str(current_driver_gate_pass_counter + 1).zfill(4)
+    else:
+        # If no gate pass is found for the current date, start the counter at '0001'
+        driver_gate_pass_counter = '0001'
+
+    # Combine the date and the counter to form the new gate pass ID
+    driver_gate_pass_code = f'D{today_driver_gate_pass}{driver_gate_pass_counter}'
+    return driver_gate_pass_code
+
+@app.route('/out_drivergatepass', methods=['POST'])
+@login_required
+@permission_required('Out_Gate_Pass')
+def out_drivergatepass():
+    driverGatePassId = request.form.get('driverGatePassId')
+    driverFormStatus = request.form.get('driverFormStatus')
+    driverGatePassForm = DriverGatePass.query.filter_by(driverGatePassId=driverGatePassId).first()
+
+    pageTitle = 'Out Driver Gate Pass'
+    
+    user_permissions = current_user.permissions
+    
+    if driverGatePassForm:
+        # Access the value of the clicked button from the form data
+        clicked_button_value = request.form.get('changeStatus')
+        print(clicked_button_value)
+        status = driverFormStatus
+            
+        if clicked_button_value == 'Out':
+            driverGatePassForm.driverFormStatus = 'Out'
+            driverGatePassForm.driverOutMark = current_user.username
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+            
+        return render_template('requestedDriverGatePass.html', driverGatePassForm=driverGatePassForm, status=status,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
+        
+    else:
+        return jsonify({'error': 'Employee not found'}), 404
+    
+@app.route('/in_drivergatepass', methods=['POST'])
+@login_required
+@permission_required('In_Gate_Pass')
+def in_drivergatepass():
+    driverGatePassId = request.form.get('driverGatePassId')
+    driverFormStatus = request.form.get('driverFormStatus')
+    driverGatePassForm = DriverGatePass.query.filter_by(driverGatePassId=driverGatePassId).first()
+
+    pageTitle = 'In Driver Gate Pass'
+    
+    user_permissions = current_user.permissions
+    
+    if driverGatePassForm:
+        # Access the value of the clicked button from the form data
+        clicked_button_value = request.form.get('changeStatus')
+        print(clicked_button_value)
+        status = driverFormStatus
+            
+        if clicked_button_value == 'In':
+            driverGatePassForm.driverFormStatus = 'In'
+            driverGatePassForm.driverInMark = current_user.username
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+            
+        return render_template('outDriverGatePass.html', driverGatePassForm=driverGatePassForm, status=status,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
+        
+    else:
+        return jsonify({'error': 'Employee not found'}), 404
+    
 @app.route('/approve_gatepass', methods=['POST'])
 @login_required
 @permission_required('Approve_Gate_Pass')
