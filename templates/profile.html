@@ -1,17 +1,21 @@
 <!-- templates/profile.html -->
 <!DOCTYPE html>
 <html>
-<head>
-    <title>User Profile</title>
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
-</head>
-<body>
-    <h1>User Profile</h1>
-    {% if user %}
+    <head>
+        <title>User Profile</title>
+        <link
+            rel="shortcut icon"
+            href="{{ url_for('static', filename='favicon.png') }}"
+            type="image/x-icon" />
+    </head>
+    <body>
+        <h1>User Profile</h1>
+        {% if user %}
         <p>Username: {{ user.username }}</p>
         {% if user.image %}
-            <img src="{{ url_for('static', filename='uploads/' + user.image) }}" alt="User Image">
-        {% endif %}
-    {% endif %}
-</body>
+        <img
+            src="{{ url_for('static', filename='uploads/' + user.image) }}"
+            alt="User Image" />
+        {% endif %} {% endif %}
+    </body>
 </html>

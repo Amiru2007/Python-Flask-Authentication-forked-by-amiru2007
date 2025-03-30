@@ -1,24 +1,34 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <!-- Include CSS for navbar -->
-    <link rel="stylesheet" href='{{ url_for('static', filename='navbar.css')}}' />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
-<body>
-    <div class="container">
-        <!-- Sidebar -->
-        {% include 'navbar.html' %}
-        {% include 'listPopups.html' %}
+    <head>
+        <!-- Include CSS for navbar -->
+        <link rel="stylesheet" href='{{ url_for('static',
+        filename='navbar.css')}}' />
+        <link
+            rel="shortcut icon"
+            href="{{ url_for('static', filename='favicon.png') }}"
+            type="image/x-icon" />
+        <script src="https://unpkg.com/@phosphor-icons/web"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+            integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer" />
+    </head>
+    <body>
+        <div class="container">
+            <!-- Sidebar -->
+            {% include 'navbar.html' %} {% include 'listPopups.html' %}
 
-        <!-- Main content -->
-        <div class="main-content">
-            <nav class="horizontal-global-nav">
-                <div class="nav-left">
-                    <h3 class="nav-current-page" id="pageTitle">{{ pageTitle }}</h3>
-                    {% if pageTitle == 'Dashboard' %}
+            <!-- Main content -->
+            <div class="main-content">
+                <nav class="horizontal-global-nav">
+                    <div class="nav-left">
+                        <h3 class="nav-current-page" id="pageTitle">
+                            {{ pageTitle }}
+                        </h3>
+                        {% if pageTitle == 'Dashboard' %}
                         <div class="breakerLine"></div>
                         <p>{{ today }}</p>
                         <!-- <div class="switch-container">
@@ -30,59 +40,75 @@
 
                             <div class="switch-slider"></div>
                         </div> -->
-                    {% elif pageTitle == 'New Visitor' %}
+                        {% elif pageTitle == 'New Visitor' %}
                         <div class="breakerLine"></div>
                         <p id="navVisitorNo">...</p>
-                    {% elif pageTitle == 'Approve Visitor' %}
+                        {% elif pageTitle == 'Approve Visitor' %}
                         <div class="breakerLine"></div>
                         <p id="navVisitorNo">...</p>
-                    {% elif pageTitle == 'Mark Visitor Arrival' %}
+                        {% elif pageTitle == 'Mark Visitor Arrival' %}
                         <div class="breakerLine"></div>
                         <p id="navVisitorNo">...</p>
-                    {% elif pageTitle == 'Mark Visitor Departure' %}
+                        {% elif pageTitle == 'Mark Visitor Departure' %}
                         <div class="breakerLine"></div>
                         <p id="navVisitorNo">...</p>
-                    {% elif pageTitle == 'Edit Visitor Request' %}
+                        {% elif pageTitle == 'Edit Visitor Request' %}
                         <div class="breakerLine"></div>
                         <p id="navVisitorNo">...</p>
-                    {% endif %}
+                        {% endif %}
+                    </div>
+                    <ul class="control-nav">
+                        <li class="nav-btn">
+                            <button
+                                type="button"
+                                class="notification-btn"
+                                id="showNotifications"
+                                title="Notifications"
+                                onclick="togglePopup('notificationsMenu')">
+                                <span>
+                                    <i
+                                        class="ph-fill ph-bell-simple-ringing"></i>
+                                    {% if g.there_are_notification %}
+                                    <div
+                                        class="thereAreNotificationBubble"></div>
+                                    {% endif %}
+                                </span>
+                            </button>
+                        </li>
+                        <li class="nav-btn">
+                            <button
+                                type="button"
+                                class="profile-btn"
+                                id="profileBtn"
+                                title="Your Profile"
+                                onclick="togglePopup('profileMenu')">
+                                <span>
+                                    <i class="ph-fill ph-user-circle"></i>
+                                </span>
+                            </button>
+                        </li>
+                        <li class="nav-btn hamburger">
+                            <button
+                                type="button"
+                                class="sidebar-btn"
+                                id="sidebarBtn"
+                                title="Open Sidebar"
+                                onclick="openSideMenu()">
+                                <span>
+                                    <i class="ph ph-list"></i>
+                                </span>
+                            </button>
+                        </li>
+                    </ul>
+                </nav>
+                <!-- Your page content goes here -->
+                <div class="block-content-parent">
+                    {% block content %} {% endblock %}
                 </div>
-                <ul class="control-nav">
-                    <li class="nav-btn">
-                        <button type="button" class="notification-btn" id="showNotifications" title="Notifications" onclick="togglePopup('notificationsMenu')">
-                            <span>
-                                <i class="ph-fill ph-bell-simple-ringing"></i>
-                                {% if g.there_are_notification %}
-                                    <div class="thereAreNotificationBubble"></div>
-                                {% endif %}
-                            </span>
-                        </button>
-                    </li>
-                    <li class="nav-btn">
-                        <button type="button" class="profile-btn" id="profileBtn" title="Your Profile" onclick="togglePopup('profileMenu')">
-                            <span>
-                                <i class="ph-fill ph-user-circle"></i>
-                            </span>
-                        </button>
-                    </li>
-                    <li class="nav-btn hamburger">
-                        <button type="button" class="sidebar-btn" id="sidebarBtn" title="Open Sidebar" onclick="openSideMenu()">
-                            <span>
-                                <i class="ph ph-list"></i>
-                            </span>
-                        </button>
-                    </li>
-                </ul>
-            </nav>
-            <!-- Your page content goes here -->
-             <div class="block-content-parent">
-                {% block content %}
-                {% endblock %}
-             </div>
+            </div>
         </div>
-    </div>
-    <!-- Include JavaScript for navbar -->
-    <script src="{{ url_for('static', filename='dashboard.js')}}"></script>
-    <script src="{{ url_for('static', filename='navbar.js') }}"></script>
-</body>
+        <!-- Include JavaScript for navbar -->
+        <script src="{{ url_for('static', filename='dashboard.js')}}"></script>
+        <script src="{{ url_for('static', filename='navbar.js') }}"></script>
+    </body>
 </html>

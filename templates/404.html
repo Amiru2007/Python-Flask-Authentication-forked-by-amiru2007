@@ -1,65 +1,74 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
-    <title>Page Not Found</title>
-    <style>
-        * {
-            padding: 0;
-            margin: 0;
-        }
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="shortcut icon"
+            href="{{ url_for('static', filename='favicon.png') }}"
+            type="image/x-icon" />
+        <title>Page Not Found</title>
+        <style>
+            * {
+                padding: 0;
+                margin: 0;
+            }
 
-        body {
-            text-align: center;
-            background-color: #f9f9f9;
-            font-family: Arial, sans-serif;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            height: 100vh;
-            padding: 0 50px;
-        }
+            body {
+                text-align: center;
+                background-color: #f9f9f9;
+                font-family: Arial, sans-serif;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                flex-direction: column;
+                height: 100vh;
+                padding: 0 50px;
+            }
 
-        img {
-            max-width: 400px;
-            height: auto;
-            margin-bottom: 50px;
-        }
+            img {
+                max-width: 400px;
+                height: auto;
+                margin-bottom: 50px;
+            }
 
-        h1 {
-            font-size: 72px;
-            margin-bottom: 40px;
-            color: #0078d4;
-        }
+            h1 {
+                font-size: 72px;
+                margin-bottom: 40px;
+                color: #0078d4;
+            }
 
-        p {
-            font-size: 24px;
-        }
+            p {
+                font-size: 24px;
+            }
 
-        a {
-            display: inline-block;
-            margin-top: 40px;
-            padding: 10px 20px;
-            background-color: #0078d4;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-        }
+            a {
+                display: inline-block;
+                margin-top: 40px;
+                padding: 10px 20px;
+                background-color: #0078d4;
+                color: white;
+                text-decoration: none;
+                border-radius: 5px;
+            }
 
-        a:hover {
-            background-color: #2a94e6;
-        }
-    </style>
-</head>
-<body>
-    <img class="logo-image" src="{{ url_for('static', filename='logo.png') }}" alt="Dayartne Holdings Logo">
-    <h1>404 - Page Not Found</h1>
-    <p>{{ error_message }}</p>
-    <br>
-    <p>It seems you've reached a page that doesn't exist or that you're not authorized to view.</p>
-    <a href="{{ url_for('dashboard') }}">Go back to Dashboard</a>
-</body>
+            a:hover {
+                background-color: #2a94e6;
+            }
+        </style>
+    </head>
+    <body>
+        <img
+            class="logo-image"
+            src="{{ url_for('static', filename='logo.png') }}"
+            alt="Dayartne Holdings Logo" />
+        <h1>404 - Page Not Found</h1>
+        <p>{{ error_message }}</p>
+        <br />
+        <p>
+            It seems you've reached a page that doesn't exist or that you're not
+            authorized to view.
+        </p>
+        <a href="{{ url_for('dashboard') }}">Go back to Dashboard</a>
+    </body>
 </html>

@@ -12,7 +12,6 @@
     width: 100%;
 }
 
-/* Sidebar styles */
 .sidebar {
     width: auto;
     height: calc(100vh - 40px);
@@ -33,10 +32,8 @@
     flex-direction: column;
 }
 
-/* Main content styles */
 .main-content {
     margin-left: 306px;
-    /* padding: 20px; */
     width: calc(100% - 306px);
     min-height: 100vh;
     display: flex;
@@ -59,7 +56,6 @@
 
 .nav-logo-container a {
     display: flex;
-    /* algin-items: center; */
     justify-content: center;
     width: fit-content;
 }
@@ -91,13 +87,11 @@
     position: relative;
 }
 
-/* Style for dropdown links */
 .nav-list li a, .notificationBtnOnSide button {
     display: block;
     padding: 12px;
     color: var(--textdued);
     text-decoration: none;
-    /* border-bottom: 1px solid #495057; */
     width: 240px;
     font-weight: 600;
     display: flex;
@@ -129,36 +123,24 @@
     color: var(--alt-text);
 }
 
-/* Dropdown Menu */
 .nav-dropdown {
     position: relative;
     width: 240px;
 }
 
-/* Hidden state for dropdown */
 .dropdown-menu {
     max-height: 0;
-    /* Start with height 0 */
     overflow: hidden;
-    /* Hide overflow when collapsed */
     opacity: 0;
-    /* Start with opacity 0 */
     visibility: hidden;
-    /* Start with visibility hidden */
     margin-left: 10px;
     width: calc(100% - 20px);
-    /* Make the dropdown full-width */
-    /* box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2); */
     transition: max-height 0.5s ease, opacity 0.5s ease, visibility 0.5s ease;
-    /* Transition effects */
     transition: max-height 0.6s ease, opacity 0.6s ease, visibility 0.6s ease;
-    /* Adjust timings if needed */
 }
 
-/* When the dropdown is shown */
 .dropdown-menu.show {
     max-height: 500px;
-    /* Allow dropdown to expand (adjust as needed) */
     opacity: 1;
     visibility: visible;
 }
@@ -180,11 +162,6 @@ span.absolute-icon-contains {
 
 span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size: 13px;bottom: -4px;right: -4px;background: white;border-radius: 50%;height: 13px;width: 13px;border: 1px solid white;}
 
-/* .dropdown-menu li a:hover {
-    background-color: #6c757d;
-} */
-
-/* Optional: Add styles for the dropdown-toggle */
 .dropdown-toggle {
     cursor: pointer;
 }
@@ -224,7 +201,6 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
     margin: 0 15px;
 }
 
-/* Container styling */
 .switch-container {
     display: inline-block;
     position: relative;
@@ -237,12 +213,10 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
     display: flex;
 }
 
-/* Hidden radio inputs */
 .switch-container input[type="radio"] {
     display: none;
 }
 
-/* Labels */
 .switch-label {
     width: 100%;
     text-align: center;
@@ -254,7 +228,6 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
     z-index: 2;
 }
 
-/* Active state indicator */
 .switch-slider {
     position: absolute;
     top: 3px;
@@ -268,7 +241,6 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Position the labels */
 .switch-label.day {
     float: left;
 }
@@ -277,12 +249,10 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
     float: right;
 }
 
-/* Change the label color when selected */
 .switch-container input[type="radio"]:checked+label {
     color: var(--alt-text);
 }
 
-/* Set the slider position based on input selection */
 #day:checked~.switch-slider {
     left: 3;
 }
@@ -426,15 +396,9 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
     background: transparent;
     border: none;
     border-radius: 9999px;
-    /* width: 24px;
-    height: 24px; */
     font-size: 16px;
     cursor: pointer;
 }
-
-/* .sidebar-close-btn:hover {
-    background: #00000033;
-} */
 
 @media screen and (max-width: 900px) {
     .sidebar {
@@ -452,7 +416,6 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
 
     .main-content {
         margin-left: 92px !important;
-        /* padding: 20px; */
         width: calc(100% - 92px) !important;
         position: absolute;
         bottom: 0;
@@ -464,28 +427,20 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
         right: 0;
         top: 0;
     }
-
-    /* .nav-list {
-        position: absolute;
-        left: 0 !important;
-    } */
  
     .logo-on-bg {
         width: 45px;
         height: 45px;
         background-image: url(/static/favicon.png);
-        /* transition-delay: 0.2s; */
     }
 
     .nav-list {
         position: absolute !important;
         left: 36px;
-        /* top: 65px !important; */
     }
 
     .nav-list:has(a[href*="/help"]) {
         position: absolute;
-        /* left: 36px !important; */
         bottom: 20px !important;
     }
 
@@ -493,7 +448,6 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
     .nav-list li a .ph-caret-down {
         opacity: 0;
         visibility: hidden;
-        /* width: 0 !important; */
         transition: all 0.3s ease;
     }
 
@@ -532,19 +486,6 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
         margin-left: 20px !important;
     }
 
-    /* .sidebar:hover .nav-list:has(a[href*="/help"]) {
-        width: 100%;
-    } */
-
-    /* .sidebar:hover .nav-list:has(a[href*="/help"]) li {
-        display: flex;
-        justify-content: flex-start;
-    } */
-
-    /* .sidebar:hover .nav-list li a .nav-icon {
-        margin-right: 10px !important;
-    } */
-
     .sidebar:hover .logo-on-bg {
         background-image: url(/static/logo.png) !important;
         width: 180px;
@@ -561,10 +502,6 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
     .sidebar:hover .nav-dropdown .dropdown-menu {
         margin-left: 10px;
     }
-
-    /* .sidebar:hover .nav-list:has(a[href*="/help"]) li a span .nav-link-text {
-        margin: 0 0 0 20px !important;
-    } */
 }
 
 @media screen and (max-width: 600px) {
@@ -597,17 +534,13 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
     .sidebar,
     .sidebar:hover {
         transform: translateX(-100%);
-        /* opacity: 0;
-        visibility: hidden; */
         width: calc(100% - 40px) !important;
-        /* border: none; */
         transition: all 0.3s ease;
     }
 
     .sidebar.sideMenuOpened {
         transform: translateX(0px);
-        /* opacity: 1 !important;
-        visibility: visible !important; */
+        overflow: auto;
     }
 
     .main-content {
@@ -624,7 +557,6 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
         background-image: url(/static/logo.png) !important;
         width: 180px;
         height: 45px;
-        /* transition-delay: 0.2s; */
     }
 
     .nav-list {
@@ -640,7 +572,6 @@ span.absolute-icon-contains .secondary-marker-icon {position: absolute;font-size
 
     .nav-list:has(a[href*="/help"]) {
         position: relative !important;
-        /* left: 36px !important; */
         bottom: 20px !important;
     }
 

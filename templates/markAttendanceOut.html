@@ -24,17 +24,17 @@
 
     <body class="gatePassPage">
         {% extends 'base.html' %} {% block content %}
-        <h1 class="gate-pass-title">Exit Permit</h1>
+        <h1 class="gate-pass-title">Mark Attendance</h1>
+
         <form
-            action="{{ url_for('driver_gate_pass') }}"
+            action="{{ url_for('mark_attendance_out') }}"
             method="POST"
-            class="gate-pass-form"
-            enctype="multipart/form-data">
+            class="gate-pass-form">
             <div class="main-form-container">
                 <div class="bottom-employee-datails">
                     <div class="name-id gate-pass-detail-block">
-                        <div class="employee-id gate-pass-input-container">
-                            <label for="driverNo">Driver ID</label>
+                        <div class="employee-id-container gate-pass-input-container" style="width: 50%">
+                            <label for="employeeNo">Employee ID</label>
                             <div class="dropdown">
                                 <input
                                     type="text"
@@ -47,11 +47,25 @@
                                 <div
                                     class="dropdown-content"
                                     id="dropdownOptions">
+                                    {% for employee in employee_list %}
+                                    <input
+                                        type="hidden"
+                                        id="driverNameInitials_{{ employee.employeeNo }}"
+                                        value="{{ employee.nameWithInitials }}" />
+                                    {% endfor %}
                                     {% for driver in driver_list %}
                                     <input
                                         type="hidden"
                                         id="driverName_{{ driver.employeeNo }}"
                                         value="{{ driver.nameWithInitials }}" />
+                                    <input
+                                        type="hidden"
+                                        id="driverDate_{{ driver.employeeNo }}"
+                                        value="{{ driver.date }}" />
+                                    <input
+                                        type="hidden"
+                                        id="driverIntime_{{ driver.employeeNo }}"
+                                        value="{{ driver.inTime }}" />
                                     <div
                                         class="option"
                                         onclick="selectOption('{{ driver.employeeNo }}')">
@@ -65,117 +79,74 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="employee-name gate-pass-input-container">
+                        <div
+                            class="employee-name gate-pass-input-container"
+                            style="width: 50%">
                             <label for="driverName">Driver Name</label>
                             <input
                                 type="text"
                                 id="driverName"
                                 name="driverName"
-                                title="Driver name"
+                                title="Driver Name"
                                 readonly />
                         </div>
                     </div>
+                    <div class="date-intime gate-pass-detail-block">
+                        <div
+                            class="employee-date gate-pass-input-container"
+                            style="width: 50%">
+                            <label for="driverDate">Date</label>
+                            <input
+                                type="text"
+                                id="driverDate"
+                                name="driverDate"
+                                title="Date"
+                                readonly />
+                        </div>
+                        <div
+                            class="employee-intime gate-pass-input-container"
+                            style="width: 50%">
+                            <label for="driverIntime">Driver Arrival</label>
+                            <input
+                                type="text"
+                                id="driverIntime"
+                                name="driverIntime"
+                                title="Driver Arrival"
+                                readonly />
+                        </div>
+                    </div>
+
                     <div class="time-period gate-pass-detail-block">
                         <div
-                            class="employee-departing-time gate-pass-input-container">
-                            <label for="driverDepartingTime"
-                                >Departing Time</label
-                            >
-                            <input
-                                type="time"
-                                id="driverDepartingTime"
-                                name="driverDepartingTime"
-                                title="Driver daparting time" />
-                        </div>
-                        <div
                             class="employee-arrival-time gate-pass-input-container">
-                            <label for="driverArrivalTime">Arrival Time</label>
-                            <input
-                                type="time"
-                                id="driverArrivalTime"
-                                name="driverArrivalTime"
-                                title="Driver time" />
-                        </div>
-                    </div>
-                    <div class="date-vehicle gate-pass-detail-block">
-                        <div
-                            class="employee-departing-date gate-pass-input-container">
-                            <label for="driverDepartingDate">Date</label>
-                            <input
-                                type="date"
-                                id="driverDepartingDate"
-                                name="driverDepartingDate"
-                                title="Driver departing date" />
-                        </div>
-                        <div
-                            class="employee-vehicle-no gate-pass-input-container">
-                            <label for="driverVehicleNo">Vehicle Number</label>
+                            <label for="currentTime">Current Time</label>
                             <input
                                 type="text"
-                                id="driverVehicleNo"
-                                name="driverVehicleNo"
-                                title="Driver vehicle number" />
-                        </div>
-                    </div>
-                    <div class="departing-reason gate-pass-detail-block">
-                        <div
-                            class="employee-departing-reason gate-pass-input-container">
-                            <label for="driverDepartingReason">Reason</label>
-                            <input
-                                type="text"
-                                id="driverDepartingReason"
-                                name="driverDepartingReason"
-                                title="Departing reason" />
-                        </div>
-                    </div>
-                    <div class="departing-remark gate-pass-detail-block">
-                        <div
-                            class="employee-departing-remark gate-pass-input-container">
-                            <label for="driverDepartingRemark">Remark</label>
-                            <input
-                                type="text"
-                                id="driverDepartingRemark"
-                                name="driverDepartingRemark"
-                                title="Departing remark" />
+                                id="currentTime"
+                                name="currentTime"
+                                readonly />
                         </div>
                     </div>
                 </div>
+
                 <div class="control-buttons-container">
-                    <div class="employee-status gate-pass-input-container">
-                        <label for="driver-status">Status</label>
-                        <input
-                            type="text"
-                            id="driverStatus"
-                            name="driver-status"
-                            title="Status"
-                            readonly />
-                    </div>
-                    <div class="button-container">
-                        <a href="{{ url_for('dashboard') }}"
-                            ><button
-                                type="button"
-                                class="exit-form-control-btn"
-                                title="cancel"
-                                id="cancelExitForm">
-                                Cancel
-                            </button></a
-                        >
-                        <button
-                            type="submit"
-                            class="exit-form-control-btn accented"
-                            title="save"
-                            id="saveDriverExitForm">
-                            Save
-                        </button>
-                    </div>
+                    <button
+                        type="submit"
+                        class="exit-form-control-btn accented"
+                        style="margin: 0; padding: 10px 20px; height:fit-content; width: fit-content;">
+                        Mark Departure
+                    </button>
                 </div>
             </div>
         </form>
+
         <script>
             document.addEventListener("DOMContentLoaded", function () {
                 const dropdown = document.querySelector(".dropdown");
                 const inputID = document.getElementById("driverNo");
                 const inputName = document.getElementById("driverName");
+                const inputDate = document.getElementById("driverDate");
+                const inputIntime = document.getElementById("driverIntime");
                 const dropdownContent =
                     document.querySelector(".dropdown-content");
                 const options = dropdownContent.querySelectorAll(".option");
@@ -190,7 +161,13 @@
                 function selectOption(driverNo) {
                     inputID.value = driverNo;
                     inputName.value = document.getElementById(
-                        `driverName_${driverNo}`
+                        `driverNameInitials_${driverNo}`
+                    ).value;
+                    inputDate.value = document.getElementById(
+                        `driverDate_${driverNo}`
+                    ).value;
+                    inputIntime.value = document.getElementById(
+                        `driverIntime_${driverNo}`
                     ).value;
                     dropdownContent.style.display = "none";
                 }
@@ -225,7 +202,15 @@
                         count > 0 ? "block" : "none";
                 };
             });
+
+            function updateTime() {
+                const now = new Date();
+                document.getElementById("currentTime").value =
+                    now.toLocaleTimeString();
+            }
+            setInterval(updateTime, 1000);
         </script>
+
         {% endblock %}
     </body>
 </html>

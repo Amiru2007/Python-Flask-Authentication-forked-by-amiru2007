@@ -1,222 +1,410 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
-    <title>Vistor Form</title>
-</head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href='{{ url_for('static',
+        filename='style.css')}}' />
+        <link
+            rel="shortcut icon"
+            href="{{ url_for('static', filename='favicon.png') }}"
+            type="image/x-icon" />
+        <title>Vistor Form</title>
+    </head>
 
-<body class="visitorPage">
-    {% extends 'base.html' %}
-
-    {% block content %}
-    <div class="content visitor">
-        <form method="POST" action="{{ url_for('get_visitor', visitor_no=visitor.visitorNo) }}" class="visitorForm">
-            
-            <div class="visitordetails">
-                <div class="names">
-                    <div class="lastname">
-                        <label for="lastName">Last Name</label>
-                        <input type="text" id="lastName" name="lastName" value="{{ visitor.lastName }}" readonly>
+    <body class="visitorPage">
+        {% extends 'base.html' %} {% block content %}
+        <div class="content visitor">
+            <form
+                method="POST"
+                action="{{ url_for('get_visitor', visitor_no=visitor.visitorNo) }}"
+                class="visitorForm">
+                <div class="visitordetails">
+                    <div class="names">
+                        <div class="lastname">
+                            <label for="lastName">Last Name</label>
+                            <input
+                                type="text"
+                                id="lastName"
+                                name="lastName"
+                                value="{{ visitor.lastName }}"
+                                readonly />
+                        </div>
+                        <div class="firstname">
+                            <label for="firstName">First Name</label>
+                            <input
+                                type="text"
+                                id="firstName"
+                                name="firstName"
+                                value="{{ visitor.firstName }}"
+                                readonly />
+                        </div>
                     </div>
-                    <div class="firstname">
-                        <label for="firstName">First Name</label>
-                        <input type="text" id="firstName" name="firstName" value="{{ visitor.firstName }}" readonly>
+                    <div class="names">
+                        <div class="company">
+                            <label for="companyName">Company Name</label>
+                            <input
+                                type="text"
+                                id="companyName"
+                                name="companyName"
+                                value="{{ visitor.companyName }}"
+                                readonly />
+                        </div>
+                        <div class="id">
+                            <label for="VisitorId">Visitor Id</label>
+                            <input
+                                type="text"
+                                id="VisitorId"
+                                name="VisitorId"
+                                value="{{ visitor.visitorId }}"
+                                readonly />
+                        </div>
                     </div>
                 </div>
-                <div class="names">
-                    <div class="company">
-                        <label for="companyName">Company Name</label>
-                        <input type="text" id="companyName" name="companyName" value="{{ visitor.companyName }}" readonly>
-                    </div>
-                    <div class="id">
-                        <label for="VisitorId">Visitor Id</label>
-                        <input type="text" id="VisitorId" name="VisitorId" value="{{ visitor.visitorId }}" readonly>
-                    </div>
-                </div>
-            </div>
-            <div class="visitdetails">
-                <div class="left">
-                    <h4>Visit Details</h4>
-                    <div class="container">
-                        <div class="enterDetail">
-                            <label for="arrivingDate">Arriving Date</label>
-                            <input type="text" id="arrivingDate" name="arrivingDate" value="{{ visitor.arrivingDate }}" readonly>
+                <div class="visitdetails">
+                    <div class="left">
+                        <h4>Visit Details</h4>
+                        <div class="container">
+                            <div class="enterDetail">
+                                <label for="arrivingDate">Arriving Date</label>
+                                <input
+                                    type="text"
+                                    id="arrivingDate"
+                                    name="arrivingDate"
+                                    value="{{ visitor.arrivingDate }}"
+                                    readonly />
+                            </div>
+                            <div class="enterDetail">
+                                <label for="arrivingTime">Arriving Time</label>
+                                <input
+                                    type="text"
+                                    id="arrivingTime"
+                                    name="arrivingTime"
+                                    value="{{ visitor.arrivingTime }}"
+                                    readonly />
+                            </div>
                         </div>
-                        <div class="enterDetail">
-                            <label for="arrivingTime">Arriving Time</label>
-                            <input type="text" id="arrivingTime" name="arrivingTime" value="{{ visitor.arrivingTime }}" readonly>
+                        <div class="container">
+                            <div class="enterDetail">
+                                <label for="departingDate"
+                                    >Departing Date</label
+                                >
+                                <input
+                                    type="text"
+                                    id="departingDate"
+                                    name="departingDate"
+                                    value="{{ visitor.departingDate }}"
+                                    readonly />
+                            </div>
+                            <div class="enterDetail">
+                                <label for="departingTime"
+                                    >Departing Time</label
+                                >
+                                <input
+                                    type="text"
+                                    id="departingTime"
+                                    name="departingTime"
+                                    value="{{ visitor.departingTime }}"
+                                    readonly />
+                            </div>
                         </div>
-                    </div>
-                    <div class="container">
-                        <div class="enterDetail">
-                            <label for="departingDate">Departing Date</label>
-                            <input type="text" id="departingDate" name="departingDate" value="{{ visitor.departingDate }}" readonly>
+                        <div class="container">
+                            <div class="enterDetail">
+                                <label for="vehicleNo">Vehicle No.</label>
+                                <input
+                                    type="text"
+                                    id="vehicleNo"
+                                    name="vehicleNo"
+                                    value="{{ visitor.vehicleNo }}"
+                                    readonly />
+                            </div>
+                            <div class="enterDetail">
+                                <label for="visitorNo">Visitor No.</label>
+                                <input
+                                    type="text"
+                                    id="visitorNo"
+                                    name="visitorNo"
+                                    value="{{ visitor.visitorNo }}"
+                                    readonly />
+                            </div>
                         </div>
-                        <div class="enterDetail">
-                            <label for="departingTime">Departing Time</label>
-                            <input type="text" id="departingTime" name="departingTime" value="{{ visitor.departingTime }}" readonly>
+                        <div class="container">
+                            <div class="enterDetail">
+                                <label for="phoneNumber">Phone Number</label>
+                                <input
+                                    type="text"
+                                    id="phoneNumber"
+                                    name="phoneNumber"
+                                    value="{{ visitor.phoneNumber }}"
+                                    readonly />
+                            </div>
+                            <div class="enterDetail">
+                                <label for="emailAddress">E-mail Address</label>
+                                <input
+                                    type="text"
+                                    id="emailAddress"
+                                    name="emailAddress"
+                                    value="{{ visitor.emailAddress }}"
+                                    readonly />
+                            </div>
                         </div>
-                    </div>
-                    <div class="container">
-                        <div class="enterDetail">
-                            <label for="vehicleNo">Vehicle No.</label>
-                            <input type="text" id="vehicleNo" name="vehicleNo" value="{{ visitor.vehicleNo }}" readonly>
+                        <div class="container">
+                            <div class="enterDetail">
+                                <label for="requester">Requester</label>
+                                <input
+                                    type="text"
+                                    id="requester"
+                                    name="requester"
+                                    value="{{ visitor.requester }}"
+                                    readonly />
+                            </div>
                         </div>
-                        <div class="enterDetail">
-                            <label for="visitorNo">Visitor No.</label>
-                            <input type="text" id="visitorNo" name="visitorNo" value="{{ visitor.visitorNo }}" readonly>
+                        <div class="container">
+                            <div class="enterDetail">
+                                <label for="noOfVisitors"
+                                    >No. of visitors</label
+                                >
+                                <input
+                                    type="text"
+                                    id="noOfVisitors"
+                                    name="noOfVisitors"
+                                    value="{{ visitor.noOfVisitors }}"
+                                    readonly />
+                            </div>
                         </div>
-                    </div>
-                    <div class="container">
-                        <div class="enterDetail">
-                            <label for="phoneNumber">Phone Number</label>
-                            <input type="text" id="phoneNumber" name="phoneNumber" value="{{ visitor.phoneNumber }}" readonly>
+                        <div class="container">
+                            <div class="enterDetail">
+                                <label for="remarks">Remarks</label>
+                                <div class="dropdown">
+                                    <input
+                                        type="text"
+                                        id="remarks"
+                                        name="remarks" />
+                                    <div
+                                        class="dropdown-content"
+                                        id="dropdownOptions">
+                                        <div
+                                            class="option"
+                                            onclick="selectOption('To Rent a machine')">
+                                            To Rent a machine
+                                        </div>
+                                        <div
+                                            class="option"
+                                            onclick="selectOption('To Return a machine')">
+                                            To Return a machine
+                                        </div>
+                                        <div
+                                            class="option"
+                                            onclick="selectOption('To Purchase a machine')">
+                                            To Purchase a machine
+                                        </div>
+                                        <div
+                                            class="option"
+                                            onclick="selectOption('Supplier')">
+                                            Supplier
+                                        </div>
+                                        <div
+                                            class="option"
+                                            onclick="selectOption('To an official work')">
+                                            To an official work
+                                        </div>
+                                        <div
+                                            class="option"
+                                            onclick="selectOption('To meet an employee / Visitor')">
+                                            To meet an employee / Visitor
+                                        </div>
+                                        <div
+                                            class="option"
+                                            onclick="selectOption('Other')">
+                                            Other
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="enterDetail">
-                            <label for="emailAddress">E-mail Address</label>
-                            <input type="text" id="emailAddress" name="emailAddress" value="{{ visitor.emailAddress }}" readonly>
+                        <div class="container single">
+                            <div class="enterDetail">
+                                <label for="history">History</label>
+                                <textarea id="history" name="history" readonly>
+{{ visitor.history | safe }}</textarea
+                                >
+                            </div>
                         </div>
-                    </div>
-                    <div class="container">
-                        <div class="enterDetail">
-                            <label for="requester">Requester</label>
-                            <input type="text" id="requester" name="requester" value="{{ visitor.requester }}" readonly>
-                        </div>
-                    </div>
-                    <div class="container">
-                        <div class="enterDetail">
-                            <label for="noOfVisitors">No. of visitors</label>
-                            <input type="text" id="noOfVisitors" name="noOfVisitors" value="{{ visitor.noOfVisitors }}" readonly>
-                        </div>
-                    </div>
-                    <div class="container">
-                        <div class="enterDetail">
-                            <label for="remarks">Remarks</label>
-                            <div class="dropdown">
-                                <input type="text" id="remarks" name="remarks">
-                                <div class="dropdown-content" id="dropdownOptions">
-                                    <div class="option" onclick="selectOption('To Rent a machine')">To Rent a machine</div>
-                                    <div class="option" onclick="selectOption('To Return a machine')">To Return a machine</div>
-                                    <div class="option" onclick="selectOption('To Purchase a machine')">To Purchase a machine</div>
-                                    <div class="option" onclick="selectOption('Supplier')">Supplier</div>
-                                    <div class="option" onclick="selectOption('To an official work')">To an official work</div>
-                                    <div class="option" onclick="selectOption('To meet an employee / Visitor')">To meet an employee / Visitor</div>
-                                    <div class="option" onclick="selectOption('Other')">Other</div>
+                        <div class="container buttons">
+                            <div class="enterDetail">
+                                <div class="visitorStatusUpdates">
+                                    <label for="statusbtn"
+                                        >Visitor Status</label
+                                    >
+                                    <input
+                                        type="button"
+                                        id="statusbtn"
+                                        name="statusbtn"
+                                        style="cursor: auto"
+                                        value="{{ visitor.status }}"
+                                        readonly />
+                                </div>
+                                <div class="visitorStatusUpdates">
+                                    <input
+                                        type="button"
+                                        class="btn-status"
+                                        id="arrived"
+                                        value="Arrived"
+                                        disabled />
+                                    <input
+                                        type="button"
+                                        class="btn-status"
+                                        id="departed"
+                                        value="Departed"
+                                        disabled />
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <div class="container single">
-                        <div class="enterDetail">
-                            <label for="history">History</label>
-                            <textarea id="history" name="history" readonly>{{ visitor.history | safe }}</textarea>
-                        </div>
-                    </div>
-                    <div class="container buttons">
-                        <div class="enterDetail">
-                            <div class="visitorStatusUpdates">
-                                <label for="statusbtn">Visitor Status</label>
-                                <input type="button" id="statusbtn" name="statusbtn" style="cursor: auto;" value="{{ visitor.status }}" readonly>
+                    <div class="right">
+                        <div class="visitor-photo">
+                            <div class="photo-wrapper">
+                                {% if visitor.profilePhoto == 'none' %}
+                                <img
+                                    src="{{ url_for('static', filename='visitor-photo.png') }}"
+                                    alt="Default Photo" />
+                                {% elif visitor.profilePhoto %}
+                                <img
+                                    src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}"
+                                    alt="Visitor Photo" />
+                                {% endif %}
                             </div>
-                            <div class="visitorStatusUpdates">
-                                <input type="button" class="btn-status" id="arrived" value="Arrived" disabled>
-                                <input type="button" class="btn-status" id="departed" value="Departed" disabled>
+                            <div class="photo-controls">
+                                <input
+                                    type="button"
+                                    class="btn-live"
+                                    id="live"
+                                    value="Live"
+                                    disabled />
+                                <input
+                                    type="button"
+                                    class="btn-import"
+                                    id="import"
+                                    value="Import"
+                                    disabled />
+                            </div>
+                        </div>
+                        <div class="visitor-photo">
+                            <div class="photo-wrapper outside">
+                                <img
+                                    src="/static/logo2.jpg"
+                                    alt="visitor photo" />
                             </div>
                         </div>
                     </div>
                 </div>
-                <div class="right">
-                    <div class="visitor-photo">
-                        <div class="photo-wrapper">
-                            {% if visitor.profilePhoto == 'none' %}
-                                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
-                            {% elif visitor.profilePhoto %}
-                                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
-                            {% endif %}
-                        </div>
-                        <div class="photo-controls">
-                            <input type="button" class="btn-live" id="live" value="Live" disabled>
-                            <input type="button" class="btn-import" id="import" value="Import" disabled>
-                        </div>
+                <div class="footer">
+                    <div class="approveOrReject">
+                        <input
+                            type="hidden"
+                            name="visitor_no"
+                            value="{{ visitor.visitorNo }}" />
+                        <a href="{{ url_for('dashboard') }}"
+                            ><button
+                                type="submit"
+                                class="btn-approve accessed"
+                                name="changeStatus"
+                                value="Approve">
+                                Approve
+                            </button></a
+                        >
+                        <a href="{{ url_for('dashboard') }}"
+                            ><button
+                                type="submit"
+                                class="btn-reject"
+                                name="changeStatus"
+                                value="Reject">
+                                Reject
+                            </button></a
+                        >
                     </div>
-                    <div class="visitor-photo">
-                        <div class="photo-wrapper outside">
-                            <img src="/static/logo2.jpg" alt="visitor photo">
-                        </div>
+                    <div class="saveOrCancel">
+                        <input
+                            type="button"
+                            class="btn-save"
+                            id="save"
+                            value="Save"
+                            disabled />
+                        <a href="{{ url_for('dashboard') }}"
+                            ><input
+                                type="button"
+                                class="btn-cancel"
+                                id="cancel"
+                                value="Cancel"
+                        /></a>
                     </div>
                 </div>
-            </div>
-            <div class="footer">
-                <div class="approveOrReject">
-                    <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
-                    <a href="{{ url_for('dashboard') }}"><button type="submit" class="btn-approve accessed" name="changeStatus" value="Approve">Approve</button></a>
-                    <a href="{{ url_for('dashboard') }}"><button type="submit" class="btn-reject" name="changeStatus" value="Reject">Reject</button></a>
-                </div>
-                <div class="saveOrCancel">
-                    <input type="button" class="btn-save" id="save" value="Save"disabled>
-                    <a href="{{ url_for('dashboard') }}"><input type="button" class="btn-cancel" id="cancel" value="Cancel"></a>
-                </div>
-            </div>
-            <!-- <ul class="toApprove">
+                <!-- <ul class="toApprove">
                 {% for visitor in visitors %}
                     <li><a href="#">{{ visitor.visitor_Id }}</a></li>
                 {% endfor %}
             </ul> -->
-        </form>
-    </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const dropdown = document.querySelector(".dropdown");
-            const inputRemarks = document.getElementById("remarks");
-            const dropdownContent = document.querySelector(".dropdown-content");
-            const remarkOption = document.querySelector(".remarkOption");
+            </form>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const dropdown = document.querySelector(".dropdown");
+                const inputRemarks = document.getElementById("remarks");
+                const dropdownContent =
+                    document.querySelector(".dropdown-content");
+                const remarkOption = document.querySelector(".remarkOption");
 
-            dropdown.addEventListener("click", function() {
-                dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
-            });
+                dropdown.addEventListener("click", function () {
+                    dropdownContent.style.display =
+                        dropdownContent.style.display === "block"
+                            ? "none"
+                            : "block";
+                });
 
-            inputRemarks.addEventListener("click", function() {
-            });
+                inputRemarks.addEventListener("click", function () {});
 
-            function selectOption(option) {
-                if (option === 'Other') {
-                    inputRemarks.value = '';
-                    document.getElementById('dropdownOptions').classList.add('hide');
-                } else {
-                    inputRemarks.value = option;
-                }
-                dropdownContent.style.display = "none";
-            }
-
-            window.selectOption = selectOption;
-
-            document.addEventListener("click", function(event) {
-                if (!dropdown.contains(event.target) && !inputRemarks.contains(event.target) && dropdownContent.style.display === "block") {
+                function selectOption(option) {
+                    if (option === "Other") {
+                        inputRemarks.value = "";
+                        document
+                            .getElementById("dropdownOptions")
+                            .classList.add("hide");
+                    } else {
+                        inputRemarks.value = option;
+                    }
                     dropdownContent.style.display = "none";
                 }
+
+                window.selectOption = selectOption;
+
+                document.addEventListener("click", function (event) {
+                    if (
+                        !dropdown.contains(event.target) &&
+                        !inputRemarks.contains(event.target) &&
+                        dropdownContent.style.display === "block"
+                    ) {
+                        dropdownContent.style.display = "none";
+                    }
+                });
             });
-        });
-        // function openOutlook() {
-        //         var subject = "Visitor Approval - {{ visitor.visitorNo }}";
-        //         var body = "Last Name: {{ visitor.lastName }}\n" +
-        //             "First Name: {{ visitor.firstName }}\n" +
-        //             "Company Name: {{ visitor.companyName }}\n" +
-        //             "Visitor ID: {{ visitor.visitorId }}\n" +
-        //             "Arriving Date: {{ visitor.arrivingDate }}\n" +
-        //             "Arriving Time: {{ visitor.arrivingTime }}"
-        //             // Add other fields as needed
+            // function openOutlook() {
+            //         var subject = "Visitor Approval - {{ visitor.visitorNo }}";
+            //         var body = "Last Name: {{ visitor.lastName }}\n" +
+            //             "First Name: {{ visitor.firstName }}\n" +
+            //             "Company Name: {{ visitor.companyName }}\n" +
+            //             "Visitor ID: {{ visitor.visitorId }}\n" +
+            //             "Arriving Date: {{ visitor.arrivingDate }}\n" +
+            //             "Arriving Time: {{ visitor.arrivingTime }}"
+            //             // Add other fields as needed
 
-        //         var outlookLink = "https://outlook.office.com/mail/compose?subject=" + encodeURIComponent(subject) +
-        //             "&body=" + encodeURIComponent(body);
+            //         var outlookLink = "https://outlook.office.com/mail/compose?subject=" + encodeURIComponent(subject) +
+            //             "&body=" + encodeURIComponent(body);
 
-        //         // Open Outlook website in a new tab or window
-        //         window.open(outlookLink, '_blank');
-        //     }
-    </script>
-    {% endblock %}
-</body>
+            //         // Open Outlook website in a new tab or window
+            //         window.open(outlookLink, '_blank');
+            //     }
+        </script>
+        {% endblock %}
+    </body>
 </html>

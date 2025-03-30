@@ -2,16 +2,18 @@
     <div class="nav-upper">
         <div class="nav-logo-container">
             <a href="{{ url_for('dashboard') }}">
-                <!-- <img class="nav-logo-image" src="{{ url_for('static', filename='logo.png') }}" alt="Dayartne Holdings Logo"> -->
                 <div class="logo-on-bg"></div>
             </a>
-            <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" title="Close Sidebar" onclick="closeSideMenu()">
+            <button type="button" class="sidebar-close-btn" id="sidebarCloseBtn" title="Close Sidebar"
+                onclick="closeSideMenu()">
                 <i class="ph-bold ph-x"></i>
             </button>
         </div>
         <ul class="nav-list">
             <!-- Visitor Management Dropdown -->
-            {% if user_permissions is defined and (user_permissions.Edit_Visitor or user_permissions.Approve_Visitor or user_permissions.In_Visitor or user_permissions.Out_Visitor or user_permissions.Create_Visitor or user_permissions.OuterUser or user_permissions.hod) %}
+            {% if user_permissions is defined and (user_permissions.Edit_Visitor or user_permissions.Approve_Visitor or
+            user_permissions.In_Visitor or user_permissions.Out_Visitor or user_permissions.Create_Visitor or
+            user_permissions.OuterUser or user_permissions.hod) %}
             <li class="nav-dropdown">
                 <a class="dropdown-toggle" onclick="toggleDropdown('visitor-management-dropdown')">
                     <span class="main-nav-link-header" style="pointer-events: none;">
@@ -27,14 +29,14 @@
                     <li>
                         <a href="{{ url_for('new_visitor') }}">
                             <span class="nav-icon">
-                            <span class="absolute-icon-contains">
-                                <span class="nav-icon-main-icon">
-                                    <i class="ph-bold ph-person"></i>
+                                <span class="absolute-icon-contains">
+                                    <span class="nav-icon-main-icon">
+                                        <i class="ph-bold ph-person"></i>
+                                    </span>
+                                    <span class="secondary-marker-icon">
+                                        <i class="ph-bold ph-plus-circle"></i>
+                                    </span>
                                 </span>
-                                <span class="secondary-marker-icon">
-                                    <i class="ph-bold ph-plus-circle"></i>
-                                </span>
-                            </span>
                             </span>
                             <span class="nav-link-text">New Visitor</span>
                         </a>
@@ -44,15 +46,15 @@
                     <li>
                         <a onclick="togglePopup('editVisitorRequest')">
                             <span class="nav-icon">
-                            <span class="absolute-icon-contains">
-                                <span class="nav-icon-main-icon">
-                                    <i class="ph-bold ph-person"></i>
-                                </span>
-                                <span class="secondary-marker-icon">
-                                    <i class="ph-bold ph-pencil-simple"></i>
+                                <span class="absolute-icon-contains">
+                                    <span class="nav-icon-main-icon">
+                                        <i class="ph-bold ph-person"></i>
+                                    </span>
+                                    <span class="secondary-marker-icon">
+                                        <i class="ph-bold ph-pencil-simple"></i>
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                             <span class="nav-link-text">Edit Visitor</span>
                         </a>
                     </li>
@@ -61,15 +63,15 @@
                     <li>
                         <a onclick="togglePopup('pendingApproval')">
                             <span class="nav-icon">
-                            <span class="absolute-icon-contains">
-                                <span class="nav-icon-main-icon">
-                                    <i class="ph-bold ph-person"></i>
-                                </span>
-                                <span class="secondary-marker-icon">
-                                    <i class="ph-bold ph-paper-plane-tilt"></i>
+                                <span class="absolute-icon-contains">
+                                    <span class="nav-icon-main-icon">
+                                        <i class="ph-bold ph-person"></i>
+                                    </span>
+                                    <span class="secondary-marker-icon">
+                                        <i class="ph-bold ph-paper-plane-tilt"></i>
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                             <span class="nav-link-text">Approve Visitor</span>
                         </a>
                     </li>
@@ -78,15 +80,15 @@
                     <li>
                         <a onclick="togglePopup('ApprovedVisitors')">
                             <span class="nav-icon">
-                            <span class="absolute-icon-contains">
-                                <span class="nav-icon-main-icon">
-                                    <i class="ph-bold ph-person"></i>
-                                </span>
-                                <span class="secondary-marker-icon">
-                                    <i class="ph-bold ph-arrow-circle-right"></i>
+                                <span class="absolute-icon-contains">
+                                    <span class="nav-icon-main-icon">
+                                        <i class="ph-bold ph-person"></i>
+                                    </span>
+                                    <span class="secondary-marker-icon">
+                                        <i class="ph-bold ph-arrow-circle-right"></i>
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                             <span class="nav-link-text">Arrive Visitor</span>
                         </a>
                     </li>
@@ -95,15 +97,15 @@
                     <li>
                         <a onclick="togglePopup('arrivedVisitors')">
                             <span class="nav-icon">
-                            <span class="absolute-icon-contains">
-                                <span class="nav-icon-main-icon">
-                                    <i class="ph-bold ph-person"></i>
-                                </span>
-                                <span class="secondary-marker-icon">
-                                    <i class="ph-bold ph-check-circle"></i>
+                                <span class="absolute-icon-contains">
+                                    <span class="nav-icon-main-icon">
+                                        <i class="ph-bold ph-person"></i>
+                                    </span>
+                                    <span class="secondary-marker-icon">
+                                        <i class="ph-bold ph-check-circle"></i>
+                                    </span>
                                 </span>
                             </span>
-                        </span>
                             <span class="nav-link-text">Depart Visitor</span>
                         </a>
                     </li>
@@ -121,14 +123,16 @@
                 </ul>
             </li>
             {% endif %}
-    
+
             <!-- Gate Pass Management Dropdown -->
-            {% if user_permissions.Create_Gate_Pass or user_permissions.Edit_Gate_Pass or user_permissions.Approve_Gate_Pass or user_permissions.Confirmed_Gate_Pass or user_permissions.Out_Gate_Pass or user_permissions.In_Gate_Pass %}
+            {% if user_permissions.Create_Gate_Pass or user_permissions.Edit_Gate_Pass or
+            user_permissions.Approve_Gate_Pass or user_permissions.Confirmed_Gate_Pass or user_permissions.Out_Gate_Pass
+            or user_permissions.In_Gate_Pass %}
             <li class="nav-dropdown">
                 <a class="dropdown-toggle" onclick="toggleDropdown('gate-pass-dropdown')">
                     <span class="main-nav-link-header" style="pointer-events: none;">
                         <span class="nav-icon">
-                            <i class="ph-bold ph-door-open"></i> 
+                            <i class="ph-bold ph-door-open"></i>
                         </span>
                         <span class="nav-link-text">Gate Pass Manage</span>
                     </span>
@@ -139,14 +143,14 @@
                     <li>
                         <a href="{{ url_for('gate_pass') }}">
                             <span class="nav-icon">
-                            <span class="absolute-icon-contains">
-                                <span class="nav-icon-main-icon">
-                                    <i class="ph-bold ph-door-open"></i>
+                                <span class="absolute-icon-contains">
+                                    <span class="nav-icon-main-icon">
+                                        <i class="ph-bold ph-door-open"></i>
+                                    </span>
+                                    <span class="secondary-marker-icon">
+                                        <i class="ph-bold ph-plus-circle"></i>
+                                    </span>
                                 </span>
-                                <span class="secondary-marker-icon">
-                                    <i class="ph-bold ph-plus-circle"></i>
-                                </span>
-                            </span>
                             </span>
                             <span class="nav-link-text">Create Gate Pass</span>
                         </a>
@@ -156,14 +160,14 @@
                     <li>
                         <a onclick="togglePopup('editGatePassList')">
                             <span class="nav-icon">
-                            <span class="absolute-icon-contains">
-                                <span class="nav-icon-main-icon">
-                                    <i class="ph-bold ph-door-open"></i>
+                                <span class="absolute-icon-contains">
+                                    <span class="nav-icon-main-icon">
+                                        <i class="ph-bold ph-door-open"></i>
+                                    </span>
+                                    <span class="secondary-marker-icon">
+                                        <i class="ph-bold ph-pencil-simple"></i>
+                                    </span>
                                 </span>
-                                <span class="secondary-marker-icon">
-                                    <i class="ph-bold ph-pencil-simple"></i>
-                                </span>
-                            </span>
                             </span>
                             <span class="nav-link-text">Edit Gate Pass</span>
                         </a>
@@ -173,14 +177,14 @@
                     <li>
                         <a onclick="togglePopup('requestGatePassList')">
                             <span class="nav-icon">
-                            <span class="absolute-icon-contains">
-                                <span class="nav-icon-main-icon">
-                                    <i class="ph-bold ph-door-open"></i>
+                                <span class="absolute-icon-contains">
+                                    <span class="nav-icon-main-icon">
+                                        <i class="ph-bold ph-door-open"></i>
+                                    </span>
+                                    <span class="secondary-marker-icon">
+                                        <i class="ph-bold ph-warning-circle"></i>
+                                    </span>
                                 </span>
-                                <span class="secondary-marker-icon">
-                                    <i class="ph-bold ph-warning-circle"></i>
-                                </span>
-                            </span>
                             </span>
                             <span class="nav-link-text">Approve Gate Pass</span>
                         </a>
@@ -190,14 +194,14 @@
                     <li>
                         <a onclick="togglePopup('approvedGatePassList')">
                             <span class="nav-icon">
-                            <span class="absolute-icon-contains">
-                                <span class="nav-icon-main-icon">
-                                    <i class="ph-bold ph-door-open"></i>
+                                <span class="absolute-icon-contains">
+                                    <span class="nav-icon-main-icon">
+                                        <i class="ph-bold ph-door-open"></i>
+                                    </span>
+                                    <span class="secondary-marker-icon">
+                                        <i class="ph-bold ph-check-circle"></i>
+                                    </span>
                                 </span>
-                                <span class="secondary-marker-icon">
-                                    <i class="ph-bold ph-check-circle"></i>
-                                </span>
-                            </span>
                             </span>
                             <span class="nav-link-text">Confirm Gate Pass</span>
                         </a>
@@ -207,14 +211,14 @@
                     <li>
                         <a onclick="togglePopup('confirmedGatePassList')">
                             <span class="nav-icon">
-                            <span class="absolute-icon-contains">
-                                <span class="nav-icon-main-icon">
-                                    <i class="ph-bold ph-door-open"></i>
+                                <span class="absolute-icon-contains">
+                                    <span class="nav-icon-main-icon">
+                                        <i class="ph-bold ph-door-open"></i>
+                                    </span>
+                                    <span class="secondary-marker-icon">
+                                        <i class="ph-bold ph-arrow-circle-right"></i>
+                                    </span>
                                 </span>
-                                <span class="secondary-marker-icon">
-                                    <i class="ph-bold ph-arrow-circle-right"></i>
-                                </span>
-                            </span>
                             </span>
                             <span class="nav-link-text">Gate Pass Out</span>
                         </a>
@@ -250,14 +254,16 @@
                 </ul>
             </li>
             {% endif %}
-    
-            <!-- Gate Pass Management Dropdown -->
-            {% if user_permissions.Create_Gate_Pass or user_permissions.Edit_Gate_Pass or user_permissions.Approve_Gate_Pass or user_permissions.Confirmed_Gate_Pass or user_permissions.Out_Gate_Pass or user_permissions.In_Gate_Pass %}
+
+            <!-- Driver Management Dropdown -->
+            {% if user_permissions.Create_Gate_Pass or user_permissions.Edit_Gate_Pass or
+            user_permissions.Approve_Gate_Pass or user_permissions.Confirmed_Gate_Pass or user_permissions.Out_Gate_Pass
+            or user_permissions.In_Gate_Pass %}
             <li class="nav-dropdown">
                 <a class="dropdown-toggle" onclick="toggleDropdown('driver-gate-pass-dropdown')">
                     <span class="main-nav-link-header" style="pointer-events: none;">
                         <span class="nav-icon">
-                            <i class="ph-bold ph-car"></i> 
+                            <i class="ph-bold ph-car"></i>
                         </span>
                         <span class="nav-link-text">Driver Manage</span>
                     </span>
@@ -278,6 +284,23 @@
                                 </span>
                             </span>
                             <span class="nav-link-text">Driver Gate Pass</span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.Edit_Gate_Pass %}
+                    <li>
+                        <a onclick="togglePopup('editDriverGatePassList')">
+                            <span class="nav-icon">
+                                <span class="absolute-icon-contains">
+                                    <span class="nav-icon-main-icon">
+                                        <i class="ph-bold ph-car"></i>
+                                    </span>
+                                    <span class="secondary-marker-icon">
+                                        <i class="ph-bold ph-pencil-simple"></i>
+                                    </span>
+                                </span>
+                            </span>
+                            <span class="nav-link-text">Driver Gate Pass Edit</span>
                         </a>
                     </li>
                     {% endif %}
@@ -315,16 +338,33 @@
                         </a>
                     </li>
                     {% endif %}
+                    {% if user_permissions.Create_Gate_Pass %}
+                    <li>
+                        <a href="{{ url_for('mark_attendance') }}">
+                            <span class="main-nav-link-header">
+                                <span class="nav-icon">
+                                    <i class="ph-bold ph-calendar-dots"></i>
+                                </span>
+                                <span class="nav-link-text">Attendance</span>
+                            </span>
+                        </a>
+                    </li>
+                    {% endif %}
+                    {% if user_permissions.Create_Gate_Pass %}
+                    <li>
+                        <a href="{{ url_for('mark_attendance_out') }}">
+                            <span class="main-nav-link-header">
+                                <span class="nav-icon">
+                                    <i class="ph-bold ph-calendar-slash"></i>
+                                </span>
+                                <span class="nav-link-text">Attendance Depart</span>
+                            </span>
+                        </a>
+                    </li>
+                    {% endif %}
                 </ul>
             </li>
             {% endif %}
-            <!-- <li>
-                <a href="{{ url_for('change_password') }}">
-                    <span class="main-nav-link-header">
-                        <i class="ph ph-password"></i> Change Password
-                    </span>
-                </a>
-            </li> -->
             {% if user_permissions.Create_User %}
             <li>
                 <a href="{{ url_for('all_users') }}">
@@ -375,12 +415,13 @@
     </div>
     <ul class="nav-list">
         <li style="display: none;" class="notificationBtnOnSide">
-            <button type="button" class="notification-btn" id="showNotifications" title="Notifications" onclick="togglePopup('notificationsMenu')">
+            <button type="button" class="notification-btn" id="showNotifications" title="Notifications"
+                onclick="togglePopup('notificationsMenu')">
                 <span class="main-nav-link-header">
                     <span class="nav-icon">
                         <i class="ph-fill ph-bell-simple-ringing"></i>
                         {% if g.there_are_notification %}
-                            <div class="thereAreNotificationBubble"></div>
+                        <div class="thereAreNotificationBubble"></div>
                         {% endif %}
                     </span>
                     <span class="nav-link-text">Notifications</span>
@@ -394,7 +435,7 @@
                         <i class="ph-bold ph-question-mark"></i>
                     </span>
                     <span class="nav-link-text">Help
-                </span>
+                    </span>
             </a>
         </li>
         <li>
@@ -404,7 +445,7 @@
                         <i class="ph-bold ph-sign-out"></i>
                     </span>
                     <span class="nav-link-text">logout
-                </span>
+                    </span>
             </a>
         </li>
     </ul>

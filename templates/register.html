@@ -1,182 +1,233 @@
 <!DOCTYPE html>
 <html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='style.css')}}" />
+        <link
+            rel="shortcut icon"
+            href="{{ url_for('static', filename='favicon.png') }}"
+            type="image/x-icon" />
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+            integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer" />
+        <script src="https://unpkg.com/@phosphor-icons/web"></script>
+        <title>Register</title>
+    </head>
 
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css')}}" />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <title>Register</title>
-</head>
+    <body class="register">
+        {% extends 'base.html' %} {% block content %}
+        <div class="content login">
+            <form method="POST" action="" class="login-details">
+                {{ form.hidden_tag() }}
+                <div class="twosections">
+                    <div class="sections-container">
+                        <div class="section">
+                            <div class="form-sections">
+                                <h4 class="input-head">User Id</h4>
+                                {{ form.username(class="login-input") }}
+                            </div>
+                            <br />
+                            <div class="form-sections">
+                                <h4 class="input-head">Password</h4>
+                                {{ form.password(class="login-input") }}
+                            </div>
+                            <br />
+                            <div class="form-sections">
+                                <h4 class="input-head">E-mail</h4>
+                                {{ form.email(class="login-input") }}
+                            </div>
+                        </div>
+                        <div class="section">
+                            <div class="form-sections">
+                                <h4 class="input-head">Name</h4>
+                                {{ form.name(class="login-input") }}
+                            </div>
+                            <br />
+                            <div class="form-sections">
+                                <h4 class="input-head">Telephone Number</h4>
+                                {{ form.telephoneNo(class="login-input") }}
+                            </div>
+                            <br />
+                            <div class="form-sections">
+                                <h4 class="input-head">User Level</h4>
+                                {{ form.level(class="login-input") }}
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-sections submit">
+                        <div class="main-regsiter-submit-buttons">
+                            {{ form.submit(class="login-btn") }}
 
-<body class="register">
-    {% extends 'base.html' %}
+                            <a href="{{ url_for('all_users') }}"
+                                ><input
+                                    type="button"
+                                    style="margin-left: 15px"
+                                    class="btn-cancel login-btn"
+                                    id="cancel"
+                                    value="Cancel"
+                            /></a>
+                        </div>
+                        <button
+                            type="button"
+                            id="showPermissionsList"
+                            onclick="openPermissionsList()"
+                            title="show permission list">
+                            Permissions
+                        </button>
+                    </div>
+                </div>
+                <div
+                    class="overlay"
+                    id="permissionPopupOverlay"
+                    onclick="closePermissionsList()"></div>
+                <div class="popup" id="permissionList">
+                    <div class="popupHeader">
+                        <h3>Permissions</h3>
+                        <button
+                            type="button"
+                            onclick="closePermissionsList()"
+                            title="close permission list">
+                            <i class="ph ph-x"></i>
+                        </button>
+                    </div>
+                    <div class="permission-list" id="permissionsList">
+                        <div class="permission">
+                            {{ form2.Create_Visitor.label }} {{
+                            form2.Create_Visitor(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.Edit_Visitor.label }} {{
+                            form2.Edit_Visitor(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.Approve_Visitor.label }} {{
+                            form2.Approve_Visitor(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.In_Visitor.label }} {{
+                            form2.In_Visitor(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.Out_Visitor.label }} {{
+                            form2.Out_Visitor(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.Create_Gate_Pass.label }} {{
+                            form2.Create_Gate_Pass(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.Edit_Gate_Pass.label }} {{
+                            form2.Edit_Gate_Pass(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.Approve_Gate_Pass.label }} {{
+                            form2.Approve_Gate_Pass(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.Confirmed_Gate_Pass.label }} {{
+                            form2.Confirmed_Gate_Pass(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.In_Gate_Pass.label }} {{
+                            form2.In_Gate_Pass(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.Out_Gate_Pass.label }} {{
+                            form2.Out_Gate_Pass(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.Create_User.label }} {{
+                            form2.Create_User(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.Create_Reports.label }} {{
+                            form2.Create_Reports(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.hod.label }} {{ form2.hod(class="check") }}
+                        </div>
+                        <div class="permission">
+                            {{ form2.outerUser.label }} {{
+                            form2.outerUser(class="check") }}
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <script>
+            const outerUserCheckbox = document.getElementById("outerUser");
+            const createVisitorCheckbox =
+                document.getElementById("Create_Visitor");
+            const editVisitorCheckbox = document.getElementById("Edit_Visitor");
 
-    {% block content %}
-    <div class="content login">
-        <form method="POST" action="" class="login-details">
-            <!-- <div class="logo-wrapper">
-                <img class="logo-image" src="{{ url_for('static', filename='logo.png') }}" alt="Dayartne Holdings Logo">
-            </div> -->
-            {{ form.hidden_tag() }}
-            <div class="twosections">
-                <div class="sections-container">
-                    <div class="section">
-                        <div class="form-sections">
-                            <h4 class="input-head">User Id</h4>
-                            {{ form.username(class="login-input") }}
-                        </div>
-                        <br>
-                        <div class="form-sections">
-                            <h4 class="input-head">Password</h4>
-                            {{ form.password(class="login-input") }}
-                        </div>
-                        <br>
-                        <div class="form-sections">
-                            <h4 class="input-head">E-mail</h4>
-                            {{ form.email(class="login-input") }}
-                        </div>
-                    </div>
-                    <div class="section">
-                        <div class="form-sections">
-                            <h4 class="input-head">Name</h4>
-                            {{ form.name(class="login-input") }}
-                        </div>
-                        <br>
-                        <div class="form-sections">
-                            <h4 class="input-head">Telephone Number</h4>
-                            {{ form.telephoneNo(class="login-input") }}
-                        </div>
-                        <br>
-                        <div class="form-sections">
-                            <h4 class="input-head">User Level</h4>
-                            {{ form.level(class="login-input") }}
-                        </div>
-                    </div>
-                </div>
-                    <!-- <div class="form-sections">
-                        <h4 class="input-head">Permissions</h4>
-                    </div> -->
-                <div class="form-sections submit">
-                    <div class="main-regsiter-submit-buttons">
-                        {{ form.submit(class="login-btn") }}
-    
-                        <a href="{{ url_for('all_users') }}"><input type="button" style="margin-left: 15px;" class="btn-cancel login-btn" id="cancel" value="Cancel"></a>
-                    </div>
-                    <button type="button" id="showPermissionsList"  onclick="openPermissionsList()" title="show permission list">Permissions</button>
-                </div>
-            </div>
-            <div class="overlay" id="permissionPopupOverlay" onclick="closePermissionsList()"></div>
-            <div class="popup" id="permissionList">
-                <div class="popupHeader">
-                    <h3>Permissions</h3>
-                    <button type="button" onclick="closePermissionsList()" title="close permission list"><i class="ph ph-x"></i></button>
-                </div>
-                <div class="permission-list" id="permissionsList">
-                    <div class="permission">
-                        {{ form2.Create_Visitor.label }} {{ form2.Create_Visitor(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.Edit_Visitor.label }} {{ form2.Edit_Visitor(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.Approve_Visitor.label }} {{ form2.Approve_Visitor(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.In_Visitor.label }} {{ form2.In_Visitor(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.Out_Visitor.label }} {{ form2.Out_Visitor(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.Create_Gate_Pass.label }} {{ form2.Create_Gate_Pass(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.Edit_Gate_Pass.label }} {{ form2.Edit_Gate_Pass(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.Approve_Gate_Pass.label }} {{ form2.Approve_Gate_Pass(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.Confirmed_Gate_Pass.label }} {{ form2.Confirmed_Gate_Pass(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.In_Gate_Pass.label }} {{ form2.In_Gate_Pass(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.Out_Gate_Pass.label }} {{ form2.Out_Gate_Pass(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.Create_User.label }} {{ form2.Create_User(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.Create_Reports.label }} {{ form2.Create_Reports(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.hod.label }} {{ form2.hod(class="check") }}
-                    </div>
-                    <div class="permission">
-                        {{ form2.outerUser.label }} {{ form2.outerUser(class="check") }}
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-    <script>
-        const outerUserCheckbox = document.getElementById('outerUser');
-        const createVisitorCheckbox = document.getElementById('Create_Visitor');
-        const editVisitorCheckbox = document.getElementById('Edit_Visitor');
-        
-        const otherCheckboxes = [
-            'Approve_Visitor', 'In_Visitor', 'Out_Visitor', 'Create_Gate_Pass', 
-            'Edit_Gate_Pass', 'Approve_Gate_Pass', 'Confirmed_Gate_Pass',
-            'In_Gate_Pass', 'Out_Gate_Pass', 'Create_User', 'Create_Reports', 'hod', /* Add the rest of the checkbox IDs here */
-        ].map(id => document.getElementById(id));
-    
-        function handleOuterUserToggle() {
-            if (outerUserCheckbox.checked) {
-                // Check 'Create_Visitor' and 'Edit_Visitor' and disable them
-                createVisitorCheckbox.checked = true;
-                editVisitorCheckbox.checked = true;
-                createVisitorCheckbox.disabled = true;
-                editVisitorCheckbox.disabled = true;
-    
-                // Disable all other checkboxes
-                otherCheckboxes.forEach(checkbox => {
-                    checkbox.checked = false;
-                    checkbox.disabled = true;
-                });
-            } else {
-                // Enable 'Create_Visitor' and 'Edit_Visitor'
-                createVisitorCheckbox.disabled = false;
-                editVisitorCheckbox.disabled = false;
-    
-                // Enable all other checkboxes
-                otherCheckboxes.forEach(checkbox => {
-                    checkbox.disabled = false;
-                });
+            const otherCheckboxes = [
+                "Approve_Visitor",
+                "In_Visitor",
+                "Out_Visitor",
+                "Create_Gate_Pass",
+                "Edit_Gate_Pass",
+                "Approve_Gate_Pass",
+                "Confirmed_Gate_Pass",
+                "In_Gate_Pass",
+                "Out_Gate_Pass",
+                "Create_User",
+                "Create_Reports",
+                "hod",
+            ].map((id) => document.getElementById(id));
+
+            function handleOuterUserToggle() {
+                if (outerUserCheckbox.checked) {
+                    createVisitorCheckbox.checked = true;
+                    editVisitorCheckbox.checked = true;
+                    createVisitorCheckbox.disabled = true;
+                    editVisitorCheckbox.disabled = true;
+
+                    otherCheckboxes.forEach((checkbox) => {
+                        checkbox.checked = false;
+                        checkbox.disabled = true;
+                    });
+                } else {
+                    createVisitorCheckbox.disabled = false;
+                    editVisitorCheckbox.disabled = false;
+
+                    otherCheckboxes.forEach((checkbox) => {
+                        checkbox.disabled = false;
+                    });
+                }
             }
-        }
-    
-        // Attach the event listener
-        outerUserCheckbox.addEventListener('change', handleOuterUserToggle);
-        
-        // Ensure that the logic is applied on page load if 'Outer User' is already checked
-        document.addEventListener('DOMContentLoaded', handleOuterUserToggle);
 
-        function openPermissionsList() {
-            document.getElementById('permissionPopupOverlay').classList.add('visible');
-            document.getElementById('permissionList').classList.add('visible');
-        }
+            outerUserCheckbox.addEventListener("change", handleOuterUserToggle);
 
-        function closePermissionsList() {
-            document.getElementById('permissionPopupOverlay').classList.remove('visible');
-            document.getElementById('permissionList').classList.remove('visible');
-        }
-    </script>
-    {% endblock %}
-</body>
+            document.addEventListener(
+                "DOMContentLoaded",
+                handleOuterUserToggle
+            );
+
+            function openPermissionsList() {
+                document
+                    .getElementById("permissionPopupOverlay")
+                    .classList.add("visible");
+                document
+                    .getElementById("permissionList")
+                    .classList.add("visible");
+            }
+
+            function closePermissionsList() {
+                document
+                    .getElementById("permissionPopupOverlay")
+                    .classList.remove("visible");
+                document
+                    .getElementById("permissionList")
+                    .classList.remove("visible");
+            }
+        </script>
+        {% endblock %}
+    </body>
 </html>

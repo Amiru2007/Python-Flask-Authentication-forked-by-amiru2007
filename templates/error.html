@@ -1,15 +1,14 @@
 <!-- templates/upload.html -->
 <!DOCTYPE html>
 <html>
-<head>
-    <title>Image Upload</title>
-</head>
-<body>
-    <h1>Upload Image</h1>
-    <form method="POST" enctype="multipart/form-data">
-        {{ form.hidden_tag() }}
-        {{ form.image.label }} {{ form.image }}
-        <button type="submit">Submit</button>
-    </form>
-</body>
+    <head>
+        <title>Image Upload</title>
+    </head>
+    <body>
+        <h1>Upload Image</h1>
+        <form method="POST" enctype="multipart/form-data">
+            {{ form.hidden_tag() }} {{ form.image.label }} {{ form.image }}
+            <button type="submit">Submit</button>
+        </form>
+    </body>
 </html>

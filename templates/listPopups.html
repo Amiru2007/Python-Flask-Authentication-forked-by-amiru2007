@@ -1,4 +1,3 @@
-<!-- <div class="overlay" id="ApprovedVisitorsoverlay" onclick="closeToApproveList()"></div> -->
 <div class="popup" id="editVisitorRequest">
     <div class="popupHeader">
         <h3>Edit Visitor Request</h3>
@@ -18,7 +17,6 @@
     </ul>
 </div>
 
-<!-- <div class="overlay" id="ApprovedVisitorsoverlay" onclick="closeToApproveList()"></div> -->
 <div class="popup" id="pendingApproval">
     <div class="popupHeader">
         <h3>Pending Approval Visitor List</h3>
@@ -38,7 +36,6 @@
     </ul>
 </div>
 
-<!-- <div class="overlay" id="pendingApprovaloverlay" onclick="closeShowApprovedList()"></div> -->
 <div class="popup" id="ApprovedVisitors">
     <div class="popupHeader">
         <h3>Approved Visitor List</h3>
@@ -61,7 +58,6 @@
     </ul>
 </div>
 
-<!-- <div class="overlay" id="arrivedOverlay" onclick="closeArrivedList()"></div> -->
 <div class="popup" id="arrivedVisitors">
     <div class="popupHeader">
         <h3>Arrived Visitor List</h3>
@@ -84,7 +80,6 @@
     </ul>
 </div>
 
-<!-- <div class="overlay" id="visitorsOverlay" onclick="closeVisitors()"></div> -->
 <div class="popup" id="visitorsList">
     <div class="popupHeader">
         <h3>Visitor List</h3>
@@ -152,7 +147,6 @@
 
 
 
-<!-- <div class="overlay" id="requestGatePassListOverlay" onclick="closeRequestGatePassList()"></div> -->
 <div class="popup" id="requestGatePassList">
     <div class="popupHeader">
         <h3>Pending Gate Passes</h3>
@@ -183,7 +177,6 @@
     </ul>
 </div>
 
-<!-- <div class="overlay" id="approveGatePassListOverlay" onclick="closeApprovedGatePassList()"></div> -->
 <div class="popup" id="approvedGatePassList">
     <div class="popupHeader">
         <h3>Approved Gate Passes</h3>
@@ -214,7 +207,6 @@
     </ul>
 </div>
 
-<!-- <div class="overlay" id="confirmedGatePassListOverlay" onclick="closeConfirmedGatePassList()"></div> -->
 <div class="popup" id="confirmedGatePassList">
     <div class="popupHeader">
         <h3>Confirmed Gate Passes</h3>
@@ -245,7 +237,6 @@
     </ul>
 </div>
 
-<!-- <div class="overlay" id="departedGatePassListOverlay" onclick="closeDepartedGatePassList()"></div> -->
 <div class="popup" id="departedGatePassList">
     <div class="popupHeader">
         <h3>Departed Gate Passes</h3>
@@ -276,7 +267,6 @@
     </ul>
 </div>
 
-<!-- <div class="overlay" id="editGatePassListOverlay" onclick="closeEditGatePassList()"></div> -->
 <div class="popup" id="editGatePassList">
     <div class="popupHeader">
         <h3>Edit Gate Pass</h3>
@@ -308,7 +298,6 @@
 </div>
 
 
-<!-- <div class="overlay" id="editGatePassListOverlay" onclick="closeEditGatePassList()"></div> -->
 <div class="popup" id="requestedDriverGatePassList">
     <div class="popupHeader">
         <h3>Mark Driver Gate Pass out</h3>
@@ -339,7 +328,6 @@
     </ul>
 </div>
 
-<!-- <div class="overlay" id="editGatePassListOverlay" onclick="closeEditGatePassList()"></div> -->
 <div class="popup" id="outDriverGatePassList">
     <div class="popupHeader">
         <h3>Mark Driver Gate Pass In</h3>
@@ -370,7 +358,36 @@
     </ul>
 </div>
 
-<!-- <div class="overlay" id="gatePassFormsOverlay" onclick="closeGatePassForms()"></div> -->
+<div class="popup" id="editDriverGatePassList">
+    <div class="popupHeader">
+        <h3>Mark Driver Gate Pass out</h3>
+        <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
+    </div>
+    <ul class="toApprove">
+        {% for driver in g.edit_driver_gate_pass %}
+            <li>
+                <form method="post" action="{{ url_for('edit_drivergatepass') }}">
+                    <input type="hidden" name="driverGatePassId" value="{{ driver.driverGatePassId }}">
+                    <input type="hidden" name="driverFormStatus" value="{{ driver.driverFormStatus }}">
+                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                        <span class="visitorsListDetail">{{ driver.driverNo }}</span>
+                        {% if driver.driverName %}
+                            <span class="visitorsListDetail" style="flex:5;">{{ driver.driverName }}</span>
+                        {% else %}
+                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                        {% endif %}
+                        {% if driver.driverDepartingTime %}
+                            <span class="visitorsListDetail">{{ driver.driverDepartingTime }}</span>
+                        {% else %}
+                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                        {% endif %}
+                    </button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</div>
+
 <div class="popup" id="gatePassForms">
     <div class="popupHeader">
         <h3>Gate Pass Forms List</h3>
@@ -431,7 +448,6 @@
 
 
 
-<!-- <div class="overlay" id="reportOverlay" onclick="closeReports()"></div> -->
 <div class="popup" id="reportButtons">
     <div class="popupHeader" style="position: relative; width: 100%;">
         <h3>Export Reports</h3>
@@ -458,10 +474,24 @@
             <h5>Gate Pass List</h5>
             <button type="button">Create</button>
         </div>
+        <div class="excelExportBtns" onclick="togglePopup('driverGatePassReportButtons')">
+            <span><i class="ph ph-car"></i></span>
+            <h5>Driver Gate Pass Search</h5>
+            <button type="button">Create</button>
+        </div>
+        <div class="excelExportBtns" onclick="togglePopup('driverGatePassListReportButtons')">
+            <span><i class="ph ph-car"></i></span>
+            <h5>Driver Gate Pass List</h5>
+            <button type="button">Create</button>
+        </div>
+        <div class="excelExportBtns" onclick="togglePopup('driverAttendanceReportButtons')">
+            <span><i class="ph ph-calendar-dots"></i></span>
+            <h5>Driver Attendance</h5>
+            <button type="button">Create</button>
+        </div>
     </div>
 </div>
 
-<!-- <div class="overlay" id="visitorReportOverlay" onclick="closeVisitorReport()"></div> -->
 <div class="popup" id="visitorReportButtons">
     <div class="popupHeader" style="position: relative; width: 100%;">
         <h3>Set Duration</h3>
@@ -483,7 +513,6 @@
     </form>
 </div>
 
-<!-- <div class="overlay" id="gatePassReportOverlay" onclick="closeEmployeeGatePassReport()"></div> -->
 <div class="popup" id="gatePassReportButtons">
     <div class="popupHeader" style="position: relative; width: 100%;">
         <h3>Set Duration For Employee</h3>
@@ -509,10 +538,9 @@
     </form>
 </div>
 
-<!-- <div class="overlay" id="gatePassListReportOverlay" onclick="closeGatePassListReport()"></div> -->
 <div class="popup" id="gatePassListReportButtons">
     <div class="popupHeader" style="position: relative; width: 100%;">
-        <h3>Set Duration (Gate Pass List)</h3>
+        <h3>Set Duration (Driver Gate Pass)</h3>
         <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
     </div>
     <form action="/export_excel/gate_pass_list" method="POST" class="excelExportVisitorBtns">
@@ -527,6 +555,75 @@
         <div class="exportAndBack">
             <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i class="ph ph-arrow-left"></i></button>
             <input type="submit" class="exportVisitorExcel" id="exportGatePassListExcel" value="Export">
+        </div>
+    </form>
+</div>
+
+<div class="popup" id="driverGatePassReportButtons">
+    <div class="popupHeader" style="position: relative; width: 100%;">
+        <h3>Set Duration for Driver</h3>
+        <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
+    </div>
+    <form action="/export_excel/driver_gate_pass" method="POST" class="excelExportVisitorBtns">
+        <div class="driverNoForReport excelTimeDuration">
+            <label for="reportDriverNo">Driver Number</label>
+            <input type="text" id="reportDriverNo" name="reportDriverNo">
+        </div>
+        <div class="startDate excelTimeDuration">
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" name="startDate">
+        </div>
+        <div class="endDate excelTimeDuration">
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" name="endDate">
+        </div>
+        <div class="exportAndBack">
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i class="ph ph-arrow-left"></i></button>
+            <input type="submit" class="exportVisitorExcel" id="exportDriverGatePassExcel" value="Export">
+        </div>
+    </form>
+</div>
+
+<div class="popup" id="driverGatePassListReportButtons">
+    <div class="popupHeader" style="position: relative; width: 100%;">
+        <h3>Set Duration (Driver Gate Pass List)</h3>
+        <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
+    </div>
+    <form action="/export_excel/driver_gate_pass_list" method="POST" class="excelExportVisitorBtns">
+        <div class="startDate excelTimeDuration">
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" name="startDate">
+        </div>
+        <div class="endDate excelTimeDuration">
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" name="endDate">
+        </div>
+        <div class="exportAndBack">
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i class="ph ph-arrow-left"></i></button>
+            <input type="submit" class="exportVisitorExcel" id="exportDriverGatePassExcel" value="Export">
+        </div>
+    </form>
+</div>
+
+<div class="popup" id="driverAttendanceReportButtons">
+    <div class="popupHeader" style="position: relative; width: 100%;">
+        <h3>Set Duration for Attendance Report</h3>
+        <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
+    </div>
+    <form action="/export_excel/driver_attendance" method="POST" class="excelExportVisitorBtns">
+        <div class="startDate excelTimeDuration">
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" name="startDate">
+        </div>
+        <div class="endDate excelTimeDuration">
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" name="endDate">
+        </div>
+        <div class="exportAndBack">
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')">
+                <i class="ph ph-arrow-left"></i>
+            </button>
+            <input type="submit" class="exportVisitorExcel" id="exportDriverAttendanceExcel" value="Export">
         </div>
     </form>
 </div>

@@ -16,11 +16,7 @@
     {% extends 'base.html' %}
 
     {% block content %}
-    <!-- <div class="overlay" id="helpMenuOverlay" onclick="closeHelp()"></div> -->
     <div class="mainMenu" id="helpMenu">
-        <!-- <div class="helpHeader" style="position: relative; width: 100%;">
-            <h3>Help Menu</h3>
-        </div> -->
         <div class="panels">
             <div class="tabs panel">
                 <button type="button" onclick="openWindow(1)" id="button1">New Visitor</button>
@@ -45,7 +41,6 @@
                         <li class="mainListItem">
                             The final form like given below.
                             <br>
-                            <!-- <img id="fullscreenTrigger" src="{{ url_for('static', filename='Create Visitor Preview.jpg') }}" alt="Visitor Form Preview"> -->
                         </li>
                         <li class="mainListItem">If information are correct, Click on “Save”.</li>
                         <li class="mainListItem">If you do not need to save Click on “Cancel”.</li>
@@ -170,9 +165,6 @@
         }
 
         document.addEventListener("DOMContentLoaded", function () {
-            // ... (your existing code)
-
-            // Add the event listener for the search box
             const searchInput = document.getElementById("visitor-search");
             searchInput.addEventListener("input", function () {
                 const searchTerm = this.value.trim().toLowerCase();
@@ -188,7 +180,6 @@
             searchInput.addEventListener('input', function () {
                 const searchTerm = searchInput.value.toLowerCase();
 
-                // Show only the matching visitors based on the search term
                 allVisitors.forEach(function (visitor) {
                     const visitorNumber = visitor.querySelector('span:first-child').textContent.toLowerCase();
                     const shouldShow = visitorNumber.includes(searchTerm);
@@ -206,18 +197,15 @@
                     const rect = this.getBoundingClientRect();
                     const detailBoxHeight = detailBox.offsetHeight;
 
-                    // Reset any inline styles first
                     detailBox.style.top = '';
                     detailBox.style.bottom = '';
                     
-                    // Check if detail box would go beyond the viewport bottom
                     if (rect.bottom + detailBoxHeight > window.innerHeight) {
                         detailBox.style.bottom = '100%';
                     } else {
                         detailBox.style.top = '100%';
                     }
 
-                    // Adjust left position if it overflows the right side of the viewport
                     if (rect.right + detailBox.offsetWidth > window.innerWidth) {
                         detailBox.style.left = 'auto';
                         detailBox.style.right = '0';

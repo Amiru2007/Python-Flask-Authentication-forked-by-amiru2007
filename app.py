@@ -1,6 +1,7 @@
 from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session, send_file, send_from_directory, abort, g # type: ignore
 from flask_sqlalchemy import SQLAlchemy # type: ignore
 from sqlalchemy import or_, func # type: ignore
+from sqlalchemy.orm import aliased # type: ignore
 from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user # type: ignore
 from flask_wtf import FlaskForm # type: ignore
 from flask_wtf.file import FileField, FileAllowed # type: ignore
@@ -9,7 +10,7 @@ from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectF
 from wtforms.validators import InputRequired, Length, ValidationError, EqualTo # type: ignore
 from flask_bcrypt import Bcrypt # type: ignore
 # from flask_migrate import Migrate
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 from base64 import b64encode
 import openpyxl # type: ignore
 from openpyxl.worksheet.table import Table, TableStyleInfo # type: ignore
@@ -174,6 +175,17 @@ class DriverGatePass(db.Model):
     committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
     driverGatePassRequester = db.Column(db.String(80), nullable=False)
 
+class DriverAttendance(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    employeeNo = db.Column(db.String(50), nullable=False)
+    date = db.Column(db.String(20))
+    inTime = db.Column(db.String(20))
+    outTime = db.Column(db.String(20))
+    status = db.Column(db.String(20))
+
+    def __repr__(self):
+        return f"<DriverAttendance {self.id} - {self.employeeNo}>"
+    
 class ImageUploadForm(FlaskForm):
     profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
  
@@ -559,6 +571,26 @@ def set_global_variables():
         g.user_permissions = None
 
 
+@app.before_request
+def create_attendance_records():
+    """Automatically create attendance records for all drivers at the start of the day."""
+    today = date.today()
+    existing_records = {record.employeeNo for record in DriverAttendance.query.filter_by(date=today).all()}
+    
+    drivers = Employee.query.filter_by(employeeDesignation="Driver").all()
+    
+    for driver in drivers:
+        if driver.employeeNo not in existing_records:
+            new_record = DriverAttendance(
+                employeeNo=driver.employeeNo,
+                date=today,
+                status="Not Present"
+            )
+            db.session.add(new_record)
+    
+    db.session.commit()
+
+
 def has_permission(permission_name):
     user_permissions = Permissions.query.filter_by(username=current_user.username).first()
     if user_permissions and getattr(user_permissions, permission_name, False):
@@ -573,6 +605,7 @@ def dashboard():
     # --- Visitors Charts ---
 
     today = datetime.now().strftime('%Y-%m-%d')
+    todaySimple = datetime.utcnow().strftime("%Y%m%d")
     start_of_today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
     
     data = Visitor.query.filter(
@@ -664,6 +697,21 @@ def dashboard():
         GatePass.employeeDepartingDate.like(f'{today}%')
     ).count()
 
+    present_count = DriverAttendance.query.filter(
+        DriverAttendance.status == 'Present',
+        DriverAttendance.date.like(f"{today}%")
+    ).count()
+
+    driver_out_count = DriverGatePass.query.filter(
+        DriverGatePass.driverFormStatus == 'Out',
+        DriverGatePass.driverGatePassId.like(f"D{todaySimple}%")
+    ).count()
+
+    driver_in_count = DriverGatePass.query.filter(
+        DriverGatePass.driverFormStatus == 'In',
+        DriverGatePass.driverGatePassId.like(f'D{todaySimple}%')
+    ).count()
+
     out_of_office_count = out_count - returned_count
 
     # --- Visitor Management Counts ---
@@ -703,7 +751,10 @@ def dashboard():
         out_of_office_count=out_of_office_count,
         arrived_count=arrived_count,
         departed_count=departed_count,
-        in_premises_count=in_premises_count
+        in_premises_count=in_premises_count,
+        present_count=present_count,
+        driver_out_count=driver_out_count,
+        driver_in_count=driver_in_count
     )
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -1613,6 +1664,183 @@ def export_excel_gate_pass_list():
         download_name='gate_pass_list_records.xlsx'
     )
 
+# New function for filtering driver gate passes by driverNo and date range
+@app.route('/export_excel/driver_gate_pass', methods=['POST'])
+@login_required
+@permission_required('Create_Reports')
+def export_excel_driver_gate_pass():
+    driver_no = request.form.get('reportDriverNo')
+    start_date = request.form.get('startDate')
+    end_date = request.form.get('endDate')
+
+    start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
+    end_datetime = datetime.strptime(end_date, '%Y-%m-%d')
+
+    data = DriverGatePass.query.filter(
+        DriverGatePass.driverNo == driver_no,
+        db.func.date(DriverGatePass.committedDate) >= start_datetime.date(),
+        db.func.date(DriverGatePass.committedDate) <= end_datetime.date()
+    ).all()
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = f"Driver {driver_no} Gate Pass"
+
+    headers = [
+        'id', 'driverGatePassId', 'driverNo', 'driverName', 'driverCompany', 'driverDepartingTime', 'driverDepartingDate', 
+        'driverArrivalTime', 'driverVehicleNo', 'driverDepartingReason', 'driverDepartingDestinationRemark', 
+        'driverFormStatus', 'driverOutMark', 'driverInMark', 'committedDate', 'driverGatePassRequester'
+    ]
+
+    ws.append(headers)
+
+    for row in data:
+        ws.append([
+            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime('%Y-%m-%d %H:%M:%S')
+            for field in headers
+        ])
+
+    table = Table(displayName="DriverGatePassTable", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+    style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False, showLastColumn=False, showRowStripes=True, showColumnStripes=True)
+    table.tableStyleInfo = style
+    ws.add_table(table)
+
+    for column in ws.columns:
+        max_length = max((len(str(cell.value)) for cell in column if cell.value), default=10)
+        ws.column_dimensions[column[0].column_letter].width = max_length + 2
+
+    excel_data = BytesIO()
+    wb.save(excel_data)
+    excel_data.seek(0)
+
+    return send_file(excel_data, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', as_attachment=True, download_name=f'driver_gate_pass_{driver_no}.xlsx')
+
+@app.route('/export_excel/driver_gate_pass_list', methods=['POST'])
+@login_required
+@permission_required('Create_Reports')
+def export_excel_driver_gate_pass_list():
+    # Get start and end dates from the form
+    start_date = request.form.get('startDate')
+    end_date = request.form.get('endDate')
+
+    # Convert start and end dates to datetime objects
+    start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
+    end_datetime = datetime.strptime(end_date, '%Y-%m-%d')
+
+    # Fetch driver gate pass data from the database within the selected date range
+    data = DriverGatePass.query.filter(
+        db.func.date(DriverGatePass.committedDate) >= start_datetime.date(),
+        db.func.date(DriverGatePass.committedDate) <= end_datetime.date()
+    ).all()
+
+    # Create an Excel workbook and add a worksheet
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Driver Gate Pass Report"
+
+    # Define headers for the worksheet
+    headers = [
+        'id', 'driverGatePassId', 'driverNo', 'driverName', 'driverCompany', 'driverDepartingTime', 'driverDepartingDate', 
+        'driverArrivalTime', 'driverVehicleNo', 'driverDepartingReason', 'driverDepartingDestinationRemark', 
+        'driverFormStatus', 'driverOutMark', 'driverInMark', 'committedDate', 'driverGatePassRequester'
+    ]
+
+    # Write headers to the worksheet
+    ws.append(headers)
+
+    # Write data to the worksheet
+    for row in data:
+        ws.append([
+            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime('%Y-%m-%d %H:%M:%S')
+            for field in headers
+        ])
+
+    # Create a table range
+    table = Table(displayName="DriverGatePassTable", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+
+    # Add a TableStyleInfo to the table
+    style = TableStyleInfo(
+        name="TableStyleMedium9", showFirstColumn=False,
+        showLastColumn=False, showRowStripes=True, showColumnStripes=True
+    )
+    table.tableStyleInfo = style
+
+    # Add the table to the worksheet
+    ws.add_table(table)
+
+    # Adjust cell width to fit content
+    for column in ws.columns:
+        max_length = 0
+        column = [cell for cell in column]
+        for cell in column:
+            try:
+                if cell.value and len(str(cell.value)) > max_length:
+                    max_length = len(str(cell.value))
+            except:
+                pass
+        adjusted_width = max_length + 2
+        ws.column_dimensions[column[0].column_letter].width = adjusted_width
+
+    # Save the workbook to a BytesIO object
+    excel_data = BytesIO()
+    wb.save(excel_data)
+    excel_data.seek(0)
+
+    # Return the Excel file as a downloadable attachment
+    return send_file(
+        excel_data,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name='driver_gate_pass_records.xlsx'
+    )
+
+@app.route('/export_excel/driver_attendance', methods=['POST'])
+@login_required
+@permission_required('Create_Reports')
+def export_excel_driver_attendance():
+    start_date = request.form.get('startDate')
+    end_date = request.form.get('endDate')
+
+    start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
+    end_datetime = datetime.strptime(end_date, '%Y-%m-%d')
+
+    # Fetch attendance records within the date range
+    data = DriverAttendance.query.filter(
+        db.func.date(DriverAttendance.date) >= start_datetime.date(),
+        db.func.date(DriverAttendance.date) <= end_datetime.date()
+    ).all()
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Driver Attendance Records"
+
+    headers = ['ID', 'Employee No', 'Date', 'In Time', 'Out Time', 'Status']
+    ws.append(headers)
+
+    for row in data:
+        ws.append([
+            row.id, row.employeeNo, row.date, row.inTime, row.outTime, row.status
+        ])
+
+    table = Table(displayName="DriverAttendanceTable", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+    style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False, showLastColumn=False, showRowStripes=True, showColumnStripes=True)
+    table.tableStyleInfo = style
+    ws.add_table(table)
+
+    for column in ws.columns:
+        max_length = max((len(str(cell.value)) for cell in column if cell.value), default=10)
+        ws.column_dimensions[column[0].column_letter].width = max_length + 2
+
+    excel_data = BytesIO()
+    wb.save(excel_data)
+    excel_data.seek(0)
+
+    return send_file(
+        excel_data,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name='driver_attendance.xlsx'
+    )
 
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
@@ -1735,8 +1963,50 @@ def driver_gate_pass():
     user_permissions = current_user.permissions
     pageTitle = 'New Driver Gate Pass'
     
-    driver_list = Employee.query.filter(Employee.employeeDesignation == 'Driver').all()
-    
+    today = datetime.utcnow().date()
+    todaySimple = datetime.utcnow().strftime("%Y%m%d")
+
+    employee_alias = aliased(Employee)
+    attendance_alias = aliased(DriverAttendance)
+    gate_pass_alias = aliased(DriverGatePass)
+
+    # Subquery to get the latest gate pass ID for each driver today
+    latest_gate_pass_subquery = (
+        db.session.query(
+            gate_pass_alias.driverNo,
+            func.max(gate_pass_alias.id).label("latest_gate_pass_id")
+        )
+        .filter(gate_pass_alias.driverGatePassId.like(f"D{todaySimple}%"))  # Gate pass must be from today
+        .group_by(gate_pass_alias.driverNo)
+        .subquery()
+    )
+
+    # Main query to get driver list
+    driver_list = (
+        db.session.query(employee_alias)
+        .join(attendance_alias, employee_alias.employeeNo == attendance_alias.employeeNo)
+        .outerjoin(  # Left join to include drivers without gate passes
+            latest_gate_pass_subquery,
+            employee_alias.employeeNo == latest_gate_pass_subquery.c.driverNo
+        )
+        .outerjoin(
+            gate_pass_alias,
+            gate_pass_alias.id == latest_gate_pass_subquery.c.latest_gate_pass_id
+        )
+        .filter(
+            employee_alias.employeeDesignation == 'Driver',
+            attendance_alias.status == "Present",
+            attendance_alias.date == today,
+            db.or_(
+                latest_gate_pass_subquery.c.latest_gate_pass_id == None,  # No gate pass today
+                gate_pass_alias.driverFormStatus == "In"  # If they have a gate pass, status must be "In"
+            )
+        )
+        .all()
+    )
+
+    print(driver_list)
+
     driver_gate_pass_code = generate_driverGatePassId()
     
     if request.method == 'POST':
@@ -1873,7 +2143,44 @@ def in_drivergatepass():
         
     else:
         return jsonify({'error': 'Employee not found'}), 404
+     
+@app.route('/edit_drivergatepass', methods=['POST'])
+@login_required
+@permission_required('Edit_Gate_Pass')
+def edit_drivergatepass():
+    driverGatePassId = request.form.get('driverGatePassId')
+    driverGatePassForm = DriverGatePass.query.filter_by(driverGatePassId=driverGatePassId).first()
+    print(driverGatePassForm)
+
+    pageTitle = 'Edit Driver Gate Pass Request'
     
+    user_permissions = current_user.permissions
+    
+    if driverGatePassForm:
+        # Access the value of the clicked button from the form data
+        clicked_button_value = request.form.get('changeStatus')
+        print(clicked_button_value)
+
+        # Your logic based on the clicked button value
+        if clicked_button_value == 'Save':
+            driverGatePassForm.driverCompany = request.form.get('driverCompany')
+            driverGatePassForm.driverDepartingTime = request.form.get('driverDepartingTime')
+            driverGatePassForm.driverDepartingDate = request.form.get('driverDepartingDate')
+            driverGatePassForm.driverArrivalTime = request.form.get('driverArrivalTime')
+            driverGatePassForm.driverVehicleNo = request.form.get('driverVehicleNo')
+            driverGatePassForm.driverDepartingReason = request.form.get('driverDepartingReason')
+            driverGatePassForm.driverDepartingDestinationRemark = request.form.get('driverDepartingDestinationRemark')
+
+            db.session.commit()
+            return redirect(url_for('dashboard'))
+        
+        return render_template('editDriverGatePass.html', driverGatePassForm=driverGatePassForm,
+                           user_permissions=user_permissions,
+                           pageTitle=pageTitle)
+
+    else:
+        return jsonify({'error': 'Employee not found', 'driverGatePassId': driverGatePassForm}), 404
+ 
 @app.route('/approve_gatepass', methods=['POST'])
 @login_required
 @permission_required('Approve_Gate_Pass')
@@ -2076,6 +2383,81 @@ def gate_pass_form():
     
     else:
         return jsonify({'error': 'Gate Pass Form not found', 'gatePassId': gatePassId}), 404
+
+
+@app.route('/mark_attendance', methods=['GET', 'POST'])
+@login_required
+def mark_attendance():
+    
+    pageTitle = "Mark Driver Attendance"
+    
+    user_permissions = current_user.permissions
+
+    driver_list = Employee.query.filter(Employee.employeeDesignation == 'Driver').all()
+    
+    if request.method == "POST":
+        driver_id = request.form.get("driverNo")
+        today = date.today()
+
+        # Find driver in Employee table
+        driver = Employee.query.filter_by(employeeNo=driver_id, employeeDesignation="Driver").first()
+
+        if not driver:
+            flash("Invalid Driver ID!", "danger")
+            return redirect(url_for("mark_attendance"))
+
+        # Get today's attendance record
+        attendance = DriverAttendance.query.filter_by(employeeNo=driver_id, date=today, status="Not Present").first()
+
+        if attendance:
+            attendance.inTime = datetime.now()
+            attendance.status = "Present"
+            db.session.commit()
+        else:
+            flash("Attendance already marked or record not found!", "warning")
+
+        return redirect(url_for("dashboard"))
+
+    return render_template("markAttendance.html", driver_list=driver_list, pageTitle=pageTitle, user_permissions=user_permissions)
+
+
+@app.route('/mark_attendance_out', methods=['GET', 'POST'])
+@login_required
+def mark_attendance_out():
+    
+    pageTitle = "Mark Driver Attendance Off"
+    
+    user_permissions = current_user.permissions
+
+    today = date.today()
+    driver_list = DriverAttendance.query.filter(DriverAttendance.date == today, DriverAttendance.status == "Present").all()
+    
+    employee_list = Employee.query.filter(Employee.employeeDesignation == 'Driver').all()
+    
+    if request.method == "POST":
+        driver_id = request.form.get("driverNo")
+        today = date.today()
+
+        # Find driver in Employee table
+        driver = Employee.query.filter_by(employeeNo=driver_id, employeeDesignation="Driver").first()
+
+        if not driver:
+            flash("Invalid Driver ID!", "danger")
+            return redirect(url_for("mark_attendance_out"))
+
+        # Get today's attendance record
+        attendance = DriverAttendance.query.filter_by(employeeNo=driver_id, date=today, status="Present").first()
+
+        if attendance:
+            attendance.outTime = datetime.now()
+            attendance.status = "Departed"
+            db.session.commit()
+        else:
+            flash("Attendance already marked or record not found!", "warning")
+
+        return redirect(url_for("dashboard"))
+
+    return render_template("markAttendanceOut.html", driver_list=driver_list, pageTitle=pageTitle, user_permissions=user_permissions, employee_list=employee_list)
 
 @app.route('/help')
 @login_required

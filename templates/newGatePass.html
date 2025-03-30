@@ -1,188 +1,331 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <!-- <link rel="stylesheet" href="../static/style.css"> -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.png') }}" type="image/x-icon">
-    <title>Gate Pass Form</title>
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-</head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link
+            rel="stylesheet"
+            href="{{ url_for('static', filename='style.css') }}" />
+        <link
+            rel="shortcut icon"
+            href="{{ url_for('static', filename='favicon.png') }}"
+            type="image/x-icon" />
+        <title>Gate Pass Form</title>
+        <script src="https://unpkg.com/@phosphor-icons/web"></script>
+        <link
+            rel="stylesheet"
+            href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+            integrity="sha512-DTOQO9RWCH3ppGqcWaEA1BIZOC6xxalwEsw9c2QQeAIftl+Vegovlnee1c9QX4TctnWMn13TZye+giMm8e2LwA=="
+            crossorigin="anonymous"
+            referrerpolicy="no-referrer" />
+    </head>
 
-<body class="gatePassPage">
-    {% extends 'base.html' %}
-
-    {% block content %}
-    <h1 class="gate-pass-title">Exit Permit</h1>
-    <form action="{{ url_for('gate_pass') }}" method="POST" class="gate-pass-form" enctype="multipart/form-data">
-        <div class="main-form-container">
-            <div class="top-radio-boxes">
-                <div class="radio-boxes-container">
-                    <div class="grid-element">
-                        <label for="radio1">Dayaratne Holdings</label>
-                        <input type="radio" id="radio1" name="company" class="radio" value="Dayaratne Holdings" onclick="setCompany('Dayaratne Holdings')">
+    <body class="gatePassPage">
+        {% extends 'base.html' %} {% block content %}
+        <h1 class="gate-pass-title">Exit Permit</h1>
+        <form
+            action="{{ url_for('gate_pass') }}"
+            method="POST"
+            class="gate-pass-form"
+            enctype="multipart/form-data">
+            <div class="main-form-container">
+                <div class="top-radio-boxes">
+                    <div class="radio-boxes-container">
+                        <div class="grid-element">
+                            <label for="radio1">Dayaratne Holdings</label>
+                            <input
+                                type="radio"
+                                id="radio1"
+                                name="company"
+                                class="radio"
+                                value="Dayaratne Holdings"
+                                onclick="setCompany('Dayaratne Holdings')" />
+                        </div>
+                        <div class="grid-element">
+                            <label for="radio2">Dayaratne Apperal</label>
+                            <input
+                                type="radio"
+                                id="radio2"
+                                name="company"
+                                class="radio"
+                                value="Dayaratne Apperal"
+                                onclick="setCompany('Dayaratne Apperal')" />
+                        </div>
+                        <div class="grid-element">
+                            <label for="radio3">Pra Su King</label>
+                            <input
+                                type="radio"
+                                id="radio3"
+                                name="company"
+                                class="radio"
+                                value="Pra Su King"
+                                onclick="setCompany('Pra Su King')" />
+                        </div>
+                        <div class="grid-element">
+                            <label for="radio4">Isuru International</label>
+                            <input
+                                type="radio"
+                                id="radio4"
+                                name="company"
+                                class="radio"
+                                value="Isuru International"
+                                onclick="setCompany('Isuru International')" />
+                        </div>
+                        <div class="grid-element">
+                            <label for="radio5">Isuru Lojistick</label>
+                            <input
+                                type="radio"
+                                id="radio5"
+                                name="company"
+                                class="radio"
+                                value="Isuru Lojistick"
+                                onclick="setCompany('Isuru Lojistick')" />
+                        </div>
+                        <div class="grid-element">
+                            <label for="radio6">V B T N Trading</label>
+                            <input
+                                type="radio"
+                                id="radio6"
+                                name="company"
+                                class="radio"
+                                value="V B T N Trading"
+                                onclick="setCompany('V B T N Trading')" />
+                        </div>
+                        <input
+                            type="hidden"
+                            name="employeeCompany"
+                            id="employeeCompany" />
                     </div>
-                    <div class="grid-element">
-                        <label for="radio2">Dayaratne Apperal</label>
-                        <input type="radio" id="radio2" name="company" class="radio" value="Dayaratne Apperal" onclick="setCompany('Dayaratne Apperal')">
-                    </div>
-                    <div class="grid-element">
-                        <label for="radio3">Pra Su King</label>
-                        <input type="radio" id="radio3" name="company" class="radio" value="Pra Su King" onclick="setCompany('Pra Su King')">
-                    </div>
-                    <div class="grid-element">
-                        <label for="radio4">Isuru International</label>
-                        <input type="radio" id="radio4" name="company" class="radio" value="Isuru International" onclick="setCompany('Isuru International')">
-                    </div>
-                    <div class="grid-element">
-                        <label for="radio5">Isuru Lojistick</label>
-                        <input type="radio" id="radio5" name="company" class="radio" value="Isuru Lojistick" onclick="setCompany('Isuru Lojistick')">
-                    </div>
-                    <div class="grid-element">
-                        <label for="radio6">V B T N Trading</label>
-                        <input type="radio" id="radio6" name="company" class="radio" value="V B T N Trading" onclick="setCompany('V B T N Trading')">
-                    </div>
-                    <input type="hidden" name="employeeCompany" id="employeeCompany">
                 </div>
-            </div>
-            <div class="bottom-employee-datails">
-                <div class="name-id gate-pass-detail-block">
-                    <div class="employee-id gate-pass-input-container">
-                        <label for="employeeNo">Employee ID</label>
-                        <div class="dropdown">
-                            <input type="text" id="employeeNo" name="employeeNo" title="Employee ID" onkeyup="filterDropdown()" placeholder="Search Employee ID" required>
-                            <div class="dropdown-content" id="dropdownOptions">
-                                {% for employee in employee_list %}
-                                    <input type="hidden" id="employeeName_{{ employee.employeeNo }}" value="{{ employee.nameWithInitials }}">
-                                    <div class="option" onclick="selectOption('{{ employee.employeeNo }}')">{{ employee.employeeNo }}</div>
-                                {% else %}
-                                    <div class="option">No employees available</div>
-                                {% endfor %}
+                <div class="bottom-employee-datails">
+                    <div class="name-id gate-pass-detail-block">
+                        <div class="employee-id gate-pass-input-container">
+                            <label for="employeeNo">Employee ID</label>
+                            <div class="dropdown">
+                                <input
+                                    type="text"
+                                    id="employeeNo"
+                                    name="employeeNo"
+                                    title="Employee ID"
+                                    onkeyup="filterDropdown()"
+                                    placeholder="Search Employee ID"
+                                    required />
+                                <div
+                                    class="dropdown-content"
+                                    id="dropdownOptions">
+                                    {% for employee in employee_list %}
+                                    <input
+                                        type="hidden"
+                                        id="employeeName_{{ employee.employeeNo }}"
+                                        value="{{ employee.nameWithInitials }}" />
+                                    <div
+                                        class="option"
+                                        onclick="selectOption('{{ employee.employeeNo }}')">
+                                        {{ employee.employeeNo }}
+                                    </div>
+                                    {% else %}
+                                    <div class="option">
+                                        No employees available
+                                    </div>
+                                    {% endfor %}
+                                </div>
                             </div>
                         </div>
+                        <div class="employee-name gate-pass-input-container">
+                            <label for="employeeName">Employee Name</label>
+                            <input
+                                type="text"
+                                id="employeeName"
+                                name="employeeName"
+                                title="Employee name"
+                                readonly />
+                        </div>
                     </div>
-                    <div class="employee-name gate-pass-input-container">
-                        <label for="employeeName">Employee Name</label>
-                        <input type="text" id="employeeName" name="employeeName" title="Employee name" readonly>
+                    <div class="time-period gate-pass-detail-block">
+                        <div
+                            class="employee-departing-time gate-pass-input-container">
+                            <label for="employeeDepartingTime"
+                                >Departing Time</label
+                            >
+                            <input
+                                type="time"
+                                id="employeeDepartingTime"
+                                name="employeeDepartingTime"
+                                title="Employee daparting time" />
+                        </div>
+                        <div
+                            class="employee-arrival-time gate-pass-input-container">
+                            <label for="employeeArrivalTime"
+                                >Arrival Time</label
+                            >
+                            <input
+                                type="time"
+                                id="employeeArrivalTime"
+                                name="employeeArrivalTime"
+                                title="Employee time" />
+                        </div>
+                    </div>
+                    <div class="date-vehicle gate-pass-detail-block">
+                        <div
+                            class="employee-departing-date gate-pass-input-container">
+                            <label for="employeeDepartingDate">Date</label>
+                            <input
+                                type="date"
+                                id="employeeDepartingDate"
+                                name="employeeDepartingDate"
+                                title="Employee departing date" />
+                        </div>
+                        <div
+                            class="employee-vehicle-no gate-pass-input-container">
+                            <label for="employeeVehicleNo"
+                                >Vehicle Number</label
+                            >
+                            <input
+                                type="text"
+                                id="employeeVehicleNo"
+                                name="employeeVehicleNo"
+                                title="Employee vehicle number" />
+                        </div>
+                    </div>
+                    <div class="departing-reason gate-pass-detail-block">
+                        <div
+                            class="employee-departing-reason gate-pass-input-container">
+                            <label for="employeeDepartingReason">Reason</label>
+                            <input
+                                type="text"
+                                id="employeeDepartingReason"
+                                name="employeeDepartingReason"
+                                title="Departing reason" />
+                        </div>
+                    </div>
+                    <div class="departing-remark gate-pass-detail-block">
+                        <div
+                            class="employee-departing-remark gate-pass-input-container">
+                            <label for="employeeDepartingRemark">Remark</label>
+                            <input
+                                type="text"
+                                id="employeeDepartingRemark"
+                                name="employeeDepartingRemark"
+                                title="Departing remark" />
+                        </div>
+                    </div>
+                    <div class="officer-confirmed-by gate-pass-detail-block">
+                        <div class="employee-officer gate-pass-input-container">
+                            <label for="employeeOfficer"
+                                >Authorized officer</label
+                            >
+                            <input
+                                type="text"
+                                id="employeeOfficer"
+                                name="employeeOfficer"
+                                title="Authorized officer"
+                                readonly />
+                        </div>
+                        <div
+                            class="employee-confirmed-by gate-pass-input-container">
+                            <label for="employee-confirmed-by"
+                                >Confirmed By</label
+                            >
+                            <input
+                                type="text"
+                                id="employeeConfirmedBy"
+                                name="employee-confirmed-by"
+                                title="Confirmed by"
+                                readonly />
+                        </div>
                     </div>
                 </div>
-                <div class="time-period gate-pass-detail-block">
-                    <div class="employee-departing-time gate-pass-input-container">
-                        <label for="employeeDepartingTime">Departing Time</label>
-                        <input type="time" id="employeeDepartingTime" name="employeeDepartingTime" title="Employee daparting time">
+                <div class="control-buttons-container">
+                    <div class="employee-status gate-pass-input-container">
+                        <label for="employee-status">Status</label>
+                        <input
+                            type="text"
+                            id="employeeStatus"
+                            name="employee-status"
+                            title="Status"
+                            readonly />
                     </div>
-                    <div class="employee-arrival-time gate-pass-input-container">
-                        <label for="employeeArrivalTime">Arrival Time</label>
-                        <input type="time" id="employeeArrivalTime" name="employeeArrivalTime" title="Employee time">
-                    </div>
-                </div>
-                <div class="date-vehicle gate-pass-detail-block">
-                    <div class="employee-departing-date gate-pass-input-container">
-                        <label for="employeeDepartingDate">Date</label>
-                        <input type="date" id="employeeDepartingDate" name="employeeDepartingDate" title="Employee departing date">
-                    </div>
-                    <div class="employee-vehicle-no gate-pass-input-container">
-                        <label for="employeeVehicleNo">Vehicle Number</label>
-                        <input type="text" id="employeeVehicleNo" name="employeeVehicleNo" title="Employee vehicle number">
-                    </div>
-                </div>
-                <div class="departing-reason gate-pass-detail-block">
-                    <div class="employee-departing-reason gate-pass-input-container">
-                        <label for="employeeDepartingReason">Reason</label>
-                        <input type="text" id="employeeDepartingReason" name="employeeDepartingReason" title="Departing reason">
-                    </div>
-                </div>
-                <div class="departing-remark gate-pass-detail-block">
-                    <div class="employee-departing-remark gate-pass-input-container">
-                        <label for="employeeDepartingRemark">Remark</label>
-                        <input type="text" id="employeeDepartingRemark" name="employeeDepartingRemark" title="Departing remark">
+                    <div class="button-container">
+                        <a href="{{ url_for('dashboard') }}"
+                            ><button
+                                type="button"
+                                class="exit-form-control-btn"
+                                title="cancel"
+                                id="cancelExitForm">
+                                Cancel
+                            </button></a
+                        >
+                        <button
+                            type="submit"
+                            class="exit-form-control-btn accented"
+                            title="save"
+                            id="saveExitForm">
+                            Save
+                        </button>
                     </div>
                 </div>
-                <div class="officer-confirmed-by gate-pass-detail-block">
-                    <div class="employee-officer gate-pass-input-container">
-                        <label for="employeeOfficer">Authorized officer</label>
-                        <input type="text" id="employeeOfficer" name="employeeOfficer" title="Authorized officer" readonly>
-                    </div>
-                    <div class="employee-confirmed-by gate-pass-input-container">
-                        <label for="employee-confirmed-by">Confirmed By</label>
-                        <input type="text" id="employeeConfirmedBy" name="employee-confirmed-by" title="Confirmed by" readonly>
-                    </div>
-                </div>
-                <!-- <div class="sequence-number gate-pass-detail-block">
-                    <div class="employee-sequence-number gate-pass-input-container">
-                        <label for="employee-sequence-number">Sequence Number</label>
-                        <input type="text" id="employeeSequenceNumber" name="employee-sequence-number">
-                    </div>
-                </div> -->
             </div>
-            <div class="control-buttons-container">
-                <div class="employee-status gate-pass-input-container">
-                    <label for="employee-status">Status</label>
-                    <input type="text" id="employeeStatus" name="employee-status" title="Status" readonly>
-                </div>
-                <div class="button-container">
-                    <a href="{{ url_for('dashboard') }}"><button type="button" class="exit-form-control-btn" title="cancel" id="cancelExitForm">Cancel</button></a>
-                    <button type="submit" class="exit-form-control-btn accented" title="save" id="saveExitForm">Save</button>
-                    <!-- <button type="button" class="exit-form-control-btn accented" title="approve" id="approveExitForm">Approve</button>
-                    <button type="button" class="exit-form-control-btn accented" title="confirm" id="confirmExitForm">Confirm</button>
-                    <button type="button" class="exit-form-control-btn" title="reject" id="rejectExitForm">Reject</button>
-                    <button type="button" class="exit-form-control-btn accented" title="in" id="inExitForm">In</button>
-                    <button type="button" class="exit-form-control-btn" title="out" id="outExitForm">Exit</button> -->
-                </div>
-            </div>
-        </div>
-    </form>
-    <script>
-        function setCompany(company) {
-            document.getElementById('employeeCompany').value = company;
-        }
-
-        document.addEventListener("DOMContentLoaded", function() {
-            const dropdown = document.querySelector(".dropdown");
-            const inputID = document.getElementById("employeeNo");
-            const inputName = document.getElementById("employeeName");
-            const dropdownContent = document.querySelector(".dropdown-content");
-            const options = dropdownContent.querySelectorAll(".option");
-
-            dropdown.addEventListener("click", function() {
-                dropdownContent.style.display = dropdownContent.style.display === "block" ? "none" : "block";
-            });
-
-            function selectOption(employeeNo) {
-                inputID.value = employeeNo;
-                inputName.value = document.getElementById(`employeeName_${employeeNo}`).value;
-                dropdownContent.style.display = "none";
+        </form>
+        <script>
+            function setCompany(company) {
+                document.getElementById("employeeCompany").value = company;
             }
 
-            window.selectOption = selectOption;
+            document.addEventListener("DOMContentLoaded", function () {
+                const dropdown = document.querySelector(".dropdown");
+                const inputID = document.getElementById("employeeNo");
+                const inputName = document.getElementById("employeeName");
+                const dropdownContent =
+                    document.querySelector(".dropdown-content");
+                const options = dropdownContent.querySelectorAll(".option");
 
-            document.addEventListener("click", function(event) {
-                if (!dropdown.contains(event.target) && dropdownContent.style.display === "block") {
+                dropdown.addEventListener("click", function () {
+                    dropdownContent.style.display =
+                        dropdownContent.style.display === "block"
+                            ? "none"
+                            : "block";
+                });
+
+                function selectOption(employeeNo) {
+                    inputID.value = employeeNo;
+                    inputName.value = document.getElementById(
+                        `employeeName_${employeeNo}`
+                    ).value;
                     dropdownContent.style.display = "none";
                 }
-            });
 
-            // Function to filter dropdown options based on input
-            window.filterDropdown = function() {
-                const filter = inputID.value.toUpperCase();
-                let count = 0;
-                options.forEach(option => {
-                    const textValue = option.textContent || option.innerText;
-                    if (textValue.toUpperCase().indexOf(filter) > -1) {
-                        option.style.display = "";
-                        count++;
-                    } else {
-                        option.style.display = "none";
+                window.selectOption = selectOption;
+
+                document.addEventListener("click", function (event) {
+                    if (
+                        !dropdown.contains(event.target) &&
+                        dropdownContent.style.display === "block"
+                    ) {
+                        dropdownContent.style.display = "none";
                     }
                 });
 
-                dropdownContent.style.display = count > 0 ? "block" : "none";
-            }
-        });
-    </script>
-    {% endblock %}
-</body>
+                // Function to filter dropdown options based on input
+                window.filterDropdown = function () {
+                    const filter = inputID.value.toUpperCase();
+                    let count = 0;
+                    options.forEach((option) => {
+                        const textValue =
+                            option.textContent || option.innerText;
+                        if (textValue.toUpperCase().indexOf(filter) > -1) {
+                            option.style.display = "";
+                            count++;
+                        } else {
+                            option.style.display = "none";
+                        }
+                    });
+
+                    dropdownContent.style.display =
+                        count > 0 ? "block" : "none";
+                };
+            });
+        </script>
+        {% endblock %}
+    </body>
 </html>
