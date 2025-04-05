@@ -40,6 +40,7 @@
                                     id="driverNo"
                                     name="driverNo"
                                     title="Driver ID"
+                                    class="monospaced"
                                     value="{{ driverGatePassForm.driverNo }}"
                                     readonly />
                             </div>
@@ -66,7 +67,8 @@
                                 id="driverDepartingTime"
                                 name="driverDepartingTime"
                                 title="Driver daparting time"
-                                value="{{ driverGatePassForm.driverDepartingTime }}"/>
+                                class="monospaced"
+                                value="{{ driverGatePassForm.driverDepartingTime }}" />
                         </div>
                         <div
                             class="employee-arrival-time gate-pass-input-container">
@@ -76,7 +78,8 @@
                                 id="driverArrivalTime"
                                 name="driverArrivalTime"
                                 title="Driver time"
-                                value="{{ driverGatePassForm.driverArrivalTime }}"/>
+                                class="monospaced"
+                                value="{{ driverGatePassForm.driverArrivalTime }}" />
                         </div>
                     </div>
                     <div class="date-vehicle gate-pass-detail-block">
@@ -88,8 +91,8 @@
                                 id="driverDepartingDate"
                                 name="driverDepartingDate"
                                 title="Driver departing date"
-                                value="{{ driverGatePassForm.driverDepartingDate }}"
-                                 />
+                                class="monospaced"
+                                value="{{ driverGatePassForm.driverDepartingDate }}" />
                         </div>
                         <div
                             class="employee-vehicle-no gate-pass-input-container">
@@ -99,8 +102,8 @@
                                 id="driverVehicleNo"
                                 name="driverVehicleNo"
                                 title="Driver vehicle number"
-                                value="{{ driverGatePassForm.driverVehicleNo }}"
-                                 />
+                                class="monospaced"
+                                value="{{ driverGatePassForm.driverVehicleNo }}" />
                         </div>
                     </div>
                     <div class="departing-reason gate-pass-detail-block">
@@ -112,21 +115,21 @@
                                 id="driverDepartingReason"
                                 name="driverDepartingReason"
                                 title="Departing reason"
-                                value="{{ driverGatePassForm.driverDepartingReason }}"
-                                 />
+                                value="{{ driverGatePassForm.driverDepartingReason }}" />
                         </div>
                     </div>
                     <div class="departing-remark gate-pass-detail-block">
                         <div
                             class="employee-departing-remark gate-pass-input-container">
-                            <label for="driverDepartingDestinationRemark">Remark</label>
+                            <label for="driverDepartingDestinationRemark"
+                                >Remark</label
+                            >
                             <input
                                 type="text"
                                 id="driverDepartingDestinationRemark"
                                 name="driverDepartingDestinationRemark"
                                 title="Departing remark"
-                                value="{{ driverGatePassForm.driverDepartingDestinationRemark }}"
-                                 />
+                                value="{{ driverGatePassForm.driverDepartingDestinationRemark }}" />
                         </div>
                     </div>
                 </div>

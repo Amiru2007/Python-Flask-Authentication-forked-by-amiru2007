@@ -5,14 +5,14 @@
     </div>
     <ul class="toApprove">
         {% for visitor in g.request_list %}
-            <li>
-                <form method="post" action="{{ url_for('edit_request') }}">
-                    <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
-                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span>{{ visitor.visitorNo }}</span><span>{{ visitor.requester }}</span>
-                    </button>
-                </form>
-            </li>
+        <li>
+            <form method="post" action="{{ url_for('edit_request') }}">
+                <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="monospaced">{{ visitor.visitorNo }}</span><span>{{ visitor.requester }}</span>
+                </button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 </div>
@@ -24,14 +24,14 @@
     </div>
     <ul class="toApprove">
         {% for visitor in g.pending_visitors %}
-            <li>
-                <form method="post" action="{{ url_for('get_visitor') }}">
-                    <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
-                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span>{{ visitor.visitorNo }}</span><span>{{ visitor.requester }}</span>
-                    </button>
-                </form>
-            </li>
+        <li>
+            <form method="post" action="{{ url_for('get_visitor') }}">
+                <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="monospaced">{{ visitor.visitorNo }}</span><span>{{ visitor.requester }}</span>
+                </button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 </div>
@@ -43,17 +43,17 @@
     </div>
     <ul class="toApprove">
         {% for visitor in g.approved_visitors %}
-            <li>
-                <form method="post" action="{{ url_for('arrive_visitor') }}">
-                    <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
-                    {% if visitor.profilePhoto == 'none' %}
-                        <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
-                    {% elif visitor.profilePhoto %}
-                        <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
-                    {% endif %}
-                    <button type="submit">{{ visitor.visitorNo }}</button>
-                </form>
-            </li>
+        <li>
+            <form method="post" action="{{ url_for('arrive_visitor') }}">
+                <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                {% if visitor.profilePhoto == 'none' %}
+                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
+                {% elif visitor.profilePhoto %}
+                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
+                {% endif %}
+                <button type="submit" class="monospaced">{{ visitor.visitorNo }}</button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 </div>
@@ -65,17 +65,17 @@
     </div>
     <ul class="toApprove">
         {% for visitor in g.arrived_visitors %}
-            <li>
-                <form method="post" action="{{ url_for('depart_visitor') }}">
-                    <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
-                    {% if visitor.profilePhoto == 'none' %}
-                        <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
-                    {% elif visitor.profilePhoto %}
-                        <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
-                    {% endif %}
-                    <button type="submit">{{ visitor.visitorNo }}</button>
-                </form>
-            </li>
+        <li>
+            <form method="post" action="{{ url_for('depart_visitor') }}">
+                <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                {% if visitor.profilePhoto == 'none' %}
+                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
+                {% elif visitor.profilePhoto %}
+                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
+                {% endif %}
+                <button type="submit" class="monospaced">{{ visitor.visitorNo }}</button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 </div>
@@ -86,61 +86,62 @@
         <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
     </div>
     <div class="search-container">
-        <input type="text" id="visitor-search" class="search-input" placeholder="Search..." style="width: calc(100% - 10px);">
+        <input type="text" id="visitor-search" class="search-input" placeholder="Search..."
+            style="width: calc(100% - 10px);">
         <button type="button" onclick="performSearch()">
             <i class="ph-bold ph-magnifying-glass"></i>
         </button>
     </div>
     <ul class="toApprove" id="search-results">
         {% for visitor in g.visitors_list %}
-            <li class="visitor-item">
-                <form method="post" action="{{ url_for('visitor', visitor_no=visitor.visitorNo) }}">
-                    <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
-                    {% if visitor.profilePhoto == 'none' %}
-                        <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
-                    {% elif visitor.profilePhoto %}
-                        <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
+        <li class="visitor-item">
+            <form method="post" action="{{ url_for('visitor', visitor_no=visitor.visitorNo) }}">
+                <input type="hidden" name="visitor_no" value="{{ visitor.visitorNo }}">
+                {% if visitor.profilePhoto == 'none' %}
+                <img src="{{ url_for('static', filename='visitor-photo.png') }}" alt="Default Photo">
+                {% elif visitor.profilePhoto %}
+                <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
+                {% endif %}
+                <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="visitorsListDetail">{{ visitor.visitorNo }}</span>
+                    {% if visitor.companyName %}
+                    <span class="visitorsListDetail">{{ visitor.companyName }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
                     {% endif %}
-                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span class="visitorsListDetail">{{ visitor.visitorNo }}</span>
-                        {% if visitor.companyName %}
-                            <span class="visitorsListDetail">{{ visitor.companyName }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                        {% if visitor.arrivedTime %}
-                            <span class="visitorsListDetail">{{ visitor.arrivedTime }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                        {% if visitor.departedTime %}
-                            <span class="visitorsListDetail">{{ visitor.departedTime }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                        <span class="visitorsListDetail">{{ visitor.status }}</span>
-                    </button>
-                </form>
-                <div class="detail-box">
-                    <div class="detail-box-row">
-                        <span>Visitor No:</span><span> {{ visitor.visitorNo }} </span>
-                    </div>
-                    <div class="detail-box-row">
-                        <span>Company Name:</span><span> {{ visitor.companyName or '-' }} </span>
-                    </div>
-                    <div class="detail-box-row">
-                        <span>Arrived Time:</span><span> {{ visitor.arrivedTime or '-' }} </span>
-                    </div>
-                    <div class="detail-box-row">
-                        <span>Departed Time:</span><span> {{ visitor.departedTime or '-' }} </span>
-                    </div>
-                    <div class="detail-box-row">
-                        <span>Status:</span><span> {{ visitor.status }} </span>
-                    </div>
+                    {% if visitor.arrivedTime %}
+                    <span class="visitorsListDetail monospaced">{{ visitor.arrivedTime }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                    {% if visitor.departedTime %}
+                    <span class="visitorsListDetail monospaced">{{ visitor.departedTime }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                    <span class="visitorsListDetail">{{ visitor.status }}</span>
+                </button>
+            </form>
+            <div class="detail-box">
+                <div class="detail-box-row">
+                    <span>Visitor No:</span><span class="monospaced"> {{ visitor.visitorNo }} </span>
                 </div>
-            </li>
-        {% endfor %}            
-    </ul>            
+                <div class="detail-box-row">
+                    <span>Company Name:</span><span> {{ visitor.companyName or '-' }} </span>
+                </div>
+                <div class="detail-box-row">
+                    <span>Arrived Time:</span><span class="monospaced"> {{ visitor.arrivedTime or '-' }} </span>
+                </div>
+                <div class="detail-box-row">
+                    <span>Departed Time:</span><span class="monospaced"> {{ visitor.departedTime or '-' }} </span>
+                </div>
+                <div class="detail-box-row">
+                    <span>Status:</span><span> {{ visitor.status }} </span>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
 </div>
 
 
@@ -154,25 +155,25 @@
     </div>
     <ul class="toApprove">
         {% for employee in g.pending_gate_pass %}
-            <li>
-                <form method="post" action="{{ url_for('approve_gatepass') }}">
-                    <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
-                    <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
-                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
-                        {% if employee.employeeName %}
-                            <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                        {% if employee.employeeDepartingTime %}
-                            <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                    </button>
-                </form>
-            </li>
+        <li>
+            <form method="post" action="{{ url_for('approve_gatepass') }}">
+                <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
+                <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="visitorsListDetail monospaced">{{ employee.employeeNo }}</span>
+                    {% if employee.employeeName %}
+                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                    {% if employee.employeeDepartingTime %}
+                    <span class="visitorsListDetail monospaced">{{ employee.employeeDepartingTime }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                </button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 </div>
@@ -184,25 +185,25 @@
     </div>
     <ul class="toApprove">
         {% for employee in g.approved_gate_pass %}
-            <li>
-                <form method="post" action="{{ url_for('confirm_gatepass') }}">
-                    <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
-                    <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
-                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
-                        {% if employee.employeeName %}
-                            <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                        {% if employee.employeeDepartingTime %}
-                            <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                    </button>
-                </form>
-            </li>
+        <li>
+            <form method="post" action="{{ url_for('confirm_gatepass') }}">
+                <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
+                <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="visitorsListDetail monospaced">{{ employee.employeeNo }}</span>
+                    {% if employee.employeeName %}
+                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                    {% if employee.employeeDepartingTime %}
+                    <span class="visitorsListDetail monospaced">{{ employee.employeeDepartingTime }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                </button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 </div>
@@ -214,25 +215,25 @@
     </div>
     <ul class="toApprove">
         {% for employee in g.confirmed_gate_pass %}
-            <li>
-                <form method="post" action="{{ url_for('out_gatepass') }}">
-                    <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
-                    <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
-                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
-                        {% if employee.employeeName %}
-                            <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                        {% if employee.employeeDepartingTime %}
-                            <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                    </button>
-                </form>
-            </li>
+        <li>
+            <form method="post" action="{{ url_for('out_gatepass') }}">
+                <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
+                <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="visitorsListDetail monospaced">{{ employee.employeeNo }}</span>
+                    {% if employee.employeeName %}
+                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                    {% if employee.employeeDepartingTime %}
+                    <span class="visitorsListDetail monospaced">{{ employee.employeeDepartingTime }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                </button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 </div>
@@ -244,25 +245,25 @@
     </div>
     <ul class="toApprove">
         {% for employee in g.departed_gate_pass %}
-            <li>
-                <form method="post" action="{{ url_for('in_gatepass') }}">
-                    <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
-                    <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
-                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
-                        {% if employee.employeeName %}
-                            <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                        {% if employee.employeeDepartingTime %}
-                            <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                    </button>
-                </form>
-            </li>
+        <li>
+            <form method="post" action="{{ url_for('in_gatepass') }}">
+                <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
+                <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="visitorsListDetail monospaced">{{ employee.employeeNo }}</span>
+                    {% if employee.employeeName %}
+                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                    {% if employee.employeeDepartingTime %}
+                    <span class="visitorsListDetail monospaced">{{ employee.employeeDepartingTime }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                </button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 </div>
@@ -274,25 +275,25 @@
     </div>
     <ul class="toApprove">
         {% for employee in g.edit_gate_pass %}
-            <li>
-                <form method="post" action="{{ url_for('edit_gatepass') }}">
-                    <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
-                    <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
-                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span class="visitorsListDetail">{{ employee.employeeNo }}</span>
-                        {% if employee.employeeName %}
-                            <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                        {% if employee.employeeDepartingTime %}
-                            <span class="visitorsListDetail">{{ employee.employeeDepartingTime }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                    </button>
-                </form>
-            </li>
+        <li>
+            <form method="post" action="{{ url_for('edit_gatepass') }}">
+                <input type="hidden" name="gatePassId" value="{{ employee.gatePassId }}">
+                <input type="hidden" name="employeeFormStatus" value="{{ employee.employeeFormStatus }}">
+                <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="visitorsListDetail monospaced">{{ employee.employeeNo }}</span>
+                    {% if employee.employeeName %}
+                    <span class="visitorsListDetail" style="flex:5;">{{ employee.employeeName }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                    {% if employee.employeeDepartingTime %}
+                    <span class="visitorsListDetai monospaced">{{ employee.employeeDepartingTime }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                </button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 </div>
@@ -305,25 +306,25 @@
     </div>
     <ul class="toApprove">
         {% for driver in g.requested_driver_gate_pass %}
-            <li>
-                <form method="post" action="{{ url_for('out_drivergatepass') }}">
-                    <input type="hidden" name="driverGatePassId" value="{{ driver.driverGatePassId }}">
-                    <input type="hidden" name="driverFormStatus" value="{{ driver.driverFormStatus }}">
-                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span class="visitorsListDetail">{{ driver.driverNo }}</span>
-                        {% if driver.driverName %}
-                            <span class="visitorsListDetail" style="flex:5;">{{ driver.driverName }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                        {% if driver.driverDepartingTime %}
-                            <span class="visitorsListDetail">{{ driver.driverDepartingTime }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                    </button>
-                </form>
-            </li>
+        <li>
+            <form method="post" action="{{ url_for('out_drivergatepass') }}">
+                <input type="hidden" name="driverGatePassId" value="{{ driver.driverGatePassId }}">
+                <input type="hidden" name="driverFormStatus" value="{{ driver.driverFormStatus }}">
+                <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="visitorsListDetail monospaced">{{ driver.driverNo }}</span>
+                    {% if driver.driverName %}
+                    <span class="visitorsListDetail" style="flex:5;">{{ driver.driverName }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                    {% if driver.driverDepartingTime %}
+                    <span class="visitorsListDetail monospaced">{{ driver.driverDepartingTime }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                </button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 </div>
@@ -335,25 +336,25 @@
     </div>
     <ul class="toApprove">
         {% for driver in g.departed_driver_gate_pass %}
-            <li>
-                <form method="post" action="{{ url_for('in_drivergatepass') }}">
-                    <input type="hidden" name="driverGatePassId" value="{{ driver.driverGatePassId }}">
-                    <input type="hidden" name="driverFormStatus" value="{{ driver.driverFormStatus }}">
-                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span class="visitorsListDetail">{{ driver.driverNo }}</span>
-                        {% if driver.driverName %}
-                            <span class="visitorsListDetail" style="flex:5;">{{ driver.driverName }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                        {% if driver.driverDepartingTime %}
-                            <span class="visitorsListDetail">{{ driver.driverDepartingTime }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                    </button>
-                </form>
-            </li>
+        <li>
+            <form method="post" action="{{ url_for('in_drivergatepass') }}">
+                <input type="hidden" name="driverGatePassId" value="{{ driver.driverGatePassId }}">
+                <input type="hidden" name="driverFormStatus" value="{{ driver.driverFormStatus }}">
+                <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="visitorsListDetail monospaced">{{ driver.driverNo }}</span>
+                    {% if driver.driverName %}
+                    <span class="visitorsListDetail" style="flex:5;">{{ driver.driverName }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                    {% if driver.driverDepartingTime %}
+                    <span class="visitorsListDetail monospaced">{{ driver.driverDepartingTime }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                </button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 </div>
@@ -365,25 +366,25 @@
     </div>
     <ul class="toApprove">
         {% for driver in g.edit_driver_gate_pass %}
-            <li>
-                <form method="post" action="{{ url_for('edit_drivergatepass') }}">
-                    <input type="hidden" name="driverGatePassId" value="{{ driver.driverGatePassId }}">
-                    <input type="hidden" name="driverFormStatus" value="{{ driver.driverFormStatus }}">
-                    <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                        <span class="visitorsListDetail">{{ driver.driverNo }}</span>
-                        {% if driver.driverName %}
-                            <span class="visitorsListDetail" style="flex:5;">{{ driver.driverName }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                        {% if driver.driverDepartingTime %}
-                            <span class="visitorsListDetail">{{ driver.driverDepartingTime }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail" style="text-align: center !important;">-</span>
-                        {% endif %}
-                    </button>
-                </form>
-            </li>
+        <li>
+            <form method="post" action="{{ url_for('edit_drivergatepass') }}">
+                <input type="hidden" name="driverGatePassId" value="{{ driver.driverGatePassId }}">
+                <input type="hidden" name="driverFormStatus" value="{{ driver.driverFormStatus }}">
+                <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
+                    <span class="visitorsListDetail monospaced">{{ driver.driverNo }}</span>
+                    {% if driver.driverName %}
+                    <span class="visitorsListDetail" style="flex:5;">{{ driver.driverName }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                    {% if driver.driverDepartingTime %}
+                    <span class="visitorsListDetail monospaced">{{ driver.driverDepartingTime }}</span>
+                    {% else %}
+                    <span class="visitorsListDetail" style="text-align: center !important;">-</span>
+                    {% endif %}
+                </button>
+            </form>
+        </li>
         {% endfor %}
     </ul>
 </div>
@@ -394,55 +395,59 @@
         <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
     </div>
     <div class="search-container">
-        <input type="text" id="visitor-search" class="search-input" placeholder="Search..." style="width: calc(100% - 10px);">
+        <input type="text" id="visitor-search" class="search-input" placeholder="Search..."
+            style="width: calc(100% - 10px);">
         <button type="button" onclick="performSearch()">
             <i class="ph-bold ph-magnifying-glass"></i>
         </button>
     </div>
     <ul class="toApprove" id="search-results">
         {% for gate_pass in g.gate_pass_forms %}
-            <li class="visitor-item">
-                <form method="post" action="{{ url_for('gate_pass_form', gatePassId=gate_pass.gatePassId) }}">
-                    <input type="hidden" name="gatePassId" value="{{ gate_pass.gatePassId }}">
-                        <span class="visitorsListDetail">{{ gate_pass.employeeNo }}</span>
-                        {% if gate_pass.employeeName %}
-                            <span class="visitorsListDetail">{{ gate_pass.employeeName }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail centered-details">-</span>
-                        {% endif %}
-                        {% if gate_pass.employeeDepartingTime %}
-                            <span class="visitorsListDetail centered-details">{{ gate_pass.employeeDepartingTime }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail centered-details">-</span>
-                        {% endif %}
-                        {% if gate_pass.employeeArrivalTime %}
-                            <span class="visitorsListDetail centered-details">{{ gate_pass.employeeArrivalTime }}</span>
-                        {% else %}
-                            <span class="visitorsListDetail centered-details">-</span>
-                        {% endif %}
-                        <span class="visitorsListDetail">{{ gate_pass.employeeFormStatus }}</span>
-                    </button>
-                </form>
-                <div class="detail-box">
-                    <div class="detail-box-row">
-                        <span>Employee No:</span><span> {{ gate_pass.employeeNo }} </span>
-                    </div>
-                    <div class="detail-box-row">
-                        <span>Employee Name:</span><span> {{ gate_pass.employeeName or '-' }} </span>
-                    </div>
-                    <div class="detail-box-row">
-                        <span>Departing Time:</span><span> {{ gate_pass.employeeDepartingTime or '-' }} </span>
-                    </div>
-                    <div class="detail-box-row">
-                        <span>Arriving Time:</span><span> {{ gate_pass.employeeArrivalTime or '-' }} </span>
-                    </div>
-                    <div class="detail-box-row">
-                        <span>Status:</span><span> {{ gate_pass.employeeFormStatus }} </span>
-                    </div>
+        <li class="visitor-item">
+            <form method="post" action="{{ url_for('gate_pass_form', gatePassId=gate_pass.gatePassId) }}">
+                <input type="hidden" name="gatePassId" value="{{ gate_pass.gatePassId }}">
+                <span class="visitorsListDetail monospaced">{{ gate_pass.employeeNo }}</span>
+                {% if gate_pass.employeeName %}
+                <span class="visitorsListDetail">{{ gate_pass.employeeName }}</span>
+                {% else %}
+                <span class="visitorsListDetail centered-details">-</span>
+                {% endif %}
+                {% if gate_pass.employeeDepartingTime %}
+                <span class="visitorsListDetail centered-details monospaced">{{ gate_pass.employeeDepartingTime
+                    }}</span>
+                {% else %}
+                <span class="visitorsListDetail centered-details">-</span>
+                {% endif %}
+                {% if gate_pass.employeeArrivalTime %}
+                <span class="visitorsListDetail centered-details monospaced">{{ gate_pass.employeeArrivalTime }}</span>
+                {% else %}
+                <span class="visitorsListDetail centered-details">-</span>
+                {% endif %}
+                <span class="visitorsListDetail">{{ gate_pass.employeeFormStatus }}</span>
+                </button>
+            </form>
+            <div class="detail-box">
+                <div class="detail-box-row">
+                    <span>Employee No:</span><span class="monospaced"> {{ gate_pass.employeeNo }} </span>
                 </div>
-            </li>
-        {% endfor %}            
-    </ul>            
+                <div class="detail-box-row">
+                    <span>Employee Name:</span><span> {{ gate_pass.employeeName or '-' }} </span>
+                </div>
+                <div class="detail-box-row">
+                    <span>Departing Time:</span><span class="monospaced"> {{ gate_pass.employeeDepartingTime or '-' }}
+                    </span>
+                </div>
+                <div class="detail-box-row">
+                    <span>Arriving Time:</span><span class="monospaced"> {{ gate_pass.employeeArrivalTime or '-' }}
+                    </span>
+                </div>
+                <div class="detail-box-row">
+                    <span>Status:</span><span> {{ gate_pass.employeeFormStatus }} </span>
+                </div>
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
 </div>
 
 
@@ -500,14 +505,15 @@
     <form action="/export_excel/visitor" method="POST" class="excelExportVisitorBtns">
         <div class="startDate excelTimeDuration">
             <label for="startDate">Start Date</label>
-            <input type="date" id="startDate" name="startDate">
+            <input type="date" id="startDate" name="startDate" class="monospaced">
         </div>
         <div class="endDate excelTimeDuration">
             <label for="endDate">End Date</label>
-            <input type="date" id="endDate" name="endDate">
+            <input type="date" id="endDate" name="endDate" class="monospaced">
         </div>
         <div class="exportAndBack">
-            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i class="ph ph-arrow-left"></i></button>
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i
+                    class="ph ph-arrow-left"></i></button>
             <input type="submit" class="exportVisitorExcel" id="exportVisitorExcel" value="Export">
         </div>
     </form>
@@ -521,18 +527,19 @@
     <form action="/export_excel/employee_gate_pass" method="POST" class="excelExportVisitorBtns">
         <div class="employeeNoForReport excelTimeDuration">
             <label for="reportEmployeeNo">Employee Number</label>
-            <input type="text" id="reportEmployeeNo" name="reportEmployeeNo">
+            <input type="text" id="reportEmployeeNo" name="reportEmployeeNo" class="monospaced">
         </div>
         <div class="startDate excelTimeDuration">
             <label for="startDate">Start Date</label>
-            <input type="date" id="startDate" name="startDate">
+            <input type="date" id="startDate" name="startDate" class="monospaced">
         </div>
         <div class="endDate excelTimeDuration">
             <label for="endDate">End Date</label>
-            <input type="date" id="endDate" name="endDate">
+            <input type="date" id="endDate" name="endDate" class="monospaced">
         </div>
         <div class="exportAndBack">
-            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i class="ph ph-arrow-left"></i></button>
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i
+                    class="ph ph-arrow-left"></i></button>
             <input type="submit" class="exportVisitorExcel" id="exportEmployeeGatePassExcel" value="Export">
         </div>
     </form>
@@ -546,14 +553,15 @@
     <form action="/export_excel/gate_pass_list" method="POST" class="excelExportVisitorBtns">
         <div class="startDate excelTimeDuration">
             <label for="startDate">Start Date</label>
-            <input type="date" id="startDate" name="startDate">
+            <input type="date" id="startDate" name="startDate" class="monospaced">
         </div>
         <div class="endDate excelTimeDuration">
             <label for="endDate">End Date</label>
-            <input type="date" id="endDate" name="endDate">
+            <input type="date" id="endDate" name="endDate" class="monospaced">
         </div>
         <div class="exportAndBack">
-            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i class="ph ph-arrow-left"></i></button>
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i
+                    class="ph ph-arrow-left"></i></button>
             <input type="submit" class="exportVisitorExcel" id="exportGatePassListExcel" value="Export">
         </div>
     </form>
@@ -567,18 +575,19 @@
     <form action="/export_excel/driver_gate_pass" method="POST" class="excelExportVisitorBtns">
         <div class="driverNoForReport excelTimeDuration">
             <label for="reportDriverNo">Driver Number</label>
-            <input type="text" id="reportDriverNo" name="reportDriverNo">
+            <input type="text" id="reportDriverNo" name="reportDriverNo" class="monospaced">
         </div>
         <div class="startDate excelTimeDuration">
             <label for="startDate">Start Date</label>
-            <input type="date" id="startDate" name="startDate">
+            <input type="date" id="startDate" name="startDate" class="monospaced">
         </div>
         <div class="endDate excelTimeDuration">
             <label for="endDate">End Date</label>
-            <input type="date" id="endDate" name="endDate">
+            <input type="date" id="endDate" name="endDate" class="monospaced">
         </div>
         <div class="exportAndBack">
-            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i class="ph ph-arrow-left"></i></button>
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i
+                    class="ph ph-arrow-left"></i></button>
             <input type="submit" class="exportVisitorExcel" id="exportDriverGatePassExcel" value="Export">
         </div>
     </form>
@@ -592,14 +601,15 @@
     <form action="/export_excel/driver_gate_pass_list" method="POST" class="excelExportVisitorBtns">
         <div class="startDate excelTimeDuration">
             <label for="startDate">Start Date</label>
-            <input type="date" id="startDate" name="startDate">
+            <input type="date" id="startDate" name="startDate" class="monospaced">
         </div>
         <div class="endDate excelTimeDuration">
             <label for="endDate">End Date</label>
-            <input type="date" id="endDate" name="endDate">
+            <input type="date" id="endDate" name="endDate" class="monospaced">
         </div>
         <div class="exportAndBack">
-            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i class="ph ph-arrow-left"></i></button>
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i
+                    class="ph ph-arrow-left"></i></button>
             <input type="submit" class="exportVisitorExcel" id="exportDriverGatePassExcel" value="Export">
         </div>
     </form>
@@ -613,11 +623,11 @@
     <form action="/export_excel/driver_attendance" method="POST" class="excelExportVisitorBtns">
         <div class="startDate excelTimeDuration">
             <label for="startDate">Start Date</label>
-            <input type="date" id="startDate" name="startDate">
+            <input type="date" id="startDate" name="startDate" class="monospaced">
         </div>
         <div class="endDate excelTimeDuration">
             <label for="endDate">End Date</label>
-            <input type="date" id="endDate" name="endDate">
+            <input type="date" id="endDate" name="endDate" class="monospaced">
         </div>
         <div class="exportAndBack">
             <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')">
@@ -654,94 +664,101 @@
         <li class="profileLinks">
             <!-- Visitor Request Reminder -->
             {% if not g.there_are_notification %}
-                <div class="empty-reminder" id="emptyreminder">
-                    There are no new notifications
-                </div>
+            <div class="empty-reminder" id="emptyreminder">
+                There are no new notifications
+            </div>
             {% endif %}
         </li>
         <li class="profileLinks">
             <!-- Visitor Request Reminder -->
             {% if g.visitor_requests_reminder %}
-                <div class="requests-reminder" id="visitorReminder">
-                    <div class="text-container">
-                        <h3>Reminder</h3>
-                        <p class="reminder-message">There are pending visitor requests.</p>
-                    </div>
-                    <div class="nav-btn-container">
-                        <button type="button" id="showToApproveList2" onclick="togglePopup('pendingApproval')"><i class="ph-fill ph-arrow-circle-right"></i></button>
-                    </div>
+            <div class="requests-reminder" id="visitorReminder">
+                <div class="text-container">
+                    <h3>Reminder</h3>
+                    <p class="reminder-message">There are pending visitor requests.</p>
                 </div>
+                <div class="nav-btn-container">
+                    <button type="button" id="showToApproveList2" onclick="togglePopup('pendingApproval')"><i
+                            class="ph-fill ph-arrow-circle-right"></i></button>
+                </div>
+            </div>
             {% endif %}
         </li>
         <li class="profileLinks">
             <!-- Gate Pass Reminder -->
             {% if g.gate_pass_requests_reminder %}
-                <div class="requests-reminder" id="gatePassReminder">
-                    <div class="text-container">
-                        <h3>Reminder</h3>
-                        <p class="reminder-message">There are pending exit permit requests.</p>
-                    </div>
-                    <div class="nav-btn-container">
-                        <button type="button" id="showGatePassRequestList2" onclick="togglePopup('requestGatePassList')"><i class="ph-fill ph-arrow-circle-right"></i></button>
-                    </div>
+            <div class="requests-reminder" id="gatePassReminder">
+                <div class="text-container">
+                    <h3>Reminder</h3>
+                    <p class="reminder-message">There are pending exit permit requests.</p>
                 </div>
+                <div class="nav-btn-container">
+                    <button type="button" id="showGatePassRequestList2" onclick="togglePopup('requestGatePassList')"><i
+                            class="ph-fill ph-arrow-circle-right"></i></button>
+                </div>
+            </div>
             {% endif %}
         </li>
         <li class="profileLinks">
             <!-- Visitor Gate Reminder -->
             {% if g.visitor_gate_reminder %}
-                <div class="requests-reminder" id="visitorGateReminder">
-                    <div class="text-container">
-                        <h3>Reminder</h3>
-                        <p class="reminder-message">There are approved visitor requests.</p>
-                    </div>
-                    <div class="nav-btn-container">
-                        <button type="button" id="showAnotherRequestList2" onclick="togglePopup('ApprovedVisitors')"><i class="ph-fill ph-arrow-circle-right"></i></button>
-                    </div>
+            <div class="requests-reminder" id="visitorGateReminder">
+                <div class="text-container">
+                    <h3>Reminder</h3>
+                    <p class="reminder-message">There are approved visitor requests.</p>
                 </div>
+                <div class="nav-btn-container">
+                    <button type="button" id="showAnotherRequestList2" onclick="togglePopup('ApprovedVisitors')"><i
+                            class="ph-fill ph-arrow-circle-right"></i></button>
+                </div>
+            </div>
             {% endif %}
         </li>
         <li class="profileLinks">
             <!-- Gate Pass Gate Reminder -->
             {% if g.gate_pass_gate_reminder %}
-                <div class="requests-reminder" id="gatePassGateReminder">
-                    <div class="text-container">
-                        <h3>Reminder</h3>
-                        <p class="reminder-message">There are confirmed exit permits.</p>
-                    </div>
-                    <div class="nav-btn-container">
-                        <button type="button" id="showAnotherRequestList1" onclick="togglePopup('confirmedGatePassList')"><i class="ph-fill ph-arrow-circle-right"></i></button>
-                    </div>
+            <div class="requests-reminder" id="gatePassGateReminder">
+                <div class="text-container">
+                    <h3>Reminder</h3>
+                    <p class="reminder-message">There are confirmed exit permits.</p>
                 </div>
+                <div class="nav-btn-container">
+                    <button type="button" id="showAnotherRequestList1" onclick="togglePopup('confirmedGatePassList')"><i
+                            class="ph-fill ph-arrow-circle-right"></i></button>
+                </div>
+            </div>
             {% endif %}
         </li>
         <li class="profileLinks">
             <!-- Gate Pass Gate Reminder -->
             {% if g.approved_gate_pass_reminder %}
-                <div class="requests-reminder" id="approvedGatePassReminder">
-                    <div class="text-container">
-                        <h3>Reminder</h3>
-                        <p class="reminder-message">There are Approved exit permits.</p>
-                    </div>
-                    <div class="nav-btn-container">
-                        <button type="button" id="showAnotherRequestList1" onclick="togglePopup('approvedGatePassList')"><i class="ph-fill ph-arrow-circle-right"></i></button>
-                    </div>
+            <div class="requests-reminder" id="approvedGatePassReminder">
+                <div class="text-container">
+                    <h3>Reminder</h3>
+                    <p class="reminder-message">There are Approved exit permits.</p>
                 </div>
-            {% endif %}    
-        </li>        
+                <div class="nav-btn-container">
+                    <button type="button" id="showAnotherRequestList1" onclick="togglePopup('approvedGatePassList')"><i
+                            class="ph-fill ph-arrow-circle-right"></i></button>
+                </div>
+            </div>
+            {% endif %}
+        </li>
         <li class="profileLinks">
             <!-- Gate Pass Gate Reminder -->
             {% if g.requested_driver_gate_pass_gate_reminder %}
-                <div class="requests-reminder" id="requestedGatePassReminder">
-                    <div class="text-container">
-                        <h3>Reminder</h3>
-                        <p class="reminder-message">There are Requested driver gate passes</p>
-                    </div>
-                    <div class="nav-btn-container">
-                        <button type="button" id="showAnotherRequestList1" onclick="togglePopup('requestedDriverGatePassList')"><i class="ph-fill ph-arrow-circle-right"></i></button>
-                    </div>
+            <div class="requests-reminder" id="requestedGatePassReminder">
+                <div class="text-container">
+                    <h3>Reminder</h3>
+                    <p class="reminder-message">There are Requested driver gate passes</p>
                 </div>
-            {% endif %}    
-        </li>  
+                <div class="nav-btn-container">
+                    <button type="button" id="showAnotherRequestList1"
+                        onclick="togglePopup('requestedDriverGatePassList')"><i
+                            class="ph-fill ph-arrow-circle-right"></i></button>
+                </div>
+            </div>
+            {% endif %}
+        </li>
     </ul>
 </div>

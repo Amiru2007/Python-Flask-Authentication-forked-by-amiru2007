@@ -338,7 +338,7 @@
                         </a>
                     </li>
                     {% endif %}
-                    {% if user_permissions.Create_Gate_Pass %}
+                    {% if user_permissions.Out_Gate_Pass %}
                     <li>
                         <a href="{{ url_for('mark_attendance') }}">
                             <span class="main-nav-link-header">
@@ -350,7 +350,7 @@
                         </a>
                     </li>
                     {% endif %}
-                    {% if user_permissions.Create_Gate_Pass %}
+                    {% if user_permissions.Out_Gate_Pass %}
                     <li>
                         <a href="{{ url_for('mark_attendance_out') }}">
                             <span class="main-nav-link-header">

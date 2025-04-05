@@ -33,7 +33,9 @@
             <div class="main-form-container">
                 <div class="bottom-employee-datails">
                     <div class="name-id gate-pass-detail-block">
-                        <div class="employee-id-container gate-pass-input-container" style="width: 50%">
+                        <div
+                            class="employee-id-container gate-pass-input-container"
+                            style="width: 50%">
                             <label for="employeeNo">Employee ID</label>
                             <div class="dropdown">
                                 <input
@@ -41,13 +43,19 @@
                                     id="driverNo"
                                     name="driverNo"
                                     title="Driver ID"
+                                    class="monospaced"
                                     onkeyup="filterDropdown()"
                                     placeholder="Search Driver ID"
                                     required />
                                 <div
                                     class="dropdown-content"
                                     id="dropdownOptions">
-                                    {% for driver in driver_list %}
+                                    {% for employee in employee_list %}
+                                    <input
+                                        type="hidden"
+                                        id="driverNameInitials_{{ employee.employeeNo }}"
+                                        value="{{ employee.nameWithInitials }}" />
+                                    {% endfor %} {% for driver in driver_list %}
                                     <input
                                         type="hidden"
                                         id="driverName_{{ driver.employeeNo }}"
@@ -86,6 +94,7 @@
                                 type="text"
                                 id="currentTime"
                                 name="currentTime"
+                                class="monospaced"
                                 readonly />
                         </div>
                     </div>
@@ -95,10 +104,58 @@
                     <button
                         type="submit"
                         class="exit-form-control-btn accented"
-                        style="margin: 0; padding: 10px 20px; height:fit-content; width: fit-content;">
+                        style="
+                            margin: 0;
+                            padding: 10px 20px;
+                            height: fit-content;
+                            width: fit-content;
+                        ">
                         Mark Present
                     </button>
                 </div>
+
+                {% if present_list %}
+                <div class="attendance-chart-container">
+                    <table class="attendance-chart">
+                        <caption>
+                            Present Drivers
+                        </caption>
+                        <thead>
+                            <tr>
+                                <th>Driver ID</th>
+                                <th>Name</th>
+                                <th>Arrived at</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for driver in present_list %}
+                            <tr>
+                                <input
+                                    type="hidden"
+                                    name="driver_no"
+                                    id="driverForChart_{{ driver.employeeNo }}"
+                                    value="{{ driver.employeeNo }}" />
+                                <td>
+                                    <span class="monospaced"
+                                        >{{ driver.employeeNo }}</span
+                                    >
+                                </td>
+                                <td>
+                                    <span>{{ driver.name }}</span>
+                                    <!-- This should now be name -->
+                                </td>
+                                <td>
+                                    <span class="monospaced">
+                                        {{ driver.inTime.strftime('%H:%M:%S') if
+                                        driver.inTime else "N/A" }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% endif %}
             </div>
         </form>
 
@@ -107,6 +164,7 @@
                 const dropdown = document.querySelector(".dropdown");
                 const inputID = document.getElementById("driverNo");
                 const inputName = document.getElementById("driverName");
+                const inputDriver = document.getElementById("driverName");
                 const dropdownContent =
                     document.querySelector(".dropdown-content");
                 const options = dropdownContent.querySelectorAll(".option");
@@ -121,7 +179,7 @@
                 function selectOption(driverNo) {
                     inputID.value = driverNo;
                     inputName.value = document.getElementById(
-                        `driverName_${driverNo}`
+                        `driverNameInitials_${driverNo}`
                     ).value;
                     dropdownContent.style.display = "none";
                 }

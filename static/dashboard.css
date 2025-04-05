@@ -28,6 +28,57 @@
     margin: 20px 0;
 }
 
+.dashboard-charts .charts .attendance-chart-container {
+    width: 100%;
+    padding: 10px 10px 22px 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.dashboard-charts .charts .attendance-chart-container table.attendance-chart {
+    width: 100%;
+}
+
+.dashboard-charts .charts .attendance-chart-container table.attendance-chart caption {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+}
+
+.dashboard-charts .charts .attendance-chart-container table.attendance-chart tbody {
+    transform: translateY(12px);
+}
+
+.dashboard-charts .charts .attendance-chart-container table.attendance-chart tr {
+    height: 40px;
+    margin: 10px 0;
+}
+
+.dashboard-charts .charts .attendance-chart-container table.attendance-chart tr td {
+    padding-left: 20px;
+    font-size: var(--font-size-14)
+}
+
+.dashboard-charts .charts .attendance-chart-container table.attendance-chart thead {
+    height: 50px;
+    transform: translateY(5px);
+}
+
+.dashboard-charts .charts .attendance-chart-container table.attendance-chart thead tr th {
+    text-align: left;
+    padding-left: 20px;
+}
+
+.dashboard-charts .charts .attendance-chart-container table.attendance-chart tr {
+    height: 40px;
+    margin: 10px 0;
+}
+
+.dashboard-charts .charts .attendance-chart-container table.attendance-chart tr td {
+    padding-left: 20px;
+    font-size: var(--font-size-14)
+}
+
 .dashboard-charts .charts .data-chart {
     width: calc(50% - 40px);
     padding: 20px;

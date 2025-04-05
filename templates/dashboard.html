@@ -1,127 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href='{{ url_for('static', filename='style.css')}}' />
-    <link rel="stylesheet" href='{{ url_for('static', filename='dashboard.css')}}' />
-     <!-- <link rel="stylesheet" href="../static/style.css"> -->
-    <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <title>Dashboard</title>
-</head>
+    <head>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="stylesheet" href='{{ url_for('static',
+        filename='style.css')}}' /> <link rel="stylesheet" href='{{
+        url_for('static', filename='dashboard.css')}}' />
+        <!-- <link rel="stylesheet" href="../static/style.css"> -->
+        <script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        <title>Dashboard</title>
+    </head>
 
-<body class="dashboard">
-    {% extends 'base.html' %}
-
-    {% block content %}
-    <div class="charts-conatiner">
-        <!-- <h3 class="date-container">
+    <body class="dashboard">
+        {% extends 'base.html' %} {% block content %}
+        <div class="charts-conatiner">
+            <!-- <h3 class="date-container">
             <span style="color: var(--textdued); font-weight: 400;"></span>
         </h3> -->
-        <div class="dashboard-charts">
-            <h4 class="chart-catogary">Visitors</h4>
-            <div class="charts-status">
-                <h5 class="chart-header">
-                    Curent Status
-                </h5>
-                <div class="status-chart">
-                    <div class="status-detail-block">
-                        <p>Arrived</p>
-                        <div class="status-card">
-                            <p>{{ arrived_count }}</p>
+            <div class="dashboard-charts">
+                <h4 class="chart-catogary">Visitors</h4>
+                <div class="charts-status">
+                    <h5 class="chart-header">Curent Status</h5>
+                    <div class="status-chart">
+                        <div class="status-detail-block">
+                            <p>Arrived</p>
+                            <div class="status-card">
+                                <p class="monospaced">{{ arrived_count }}</p>
+                            </div>
+                        </div>
+                        <div class="status-detail-block">
+                            <p>Departed</p>
+                            <div class="status-card">
+                                <p class="monospaced">{{ departed_count }}</p>
+                            </div>
+                        </div>
+                        <div class="status-detail-block">
+                            <p>In Premises</p>
+                            <div class="status-card">
+                                <p class="monospaced">
+                                    {{ in_premises_count }}
+                                </p>
+                            </div>
                         </div>
                     </div>
-                    <div class="status-detail-block">
-                        <p>Departed</p>
-                        <div class="status-card">
-                            <p>{{ departed_count }}</p>
-                        </div>
+                </div>
+                <div class="charts">
+                    <div class="data-chart one-day">
+                        <canvas id="dayVisitors"></canvas>
                     </div>
-                    <div class="status-detail-block">
-                        <p>In Premises</p>
-                        <div class="status-card">
-                            <p>{{ in_premises_count }}</p>
-                        </div>
+                    <div class="data-chart one-month">
+                        <canvas id="monthVisitors"></canvas>
                     </div>
                 </div>
             </div>
-            <div class="charts">
-                <div class="data-chart one-day">
-                    <canvas id="dayVisitors"></canvas>
+            <div class="dashboard-charts">
+                <h4 class="chart-catogary">Exit Permits</h4>
+                <div class="charts-status">
+                    <h5 class="chart-header">Curent Status</h5>
+                    <div class="status-chart">
+                        <div class="status-detail-block">
+                            <p>Out</p>
+                            <div class="status-card">
+                                <p class="monospaced">{{ out_count }}</p>
+                            </div>
+                        </div>
+                        <div class="status-detail-block">
+                            <p>Returned</p>
+                            <div class="status-card">
+                                <p class="monospaced">{{ returned_count }}</p>
+                            </div>
+                        </div>
+                        <div class="status-detail-block">
+                            <p>Out of Office</p>
+                            <div class="status-card">
+                                <p class="monospaced">
+                                    {{ out_of_office_count }}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="data-chart one-month">
-                    <canvas id="monthVisitors"></canvas>
+                <div class="charts">
+                    <div class="data-chart one-day">
+                        <canvas id="dayExits"></canvas>
+                    </div>
+                    <div class="data-chart one-month">
+                        <canvas id="monthExits"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-charts">
+                <h4 class="chart-catogary">Driver Manage</h4>
+                <div class="split-dashboard">
+                    <div class="charts-status">
+                        <h5 class="chart-header">Curent Status</h5>
+                        <div class="status-chart">
+                            <div class="status-detail-block">
+                                <p>Present</p>
+                                <div class="status-card">
+                                    <p class="monospaced">
+                                        {{ present_count }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="status-detail-block">
+                                <p>Out</p>
+                                <div class="status-card">
+                                    <p class="monospaced">
+                                        {{ driver_out_count }}
+                                    </p>
+                                </div>
+                            </div>
+                            <div class="status-detail-block">
+                                <p>Returned</p>
+                                <div class="status-card">
+                                    <p class="monospaced">
+                                        {{ driver_in_count }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% if present_list %}
+                    <div class="charts">
+                        <div class="attendance-chart-container">
+                            <table class="attendance-chart">
+                                <caption>
+                                    Present Drivers
+                                </caption>
+                                <thead>
+                                    <tr>
+                                        <th>Driver ID</th>
+                                        <th>Name</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for driver in present_list %}
+                                    <tr>
+                                        <input
+                                            type="hidden"
+                                            name="driver_no"
+                                            id="driverForChart_{{ driver.employeeNo }}"
+                                            value="{{ driver.employeeNo }}" />
+                                        <td>
+                                            <span class="monospaced">{{ driver.employeeNo }}</span>
+                                        </td>
+                                        <td>
+                                            <span>{{ driver.nameWithInitials }}</span> <!-- Now it should display the name -->
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    {% endif %}
                 </div>
             </div>
         </div>
-        <div class="dashboard-charts">
-            <h4 class="chart-catogary">Exit Permits</h4>
-            <div class="charts-status">
-                <h5 class="chart-header">
-                    Curent Status
-                </h5>
-                <div class="status-chart">
-                    <div class="status-detail-block">
-                        <p>Out</p>
-                        <div class="status-card">
-                            <p>{{ out_count }}</p>
-                        </div>
-                    </div>
-                    <div class="status-detail-block">
-                        <p>Returned</p>
-                        <div class="status-card">
-                            <p>{{ returned_count }}</p>
-                        </div>
-                    </div>
-                    <div class="status-detail-block">
-                        <p>Out of Office</p>
-                        <div class="status-card">
-                            <p>{{ out_of_office_count }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="charts">
-                <div class="data-chart one-day">
-                    <canvas id="dayExits"></canvas>
-                </div>
-                <div class="data-chart one-month">
-                    <canvas id="monthExits"></canvas>
-                </div>
-            </div>
-        </div>
-        <div class="dashboard-charts">
-            <h4 class="chart-catogary">Driver Manage</h4>
-            <div class="charts-status">
-                <h5 class="chart-header">
-                    Curent Status
-                </h5>
-                <div class="status-chart">
-                    <div class="status-detail-block">
-                        <p>Present</p>
-                        <div class="status-card">
-                            <p>{{ present_count }}</p>
-                        </div>
-                    </div>
-                    <div class="status-detail-block">
-                        <p>Out</p>
-                        <div class="status-card">
-                            <p>{{ driver_out_count }}</p>
-                        </div>
-                    </div>
-                    <div class="status-detail-block">
-                        <p>Returned</p>
-                        <div class="status-card">
-                            <p>{{ driver_in_count }}</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- <div>
+        <!-- <div>
         <canvas id="myChart" width="400" height="200"></canvas>
     </div> -->
 
@@ -129,10 +168,10 @@
             // Log the data to debug
             console.log("Labels from Flask:", {{ labels | tojson }});
             console.log("Values from Flask:", {{ values | tojson }});
-        
+
             var labels = {{ labels | tojson }};
             var values = {{ values | tojson }};
-        
+
             var ctx = document.getElementById('dayVisitors').getContext('2d');
             var myChart = new Chart(ctx, {
                 type: 'bar',
@@ -220,7 +259,7 @@
 
             var labelsGatePass = {{ labels_gatepass | tojson }};
             var valuesGatePass = {{ values_gatepass | tojson }};
-            
+
             var ctxGatePass = document.getElementById('dayExits').getContext('2d');
             var myChartGatePass = new Chart(ctxGatePass, {
                 type: 'bar',
@@ -263,7 +302,7 @@
 
             var labelsGatePass30Days = {{ labels_gatepass_30_days | tojson }};
             var valuesGatePass30Days = {{ values_gatepass_30_days | tojson }};
-            
+
             var ctxGatePass30Days = document.getElementById('monthExits').getContext('2d');
             var myChartGatePass30Days = new Chart(ctxGatePass30Days, {
                 type: 'bar',
@@ -298,6 +337,6 @@
                 }
             });
         </script>
-    {% endblock %}
-</body>
+        {% endblock %}
+    </body>
 </html>

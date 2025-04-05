@@ -697,6 +697,8 @@ def dashboard():
         GatePass.employeeDepartingDate.like(f'{today}%')
     ).count()
 
+    # --- Driver Attendance & Gate Pass Management Counts ---
+    
     present_count = DriverAttendance.query.filter(
         DriverAttendance.status == 'Present',
         DriverAttendance.date.like(f"{today}%")
@@ -733,6 +735,51 @@ def dashboard():
 
     user_permissions = current_user.permissions
 
+    # present_list = DriverAttendance.query.filter(DriverAttendance.date == today, DriverAttendance.status == "Present").all()
+        
+    employee_alias = aliased(Employee)
+    attendance_alias = aliased(DriverAttendance)
+    gate_pass_alias = aliased(DriverGatePass)
+
+# Subquery to get the latest gate pass ID for each driver today
+    latest_gate_pass_subquery = (
+        db.session.query(
+            gate_pass_alias.driverNo,
+            func.max(gate_pass_alias.id).label("latest_gate_pass_id")
+        )
+        .filter(gate_pass_alias.driverGatePassId.like(f"D{todaySimple}%"))  # Gate pass must be from today
+        .group_by(gate_pass_alias.driverNo)
+        .subquery()
+    )
+
+    # Main query to get the driver list, including employee name and other details
+    present_list = (
+        db.session.query(
+            employee_alias.employeeNo,
+            employee_alias.nameWithInitials,  # Include the driver's name
+            attendance_alias.inTime
+        )
+        .join(attendance_alias, employee_alias.employeeNo == attendance_alias.employeeNo)
+        .outerjoin(  # Left join to include drivers without gate passes
+            latest_gate_pass_subquery,
+            employee_alias.employeeNo == latest_gate_pass_subquery.c.driverNo
+        )
+        .outerjoin(
+            gate_pass_alias,
+            gate_pass_alias.id == latest_gate_pass_subquery.c.latest_gate_pass_id
+        )
+        .filter(
+            employee_alias.employeeDesignation == 'Driver',
+            attendance_alias.status == "Present",
+            attendance_alias.date == today,
+            or_(
+                latest_gate_pass_subquery.c.latest_gate_pass_id == None,  # No gate pass today
+                gate_pass_alias.driverFormStatus == "In"  # If they have a gate pass, status must be "In"
+            )
+        )
+        .all()
+    )
+
     return render_template(
         'dashboard.html',
         values=values,
@@ -754,7 +801,8 @@ def dashboard():
         in_premises_count=in_premises_count,
         present_count=present_count,
         driver_out_count=driver_out_count,
-        driver_in_count=driver_in_count
+        driver_in_count=driver_in_count,
+        present_list=present_list
     )
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -2387,14 +2435,44 @@ def gate_pass_form():
 
 @app.route('/mark_attendance', methods=['GET', 'POST'])
 @login_required
+@permission_required('Out_Gate_Pass')
 def mark_attendance():
     
     pageTitle = "Mark Driver Attendance"
     
     user_permissions = current_user.permissions
 
-    driver_list = Employee.query.filter(Employee.employeeDesignation == 'Driver').all()
+    today = date.today()
+    driver_list = DriverAttendance.query.filter(DriverAttendance.date == today, DriverAttendance.status == "Not Present").all()
     
+    employee_list = Employee.query.filter(Employee.employeeDesignation == 'Driver').all()
+    
+    present_attendance = DriverAttendance.query.filter(
+        DriverAttendance.date == today, 
+        DriverAttendance.status == "Present"
+    ).all()
+
+    present_list = []
+
+    for attendance in present_attendance:
+        print(f"[DEBUG] Raw inTime from DB: {attendance.inTime}")  # add this!
+
+        employee = Employee.query.filter_by(employeeNo=attendance.employeeNo).first()
+
+        try:
+            parsed_time = datetime.strptime(attendance.inTime, "%Y-%m-%d %H:%M:%S")
+        except Exception as e:
+            print(f"[DEBUG] Failed to parse inTime for {attendance.employeeNo}: {e}")
+            parsed_time = None
+
+        present_list.append({
+            "employeeNo": attendance.employeeNo,
+            "name": employee.nameWithInitials if employee else "N/A",
+            "inTime": parsed_time
+        })
+
+    present_list.sort(key=lambda x: x["inTime"])
+
     if request.method == "POST":
         driver_id = request.form.get("driverNo")
         today = date.today()
@@ -2410,19 +2488,22 @@ def mark_attendance():
         attendance = DriverAttendance.query.filter_by(employeeNo=driver_id, date=today, status="Not Present").first()
 
         if attendance:
-            attendance.inTime = datetime.now()
+            now = datetime.now()
+            # Remove microseconds
+            attendance.inTime = now.replace(microsecond=0)
             attendance.status = "Present"
             db.session.commit()
         else:
             flash("Attendance already marked or record not found!", "warning")
 
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("mark_attendance"))
 
-    return render_template("markAttendance.html", driver_list=driver_list, pageTitle=pageTitle, user_permissions=user_permissions)
+    return render_template("markAttendance.html", driver_list=driver_list, pageTitle=pageTitle, user_permissions=user_permissions, employee_list=employee_list, present_list=present_list)
 
 
 @app.route('/mark_attendance_out', methods=['GET', 'POST'])
 @login_required
+@permission_required('Out_Gate_Pass')
 def mark_attendance_out():
     
     pageTitle = "Mark Driver Attendance Off"
@@ -2434,6 +2515,32 @@ def mark_attendance_out():
     
     employee_list = Employee.query.filter(Employee.employeeDesignation == 'Driver').all()
     
+    depart_attendance = DriverAttendance.query.filter(
+        DriverAttendance.date == today, 
+        DriverAttendance.status == "Departed"
+    ).all()
+
+    departed_list = []
+
+    for attendance in depart_attendance:
+        print(f"[DEBUG] Raw outTime from DB: {attendance.outTime}")  # add this!
+
+        employee = Employee.query.filter_by(employeeNo=attendance.employeeNo).first()
+
+        try:
+            parsed_time = datetime.strptime(attendance.outTime, "%Y-%m-%d %H:%M:%S")
+        except Exception as e:
+            print(f"[DEBUG] Failed to parse outTime for {attendance.employeeNo}: {e}")
+            parsed_time = None
+
+        departed_list.append({
+            "employeeNo": attendance.employeeNo,
+            "name": employee.nameWithInitials if employee else "N/A",
+            "outTime": parsed_time
+        })
+
+    departed_list.sort(key=lambda x: x["outTime"])
+
     if request.method == "POST":
         driver_id = request.form.get("driverNo")
         today = date.today()
@@ -2449,15 +2556,17 @@ def mark_attendance_out():
         attendance = DriverAttendance.query.filter_by(employeeNo=driver_id, date=today, status="Present").first()
 
         if attendance:
-            attendance.outTime = datetime.now()
+            now = datetime.now()
+            # Remove microseconds
+            attendance.outTime = now.replace(microsecond=0)
             attendance.status = "Departed"
             db.session.commit()
         else:
             flash("Attendance already marked or record not found!", "warning")
 
-        return redirect(url_for("dashboard"))
+        return redirect(url_for("mark_attendance_out"))
 
-    return render_template("markAttendanceOut.html", driver_list=driver_list, pageTitle=pageTitle, user_permissions=user_permissions, employee_list=employee_list)
+    return render_template("markAttendanceOut.html", driver_list=driver_list, pageTitle=pageTitle, user_permissions=user_permissions, employee_list=employee_list, departed_list=departed_list)
 
 @app.route('/help')
 @login_required

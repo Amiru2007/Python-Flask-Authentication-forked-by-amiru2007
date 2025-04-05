@@ -1,5 +1,6 @@
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap');
 
 :root {
     --text-main: #ffffff;
@@ -29,12 +30,23 @@
     --font-size-16: 16px;
 
     --open-sans: "Open Sans", sans-serif !important;
+    --monospace: "JetBrains Mono", sans-serif !important;
+    --monospace-weight: 500;
 }
 
 * {
     margin: 0;
     padding: 0;
     font-family: "DM Sans", sans-serif;
+}
+
+.monospaced {
+    font-family: var(--monospace) !important;
+    letter-spacing: 1px !important;
+}
+
+::placeholder {
+    font-family: "DM Sans", sans-serif !important;
 }
 
 span.main-nav-link-header {
@@ -1578,10 +1590,12 @@ textarea#history {
 
 .option {
     padding: 7px;
-    font-size: var(--font-size-12);
+    font-size: var(--font-size-14);
     cursor: pointer;
     border-radius: 5px;
     width: calc(100% - 14px);
+    font-family: var(--monospace);
+    letter-spacing: 1px;
 }
 
 .option:hover {
@@ -1908,7 +1922,7 @@ textarea#history {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 30px 0 10px 0;
+    padding: 30px 0;
 }
 
 .employee-status {
@@ -2018,6 +2032,44 @@ span.secondary-icon i {
     justify-content: center;
 }
 
+.attendance-chart-container {
+    width: calc(100% - 22px);
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.attendance-chart-container table.attendance-chart {
+    width: 100%;
+}
+
+.attendance-chart-container table.attendance-chart caption {
+    padding: 10px 0 20px 0;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 22px;
+}
+
+.attendance-chart-container table.attendance-chart thead {
+    height: 50px;
+    transform: translateY(5px);
+}
+
+.attendance-chart-container table.attendance-chart thead tr th {
+    text-align: left;
+    padding-left: 20px;
+}
+
+.attendance-chart-container table.attendance-chart tr {
+    height: 40px;
+    margin: 10px 0;
+}
+
+.attendance-chart-container table.attendance-chart tr td {
+    padding-left: 20px;
+    font-size: var(--font-size-14)
+}
+
 @media screen and (max-width: 1300px) {
     .visitdetails {
         flex-direction: column;
@@ -2113,12 +2165,7 @@ span.secondary-icon i {
         width: calc(100% - 336px);
     }
 
-    .dashboard-charts .charts {
-        flex-direction: column;
-        gap: 20px;
-    }
-
-    .dashboard-charts .charts .data-chart:nth-child(1) {
+    .data-chart:nth-child(1) {
         margin: 0 !important;
     }
 

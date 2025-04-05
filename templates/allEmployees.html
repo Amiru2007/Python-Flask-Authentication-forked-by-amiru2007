@@ -86,7 +86,7 @@
                                     {% set row_number = (employee_pagination.page - 1) * employee_pagination.per_page + loop.index %}
                                     {{ row_number }}
                                 </td>
-                                <td>{{ employee.employeeNo }}</td>
+                                <td class="monospaced">{{ employee.employeeNo }}</td>
                                 <td>{{ employee.nameWithInitials }}</td>
                                 <td>{{ employee.employeeDesignation }}</td>
                                 <td>{{ employee.employeeTelephone }}</td>
