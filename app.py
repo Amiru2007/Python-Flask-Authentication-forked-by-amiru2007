@@ -1,23 +1,23 @@
-from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session, send_file, send_from_directory, abort, g # type: ignore
-from flask_sqlalchemy import SQLAlchemy # type: ignore
-from sqlalchemy import or_, func # type: ignore
-from sqlalchemy.orm import aliased # type: ignore
-from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user # type: ignore
-from flask_wtf import FlaskForm # type: ignore
-from flask_wtf.file import FileField, FileAllowed # type: ignore
-from flask_wtf.csrf import CSRFProtect # type: ignore
-from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField, TelField, SelectMultipleField, FormField, BooleanField, FieldList # type: ignore
-from wtforms.validators import InputRequired, Length, ValidationError, EqualTo # type: ignore
-from flask_bcrypt import Bcrypt # type: ignore
+from flask import Flask, render_template, url_for, redirect, request, jsonify, flash, session, send_file, send_from_directory, abort, g  # type: ignore
+from flask_sqlalchemy import SQLAlchemy  # type: ignore
+from sqlalchemy import or_, func  # type: ignore
+from sqlalchemy.orm import aliased  # type: ignore
+from flask_login import UserMixin, login_user, LoginManager, login_required, logout_user, current_user  # type: ignore
+from flask_wtf import FlaskForm  # type: ignore
+from flask_wtf.file import FileField, FileAllowed  # type: ignore
+from flask_wtf.csrf import CSRFProtect  # type: ignore
+from wtforms import StringField, PasswordField, SubmitField, EmailField, SelectField, TelField, SelectMultipleField, FormField, BooleanField, FieldList  # type: ignore
+from wtforms.validators import InputRequired, Length, ValidationError, EqualTo  # type: ignore
+from flask_bcrypt import Bcrypt  # type: ignore
 # from flask_migrate import Migrate
 from datetime import datetime, timedelta, date
 from base64 import b64encode
-import openpyxl # type: ignore
-from openpyxl.worksheet.table import Table, TableStyleInfo # type: ignore
+import openpyxl  # type: ignore
+from openpyxl.worksheet.table import Table, TableStyleInfo  # type: ignore
 from io import BytesIO
-from werkzeug.utils import secure_filename # type: ignore
+from werkzeug.utils import secure_filename  # type: ignore
 import os
-import pandas as pd # type: ignore
+import pandas as pd  # type: ignore
 from functools import wraps
 # from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -25,7 +25,7 @@ basedir = os.path.abspath(os.path.dirname(__file__))
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] =\
-        'sqlite:///' + os.path.join(basedir, 'database.db')
+    'sqlite:///' + os.path.join(basedir, 'database.db')
 app.config['SECRET_KEY'] = 'thisisasecretkey'
 # csrf = CSRFProtect(app)
 db = SQLAlchemy(app)
@@ -33,8 +33,10 @@ db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
 bcrypt.init_app(app)
 
-UPLOAD_FOLDER = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'uploads')
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}  # Add any other allowed file extensions
+UPLOAD_FOLDER = os.path.join(os.path.dirname(
+    os.path.abspath(__file__)), 'uploads')
+# Add any other allowed file extensions
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
@@ -46,6 +48,7 @@ login_manager.login_view = 'login'
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -70,6 +73,8 @@ class User(db.Model, UserMixin):
         return bcrypt.check_password_hash(self.password, password)
 
 # Define the Visitor model
+
+
 class Visitor(db.Model):
     id = db.Column(db.Integer)
     lastName = db.Column(db.String(50), nullable=False)
@@ -81,7 +86,8 @@ class Visitor(db.Model):
     departingDate = db.Column(db.String(20))
     departingTime = db.Column(db.String(20))
     vehicleNo = db.Column(db.String(20))
-    visitorNo = db.Column(db.String(20), primary_key=True, nullable=False, autoincrement=False)
+    visitorNo = db.Column(db.String(20), primary_key=True,
+                          nullable=False, autoincrement=False)
     phoneNumber = db.Column(db.String(20))
     emailAddress = db.Column(db.String(120))
     requester = db.Column(db.String(50))
@@ -97,23 +103,28 @@ class Visitor(db.Model):
     departureOfficer = db.Column(db.String(50))
     departedTime = db.Column(db.String(20))
     profilePhoto = db.Column(db.String(255), nullable=True)
-    committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
+    committedDate = db.Column(
+        db.DateTime, default=datetime.utcnow, nullable=True)
+
 
 class Employee(db.Model):
     __tablename__ = 'Employee'
     id = db.Column(db.Integer, primary_key=True)
     employeeNo = db.Column(db.String(10), nullable=False, unique=True)
     nameWithInitials = db.Column(db.String(120), nullable=False, unique=True)
-    employeeDesignation = db.Column(db.String(120), nullable=False, unique=True)
+    employeeDesignation = db.Column(
+        db.String(120), nullable=False, unique=True)
     employeeTelephone = db.Column(db.String(120), nullable=False, unique=True)
     status = db.Column(db.Boolean, default=True)
 
     def __repr__(self):
         return f"<Employee {self.employeeNo}>"
 
+
 class Permissions(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(20), db.ForeignKey('user.username'), nullable=False)
+    username = db.Column(db.String(20), db.ForeignKey(
+        'user.username'), nullable=False)
 
     Create_Visitor = db.Column(db.Boolean, default=False)
     Edit_Visitor = db.Column(db.Boolean, default=False)
@@ -137,6 +148,7 @@ class Permissions(db.Model):
     hod = db.Column(db.Boolean, default=False)
     outerUser = db.Column(db.Boolean, default=False)
 
+
 class GatePass(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     gatePassId = db.Column(db.String(20), nullable=False, unique=True)
@@ -154,8 +166,10 @@ class GatePass(db.Model):
     employeeFormStatus = db.Column(db.String(20), nullable=False)
     employeeOutMark = db.Column(db.String(80))
     employeeInMark = db.Column(db.String(80))
-    committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
+    committedDate = db.Column(
+        db.DateTime, default=datetime.utcnow, nullable=True)
     gatePassRequester = db.Column(db.String(80), nullable=False)
+
 
 class DriverGatePass(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -172,8 +186,10 @@ class DriverGatePass(db.Model):
     driverFormStatus = db.Column(db.String(20), nullable=False)
     driverOutMark = db.Column(db.String(80))
     driverInMark = db.Column(db.String(80))
-    committedDate = db.Column(db.DateTime, default=datetime.utcnow, nullable=True)
+    committedDate = db.Column(
+        db.DateTime, default=datetime.utcnow, nullable=True)
     driverGatePassRequester = db.Column(db.String(80), nullable=False)
+
 
 class DriverAttendance(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -185,15 +201,20 @@ class DriverAttendance(db.Model):
 
     def __repr__(self):
         return f"<DriverAttendance {self.id} - {self.employeeNo}>"
-    
+
+
 class ImageUploadForm(FlaskForm):
-    profilePhoto = FileField('Profile Photo', validators=[FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
- 
+    profilePhoto = FileField('Profile Photo', validators=[
+                             FileAllowed(['jpg', 'png', 'jpeg', 'gif'], 'Images only!')])
+
+
 def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+
 def get_file_extension(filename):
     return os.path.splitext(filename)[1]
+
 
 def permission_required(permission_name):
     def decorator(f):
@@ -205,6 +226,7 @@ def permission_required(permission_name):
         return decorated_function
     return decorator
 
+
 @app.after_request
 def add_cache_control(response):
     if request.endpoint == 'static':
@@ -214,6 +236,8 @@ def add_cache_control(response):
     return response
 
 # Route for the form
+
+
 @app.route('/newvisitor', methods=['GET', 'POST'])
 @login_required
 @permission_required('Create_Visitor')
@@ -227,7 +251,7 @@ def new_visitor():
     form = ImageUploadForm()
 
     user_permissions = current_user.permissions
-    
+
     if request.method == 'POST':
         # Get form data using request.form.get to avoid BadRequestKeyError
         last_name = request.form.get('lastName', '')
@@ -248,11 +272,11 @@ def new_visitor():
         history = request.form.get('remarks', '')
         status = request.form.get('statusbtn', '')
         request_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        
+
         if not visitor_id:
             # Render the template with an error message
-            return render_template('newvisitor.html', 
-                                   requester=current_user.username, 
+            return render_template('newvisitor.html',
+                                   requester=current_user.username,
                                    visitorNo=visitor_code,
                                    error_message='You must enter a Visitor ID')
 
@@ -262,12 +286,12 @@ def new_visitor():
         if pic and visitor_no:
             upload_folder = 'uploads'
             os.makedirs(upload_folder, exist_ok=True)
-            
+
             # Securely generate a new filename using the visitorNo value
             original_extension = get_file_extension(pic.filename)
             filename = secure_filename(f"{visitor_no}{original_extension}")
             file_path = os.path.join(upload_folder, filename)
-            
+
             pic.save(file_path)
         else:
             # Handle the case where no image is uploaded
@@ -275,7 +299,7 @@ def new_visitor():
             filename = 'none'
 
         # filename = secure_filename(pic.filename)
-        
+
         new_visitor = Visitor(
             lastName=last_name,
             firstName=first_name,
@@ -304,12 +328,12 @@ def new_visitor():
             try:
                 db.session.add(new_visitor)
                 db.session.commit()
-                
+
                 if current_user.permissions.outerUser:
                     return redirect(url_for('welcome'))
                 else:
                     return redirect(url_for('dashboard'))
-                
+
             except Exception as e:
                 db.session.rollback()
                 return f"Error committing to database: {e}"
@@ -317,15 +341,17 @@ def new_visitor():
         return redirect(url_for('dashboard'))
 
     return render_template('newvisitor.html',
-                            requester=current_user.username,
-                            visitorNo=visitor_code,
+                           requester=current_user.username,
+                           visitorNo=visitor_code,
                            user_permissions=user_permissions,
                            pageTitle=pageTitle)
+
 
 def generate_visitorCode():
     # Get the latest code from the database for the current date
     today = datetime.now().strftime('%Y%m%d')
-    latest_visitor = Visitor.query.filter(Visitor.visitorNo.like(f'{today}%')).order_by(Visitor.visitorNo.desc()).first()
+    latest_visitor = Visitor.query.filter(Visitor.visitorNo.like(
+        f'{today}%')).order_by(Visitor.visitorNo.desc()).first()
 
     if latest_visitor:
         # Increment the counter for the current date
@@ -338,6 +364,7 @@ def generate_visitorCode():
     # Combine the date and counter to create the new code
     new_code = f'{today}{new_counter}'
     return new_code
+
 
 class PermissionsForm(FlaskForm):
     Create_Visitor = BooleanField('Create Visitor')
@@ -358,6 +385,7 @@ class PermissionsForm(FlaskForm):
     hod = BooleanField('HOD')
     outerUser = BooleanField('Outer User')
 
+
 class RegisterForm(FlaskForm):
     username = StringField(validators=[
                            InputRequired(), Length(min=4, max=20)], render_kw={"placeholder": "Username"})
@@ -366,15 +394,16 @@ class RegisterForm(FlaskForm):
                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
 
     email = EmailField(validators=[
-                             InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "E-mail"})
+        InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "E-mail"})
 
     name = StringField(validators=[
-                             InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "Name"})
+        InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "Name"})
 
     telephoneNo = TelField(validators=[
-                             InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "Telephone Number"})
+        InputRequired(), Length(min=8, max=40)], render_kw={"placeholder": "Telephone Number"})
 
-    level = SelectField('Level', choices=[('Admin', 'Admin'), ('Approver', 'Approver'), ('Requester', 'Requester'), ('Gate', 'Gate')])
+    level = SelectField('Level', choices=[(
+        'Admin', 'Admin'), ('Approver', 'Approver'), ('Requester', 'Requester'), ('Gate', 'Gate')])
 
     # permissions = SelectMultipleField('Permissions', choices=[
     #     ('permission1', 'Permission 1'),
@@ -395,18 +424,19 @@ class RegisterForm(FlaskForm):
 
 class EmployeeForm(FlaskForm):
     employeeNo = StringField(validators=[
-                           InputRequired(), Length(min=2, max=20)], render_kw={"placeholder": "Employee Number"})
+        InputRequired(), Length(min=2, max=20)], render_kw={"placeholder": "Employee Number"})
 
     nameWithInitials = StringField(validators=[
-                             InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Name with initials"})
+        InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Name with initials"})
 
     employeeDesignation = StringField(validators=[
-                             InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Destination"})
+        InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Destination"})
 
     employeeTelephone = StringField(validators=[
-                             InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Phone Number"})
+        InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Phone Number"})
 
     submit = SubmitField('Create')
+
 
 class ChangePasswordForm(FlaskForm):
     new_password = PasswordField(validators=[
@@ -417,34 +447,36 @@ class ChangePasswordForm(FlaskForm):
 
     submit = SubmitField('Change Password')
 
+
 class newPword(FlaskForm):
     password = PasswordField(validators=[
                              InputRequired(), Length(min=8, max=20)], render_kw={"placeholder": "Password"})
 
     submit = SubmitField('Change Your Password')
 
+
 @app.route('/change_password', methods=['GET', 'POST'])
 @login_required
 def change_password():
     form = newPword()
-    
+
     user_permissions = current_user.permissions
-    
+
     if form.validate_on_submit():
         print("password accessed")
         user = current_user
         hashed_password = bcrypt.generate_password_hash(form.password.data)
-        
+
         user.password = hashed_password
 
         with app.app_context():
             db.session.commit()
-                
+
         if current_user.permissions.outerUser:
             return redirect(url_for('welcome'))
         else:
             return redirect(url_for('dashboard'))
-    
+
     return render_template('change_password.html', form=form, user_permissions=user_permissions)
 
 
@@ -462,14 +494,15 @@ class LoginForm(FlaskForm):
 @app.route('/welcome', methods=['GET', 'POST'])
 @login_required
 def welcome():
-    
+
     pageTitle = 'Welcome'
-    
+
     user_permissions = current_user.permissions
-    
+
     return render_template('outerUserWelcome.html',
                            user_permissions=user_permissions,
                            pageTitle=pageTitle)
+
 
 @app.route('/', methods=['GET', 'POST'])
 def login():
@@ -479,28 +512,31 @@ def login():
         if user and user.check_password(form.password.data):
             if user.status:  # Check if user status is active
                 login_user(user)
-                
+
                 # Redirect based on the user's permission
                 if user.permissions.outerUser:
                     return redirect(url_for('welcome'))
-                
-                return redirect(url_for('dashboard'))  # Redirect normal users to dashboard
-                
+
+                # Redirect normal users to dashboard
+                return redirect(url_for('dashboard'))
+
             else:
                 flash('Your account is not activated. Please contact support or check your email for activation instructions.', 'warning')
         else:
             flash('Invalid username or password', 'danger')
     return render_template('login.html', form=form)
 
+
 @app.before_request
 def check_outer_user_access():
     public_routes = ['login', 'static', 'logout']
-    
+
     if request.endpoint in public_routes:
         return
-    
+
     if current_user.is_authenticated and current_user.permissions.outerUser:
-        allowed_routes = ['new_visitor', 'edit_request', 'welcome', 'change_password']
+        allowed_routes = ['new_visitor', 'edit_request',
+                          'welcome', 'change_password']
         if request.endpoint not in allowed_routes:
             abort(404)
 
@@ -509,29 +545,46 @@ def check_outer_user_access():
 def set_global_variables():
     if current_user.is_authenticated:
         fourteen_days_ago = datetime.utcnow() - timedelta(days=14)
-        
-        g.pending_visitors = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester != current_user.username).all()
-        g.approved_visitors = Visitor.query.filter(Visitor.status == 'Approved').all()
-        g.arrived_visitors = Visitor.query.filter(Visitor.status == 'Arrived').all()
-        g.request_list = Visitor.query.filter(Visitor.status == 'Pending', Visitor.requester == current_user.username).all()
-        g.visitors_list = Visitor.query.filter(Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
+
+        g.pending_visitors = Visitor.query.filter(
+            Visitor.status == 'Pending', Visitor.requester != current_user.username).all()
+        g.approved_visitors = Visitor.query.filter(
+            Visitor.status == 'Approved').all()
+        g.arrived_visitors = Visitor.query.filter(
+            Visitor.status == 'Arrived').all()
+        g.request_list = Visitor.query.filter(
+            Visitor.status == 'Pending', Visitor.requester == current_user.username).all()
+        g.visitors_list = Visitor.query.filter(
+            Visitor.committedDate >= fourteen_days_ago).order_by(Visitor.visitorNo.desc()).all()
 
         if has_permission('hod'):
-            g.pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending').all()
-            g.approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved').all()
-            g.confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed').all()
+            g.pending_gate_pass = GatePass.query.filter(
+                GatePass.employeeFormStatus == 'Pending').all()
+            g.approved_gate_pass = GatePass.query.filter(
+                GatePass.employeeFormStatus == 'Approved').all()
+            g.confirmed_gate_pass = GatePass.query.filter(
+                GatePass.employeeFormStatus == 'Confirmed').all()
         else:
-            g.pending_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester != current_user.username).all()
-            g.approved_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Approved', GatePass.gatePassRequester != current_user.username).all()
-            g.confirmed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Confirmed', GatePass.gatePassRequester != current_user.username).all()
+            g.pending_gate_pass = GatePass.query.filter(
+                GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester != current_user.username).all()
+            g.approved_gate_pass = GatePass.query.filter(
+                GatePass.employeeFormStatus == 'Approved', GatePass.gatePassRequester != current_user.username).all()
+            g.confirmed_gate_pass = GatePass.query.filter(
+                GatePass.employeeFormStatus == 'Confirmed', GatePass.gatePassRequester != current_user.username).all()
 
-        g.departed_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester != current_user.username).all()
-        g.edit_gate_pass = GatePass.query.filter(GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester == current_user.username).all()
-        g.gate_pass_forms = GatePass.query.filter(GatePass.committedDate >= fourteen_days_ago).order_by(GatePass.gatePassId.desc()).all()
+        g.departed_gate_pass = GatePass.query.filter(
+            GatePass.employeeFormStatus == 'Out', GatePass.gatePassRequester != current_user.username).all()
+        g.edit_gate_pass = GatePass.query.filter(
+            GatePass.employeeFormStatus == 'Pending', GatePass.gatePassRequester == current_user.username).all()
+        g.gate_pass_forms = GatePass.query.filter(
+            GatePass.committedDate >= fourteen_days_ago).order_by(GatePass.gatePassId.desc()).all()
 
-        g.requested_driver_gate_pass = DriverGatePass.query.filter(DriverGatePass.driverFormStatus == 'Requested', DriverGatePass.driverGatePassRequester != current_user.username).all()
-        g.departed_driver_gate_pass = DriverGatePass.query.filter(DriverGatePass.driverFormStatus == 'Out', DriverGatePass.driverGatePassRequester != current_user.username).all()
-        g.edit_driver_gate_pass = DriverGatePass.query.filter(DriverGatePass.driverFormStatus == 'Requested', DriverGatePass.driverGatePassRequester == current_user.username).all()
+        g.requested_driver_gate_pass = DriverGatePass.query.filter(
+            DriverGatePass.driverFormStatus == 'Requested', DriverGatePass.driverGatePassRequester != current_user.username).all()
+        g.departed_driver_gate_pass = DriverGatePass.query.filter(
+            DriverGatePass.driverFormStatus == 'Out', DriverGatePass.driverGatePassRequester != current_user.username).all()
+        g.edit_driver_gate_pass = DriverGatePass.query.filter(
+            DriverGatePass.driverFormStatus == 'Requested', DriverGatePass.driverGatePassRequester == current_user.username).all()
 
         g.gate_pass_requests_reminder = False
         g.visitor_requests_reminder = False
@@ -558,11 +611,9 @@ def set_global_variables():
         if g.confirmed_gate_pass and has_permission('Out_Gate_Pass'):
             g.approved_gate_pass_reminder = True
 
-
         if g.requested_driver_gate_pass and has_permission('Out_Gate_Pass'):
             g.requested_driver_gate_pass_gate_reminder = True
-        
-        
+
         if g.gate_pass_requests_reminder or g.visitor_requests_reminder or g.gate_pass_gate_reminder or g.visitor_gate_reminder or g.approved_gate_pass_reminder or g.requested_driver_gate_pass_gate_reminder:
             g.there_are_notification = True
 
@@ -575,10 +626,11 @@ def set_global_variables():
 def create_attendance_records():
     """Automatically create attendance records for all drivers at the start of the day."""
     today = date.today()
-    existing_records = {record.employeeNo for record in DriverAttendance.query.filter_by(date=today).all()}
-    
+    existing_records = {
+        record.employeeNo for record in DriverAttendance.query.filter_by(date=today).all()}
+
     drivers = Employee.query.filter_by(employeeDesignation="Driver").all()
-    
+
     for driver in drivers:
         if driver.employeeNo not in existing_records:
             new_record = DriverAttendance(
@@ -587,41 +639,46 @@ def create_attendance_records():
                 status="Not Present"
             )
             db.session.add(new_record)
-    
+
     db.session.commit()
 
 
 def has_permission(permission_name):
-    user_permissions = Permissions.query.filter_by(username=current_user.username).first()
+    user_permissions = Permissions.query.filter_by(
+        username=current_user.username).first()
     if user_permissions and getattr(user_permissions, permission_name, False):
         return True
     return False
+
 
 @app.route('/dashboard', methods=['GET', 'POST'])
 @login_required
 def dashboard():
     pageTitle = 'Dashboard'
-    
+
     # --- Visitors Charts ---
 
     today = datetime.now().strftime('%Y-%m-%d')
     todaySimple = datetime.utcnow().strftime("%Y%m%d")
-    start_of_today = datetime.now().replace(hour=0, minute=0, second=0, microsecond=0)
-    
+    start_of_today = datetime.now().replace(
+        hour=0, minute=0, second=0, microsecond=0)
+
     data = Visitor.query.filter(
         Visitor.arrivedTime.like(f'{today}%')
     ).all()
 
     df = pd.DataFrame([(d.arrivedTime) for d in data], columns=['arrivedTime'])
-    
-    df['arrivedTime'] = pd.to_datetime(df['arrivedTime'], format='%Y-%m-%d %H:%M:%S').dt.hour
+
+    df['arrivedTime'] = pd.to_datetime(
+        df['arrivedTime'], format='%Y-%m-%d %H:%M:%S').dt.hour
 
     df = df[(df['arrivedTime'] >= 8) & (df['arrivedTime'] <= 18)]
 
     chart_data = df.groupby('arrivedTime').size().reset_index(name='count')
 
     full_range = pd.DataFrame({'arrivedTime': range(8, 19)})
-    chart_data = pd.merge(full_range, chart_data, left_on='arrivedTime', right_on='arrivedTime', how='left').fillna(0)
+    chart_data = pd.merge(full_range, chart_data, left_on='arrivedTime',
+                          right_on='arrivedTime', how='left').fillna(0)
 
     labels = chart_data['arrivedTime'].astype(str).tolist()
     values = chart_data['count'].tolist()
@@ -632,15 +689,19 @@ def dashboard():
         Visitor.arrivedTime >= start_date
     ).all()
 
-    df_30_days = pd.DataFrame([(d.arrivedTime) for d in data_30_days], columns=['arrivedTime'])
+    df_30_days = pd.DataFrame([(d.arrivedTime)
+                              for d in data_30_days], columns=['arrivedTime'])
 
-    df_30_days['arrivedTime'] = pd.to_datetime(df_30_days['arrivedTime'], format='%Y-%m-%d %H:%M:%S').dt.date
+    df_30_days['arrivedTime'] = pd.to_datetime(
+        df_30_days['arrivedTime'], format='%Y-%m-%d %H:%M:%S').dt.date
 
-    chart_data_30_days = df_30_days.groupby('arrivedTime').size().reset_index(name='count')
+    chart_data_30_days = df_30_days.groupby(
+        'arrivedTime').size().reset_index(name='count')
 
     full_range_30_days = pd.date_range(start=start_date, end=today).date
     full_range_df_30_days = pd.DataFrame({'arrivedTime': full_range_30_days})
-    chart_data_30_days = pd.merge(full_range_df_30_days, chart_data_30_days, on='arrivedTime', how='left').fillna(0)
+    chart_data_30_days = pd.merge(
+        full_range_df_30_days, chart_data_30_days, on='arrivedTime', how='left').fillna(0)
 
     chart_data_30_days['count'] = chart_data_30_days['count'].astype(int)
 
@@ -648,21 +709,26 @@ def dashboard():
     values_30_days = chart_data_30_days['count'].tolist()
 
     # --- Exit Permits Charts ---
-    
+
     gatepass_data = GatePass.query.filter(
         GatePass.committedDate.like(f'{today}%')
     ).all()
 
-    df_gatepass = pd.DataFrame([(d.committedDate) for d in gatepass_data], columns=['committedDate'])
-    
-    df_gatepass['committedDate'] = pd.to_datetime(df_gatepass['committedDate'], format='%Y-%m-%d %H:%M:%S').dt.hour
+    df_gatepass = pd.DataFrame([(d.committedDate)
+                               for d in gatepass_data], columns=['committedDate'])
 
-    df_gatepass = df_gatepass[(df_gatepass['committedDate'] >= 8) & (df_gatepass['committedDate'] <= 18)]
+    df_gatepass['committedDate'] = pd.to_datetime(
+        df_gatepass['committedDate'], format='%Y-%m-%d %H:%M:%S').dt.hour
 
-    chart_data_gatepass = df_gatepass.groupby('committedDate').size().reset_index(name='count')
+    df_gatepass = df_gatepass[(df_gatepass['committedDate'] >= 8) & (
+        df_gatepass['committedDate'] <= 18)]
+
+    chart_data_gatepass = df_gatepass.groupby(
+        'committedDate').size().reset_index(name='count')
 
     full_range_gatepass = pd.DataFrame({'committedDate': range(8, 19)})
-    chart_data_gatepass = pd.merge(full_range_gatepass, chart_data_gatepass, left_on='committedDate', right_on='committedDate', how='left').fillna(0)
+    chart_data_gatepass = pd.merge(full_range_gatepass, chart_data_gatepass,
+                                   left_on='committedDate', right_on='committedDate', how='left').fillna(0)
 
     labels_gatepass = chart_data_gatepass['committedDate'].astype(str).tolist()
     values_gatepass = chart_data_gatepass['count'].tolist()
@@ -671,23 +737,31 @@ def dashboard():
         GatePass.committedDate >= start_date
     ).all()
 
-    df_gatepass_30_days = pd.DataFrame([(d.committedDate) for d in gatepass_data_30_days], columns=['committedDate'])
+    df_gatepass_30_days = pd.DataFrame(
+        [(d.committedDate) for d in gatepass_data_30_days], columns=['committedDate'])
 
-    df_gatepass_30_days['committedDate'] = pd.to_datetime(df_gatepass_30_days['committedDate'], format='%Y-%m-%d %H:%M:%S').dt.date
+    df_gatepass_30_days['committedDate'] = pd.to_datetime(
+        df_gatepass_30_days['committedDate'], format='%Y-%m-%d %H:%M:%S').dt.date
 
-    chart_data_gatepass_30_days = df_gatepass_30_days.groupby('committedDate').size().reset_index(name='count')
+    chart_data_gatepass_30_days = df_gatepass_30_days.groupby(
+        'committedDate').size().reset_index(name='count')
 
-    full_range_gatepass_30_days = pd.date_range(start=start_date, end=today).date
-    full_range_df_gatepass_30_days = pd.DataFrame({'committedDate': full_range_gatepass_30_days})
-    chart_data_gatepass_30_days = pd.merge(full_range_df_gatepass_30_days, chart_data_gatepass_30_days, on='committedDate', how='left').fillna(0)
+    full_range_gatepass_30_days = pd.date_range(
+        start=start_date, end=today).date
+    full_range_df_gatepass_30_days = pd.DataFrame(
+        {'committedDate': full_range_gatepass_30_days})
+    chart_data_gatepass_30_days = pd.merge(
+        full_range_df_gatepass_30_days, chart_data_gatepass_30_days, on='committedDate', how='left').fillna(0)
 
-    chart_data_gatepass_30_days['count'] = chart_data_gatepass_30_days['count'].astype(int)
+    chart_data_gatepass_30_days['count'] = chart_data_gatepass_30_days['count'].astype(
+        int)
 
-    labels_gatepass_30_days = chart_data_gatepass_30_days['committedDate'].astype(str).tolist()
+    labels_gatepass_30_days = chart_data_gatepass_30_days['committedDate'].astype(
+        str).tolist()
     values_gatepass_30_days = chart_data_gatepass_30_days['count'].tolist()
 
     # --- Gate Pass Management Counts ---
-    
+
     out_count = GatePass.query.filter(
         GatePass.employeeDepartingDate.like(f'{today}%')
     ).count()
@@ -698,7 +772,7 @@ def dashboard():
     ).count()
 
     # --- Driver Attendance & Gate Pass Management Counts ---
-    
+
     present_count = DriverAttendance.query.filter(
         DriverAttendance.status == 'Present',
         DriverAttendance.date.like(f"{today}%")
@@ -717,7 +791,7 @@ def dashboard():
     out_of_office_count = out_count - returned_count
 
     # --- Visitor Management Counts ---
-    
+
     arrived_count = Visitor.query.filter(
         Visitor.arrivedTime.like(f'{today}%')
     ).count()
@@ -736,7 +810,7 @@ def dashboard():
     user_permissions = current_user.permissions
 
     # present_list = DriverAttendance.query.filter(DriverAttendance.date == today, DriverAttendance.status == "Present").all()
-        
+
     employee_alias = aliased(Employee)
     attendance_alias = aliased(DriverAttendance)
     gate_pass_alias = aliased(DriverGatePass)
@@ -747,7 +821,8 @@ def dashboard():
             gate_pass_alias.driverNo,
             func.max(gate_pass_alias.id).label("latest_gate_pass_id")
         )
-        .filter(gate_pass_alias.driverGatePassId.like(f"D{todaySimple}%"))  # Gate pass must be from today
+        # Gate pass must be from today
+        .filter(gate_pass_alias.driverGatePassId.like(f"D{todaySimple}%"))
         .group_by(gate_pass_alias.driverNo)
         .subquery()
     )
@@ -774,7 +849,8 @@ def dashboard():
             attendance_alias.date == today,
             or_(
                 latest_gate_pass_subquery.c.latest_gate_pass_id == None,  # No gate pass today
-                gate_pass_alias.driverFormStatus == "In"  # If they have a gate pass, status must be "In"
+                # If they have a gate pass, status must be "In"
+                gate_pass_alias.driverFormStatus == "In"
             )
         )
         .all()
@@ -805,6 +881,7 @@ def dashboard():
         present_list=present_list
     )
 
+
 @app.route('/register', methods=['GET', 'POST'])
 @login_required
 @permission_required('Create_User')
@@ -817,7 +894,8 @@ def register():
     user_permissions = current_user.permissions
 
     if form.validate_on_submit():
-        hashed_password = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+        hashed_password = bcrypt.generate_password_hash(
+            form.password.data).decode('utf-8')
 
         # Check if the provided level is one of the allowed values
         allowed_levels = ['Admin', 'Approver', 'Requester', 'Gate']
@@ -837,7 +915,7 @@ def register():
 
         # Determine permissions
         outer_user_checked = form2.outerUser.data
-        
+
         # Handle permissions based on whether 'outerUser' is checked
         permissions = Permissions(
             username=new_user.username,
@@ -871,6 +949,7 @@ def register():
                            user_permissions=user_permissions,
                            pageTitle=pageTitle)
 
+
 @app.route('/arrive_visitor', methods=['POST'])
 @login_required
 @permission_required('In_Visitor')
@@ -879,9 +958,9 @@ def arrive_visitor():
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
 
     pageTitle = 'Mark Visitor Arrival'
-    
+
     user_permissions = current_user.permissions
-    
+
     if visitor:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -889,7 +968,7 @@ def arrive_visitor():
         # Your logic based on the clicked button value
         if clicked_button_value == 'Arrived':
             visitor.status = 'Arrived'
-            visitor.arrivalOfficer=current_user.username
+            visitor.arrivalOfficer = current_user.username
             visitor.arrivedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
             # Retrieve the current history and append new remarks
@@ -908,13 +987,14 @@ def arrive_visitor():
         # Read the image file path from the database
         image_path = visitor.profilePhoto
         print("Image Path:", visitor.profilePhoto)
-    
+
         return render_template('arriveVisitor.html', visitor=visitor, image_path=image_path,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
-    
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
+
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
+
 
 @app.route('/depart_visitor', methods=['POST'])
 @login_required
@@ -924,9 +1004,9 @@ def depart_visitor():
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
 
     pageTitle = 'Mark Visitor Departure'
-    
+
     user_permissions = current_user.permissions
-    
+
     if visitor:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -934,7 +1014,7 @@ def depart_visitor():
         # Your logic based on the clicked button value
         if clicked_button_value == 'Departed':
             visitor.status = 'Departed'
-            visitor.departureOfficer=current_user.username
+            visitor.departureOfficer = current_user.username
             visitor.departedTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
             # Retrieve the current history and append new remarks
@@ -954,9 +1034,9 @@ def depart_visitor():
         image_path = visitor.profilePhoto
         print("Image Path:", visitor.profilePhoto)
         return render_template('departVisitor.html', visitor=visitor, image_path=image_path,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
-    
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
+
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
 
@@ -965,7 +1045,8 @@ def depart_visitor():
 @app.route('/uploads/<filename>')
 def serve_uploaded_image(filename):
     return send_from_directory('uploads', filename)
-        
+
+
 @app.route('/get_visitor', methods=['POST'])
 @login_required
 @permission_required('Approve_Visitor')
@@ -974,9 +1055,9 @@ def get_visitor():
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
 
     pageTitle = 'Approve Visitor'
-    
+
     user_permissions = current_user.permissions
-    
+
     if visitor:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -999,7 +1080,7 @@ def get_visitor():
 
             db.session.commit()
             return redirect(url_for('dashboard'))
-        
+
         elif clicked_button_value == 'Reject':
             visitor.status = 'Rejected'
             visitor.approver = current_user.username
@@ -1011,9 +1092,9 @@ def get_visitor():
         image_path = visitor.profilePhoto
         print("Image Path:", visitor.profilePhoto)
         return render_template('filledForm.html', visitor=visitor, image_path=image_path,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
-    
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
+
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
 
@@ -1026,9 +1107,9 @@ def edit_request():
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
 
     pageTitle = 'Edit Visitor Request'
-    
+
     user_permissions = current_user.permissions
-    
+
     if visitor:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -1049,7 +1130,7 @@ def edit_request():
             visitor.emailAddress = request.form.get('emailAddress')
             visitor.noOfVisitors = request.form.get('noOfVisitors')
             visitor.requestTime = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-            visitor.committedDate=datetime.utcnow()
+            visitor.committedDate = datetime.utcnow()
 
             # Retrieve the current history and append new remarks
             current_history = visitor.history
@@ -1072,11 +1153,12 @@ def edit_request():
         image_path = visitor.profilePhoto
         print("Image Path:", visitor.profilePhoto)
         return render_template('editRequest.html', visitor=visitor, image_path=image_path,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
-    
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
+
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
+
 
 @app.route('/visitor', methods=['GET', 'POST'])
 @login_required
@@ -1092,20 +1174,21 @@ def visitor():
     visitor = Visitor.query.filter_by(visitorNo=visitor_no).first()
 
     pageTitle = 'Visitor'
-    
+
     user_permissions = current_user.permissions
-    
+
     if visitor:
         # Read the image file path from the database
         image_path = visitor.profilePhoto
         print("Image Path:", visitor.profilePhoto)
-    
+
         return render_template('visitor.html', visitor=visitor, image_path=image_path,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
-    
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
+
     else:
         return jsonify({'error': 'Visitor not found', 'visitor_no': visitor_no}), 404
+
 
 @app.route('/logout', methods=['GET', 'POST'])
 @login_required
@@ -1113,25 +1196,29 @@ def logout():
     logout_user()
     return redirect(url_for('login'))
 
+
 @app.route('/all_users', methods=['GET', 'POST'])
 @login_required
 @permission_required('Create_User')
 def all_users():
     page = request.args.get('page', 1, type=int)
     rows_per_page = request.args.get('rows_per_page', 10, type=int)
-    status = request.args.get('status', 'active')  # Get status from query parameters
+    # Get status from query parameters
+    status = request.args.get('status', 'active')
 
     pageTitle = 'All Users'
-    
+
     user_permissions = current_user.permissions
-    
+
     if request.method == 'POST':
         # Handle deactivating selected users
         if 'deactivate_selected' in request.form:
             selected_ids = request.form.getlist('user_checkbox')
-            selected_ids = [user_id for user_id in selected_ids if int(user_id) != current_user.id]
+            selected_ids = [user_id for user_id in selected_ids if int(
+                user_id) != current_user.id]
             if selected_ids:
-                User.query.filter(User.id.in_(selected_ids)).update({'status': False}, synchronize_session=False)
+                User.query.filter(User.id.in_(selected_ids)).update(
+                    {'status': False}, synchronize_session=False)
                 db.session.commit()
                 flash(f'{len(selected_ids)} users marked as inactive.', 'success')
             else:
@@ -1140,9 +1227,11 @@ def all_users():
         # Handle activating selected users
         if 'activate_selected' in request.form:
             selected_ids = request.form.getlist('user_checkbox')
-            selected_ids = [user_id for user_id in selected_ids if int(user_id) != current_user.id]
+            selected_ids = [user_id for user_id in selected_ids if int(
+                user_id) != current_user.id]
             if selected_ids:
-                User.query.filter(User.id.in_(selected_ids)).update({'status': True}, synchronize_session=False)
+                User.query.filter(User.id.in_(selected_ids)).update(
+                    {'status': True}, synchronize_session=False)
                 db.session.commit()
                 flash(f'{len(selected_ids)} users marked as active.', 'success')
             else:
@@ -1176,6 +1265,7 @@ def all_users():
                            user_permissions=user_permissions,
                            pageTitle=pageTitle)
 
+
 def get_filtered_users(search_query):
     # Assuming you have a method to filter users based on a search query
     return User.query.filter(
@@ -1187,16 +1277,18 @@ def get_filtered_users(search_query):
     ).all()
 
 # Register route
+
+
 @app.route('/new_employee', methods=['GET', 'POST'])
 @login_required
 @permission_required('Create_User')
 def new_employee():
     form = EmployeeForm()
-    
+
     pageTitle = 'New Employee'
-    
+
     user_permissions = current_user.permissions
-    
+
     if form.validate_on_submit():
         new_employee = Employee(
             employeeNo=form.employeeNo.data,
@@ -1218,23 +1310,26 @@ def new_employee():
                            user_permissions=user_permissions,
                            pageTitle=pageTitle)
 
+
 @app.route('/all_employees', methods=['GET', 'POST'])
 @login_required
 @permission_required('Create_User')
 def all_employees():
     page = request.args.get('page', 1, type=int)
     rows_per_page = request.args.get('rows_per_page', 10, type=int)
-    status = request.args.get('status', 'active')  # Get status from query parameters
+    # Get status from query parameters
+    status = request.args.get('status', 'active')
 
     pageTitle = 'All Employees'
-    
+
     user_permissions = current_user.permissions
-    
+
     if request.method == 'POST':
         if 'deactivate_selected' in request.form:
             employee_ids = request.form.getlist('employee_checkbox')
             if employee_ids:
-                employees = Employee.query.filter(Employee.id.in_(employee_ids)).all()
+                employees = Employee.query.filter(
+                    Employee.id.in_(employee_ids)).all()
                 for employee in employees:
                     employee.status = False
                 db.session.commit()
@@ -1245,7 +1340,8 @@ def all_employees():
         if 'activate_selected' in request.form:
             employee_ids = request.form.getlist('employee_checkbox')
             if employee_ids:
-                employees = Employee.query.filter(Employee.id.in_(employee_ids)).all()
+                employees = Employee.query.filter(
+                    Employee.id.in_(employee_ids)).all()
                 for employee in employees:
                     employee.status = True
                 db.session.commit()
@@ -1281,12 +1377,13 @@ def all_employees():
 
     toggle_button_text = 'Show Inactive' if status == 'active' else 'Show Active'
 
-    return render_template('allEmployees.html', 
+    return render_template('allEmployees.html',
                            employee_pagination=employee_pagination,
                            current_status=status,
                            toggle_button_text=toggle_button_text,
                            user_permissions=user_permissions,
                            pageTitle=pageTitle)
+
 
 def get_filtered_employees(search_query):
     # Assuming you have a method to filter users based on a search query
@@ -1296,7 +1393,8 @@ def get_filtered_employees(search_query):
         (Employee.employeeDesignation.like(f'%{search_query}%')) |
         (Employee.employeeTelephone.like(f'%{search_query}%'))
     ).all()
-    
+
+
 @app.route('/update_employee', methods=['POST'])
 @login_required
 @permission_required('Edit_User')
@@ -1323,6 +1421,7 @@ def update_employee():
 
     return "Invalid request", 400
 
+
 @app.route('/edit/employee/<employeeNo>', methods=['GET'])
 @login_required
 @permission_required('Edit_User')
@@ -1330,12 +1429,13 @@ def get_employee_by_number(employeeNo):
     employee = Employee.query.filter_by(employeeNo=employeeNo).first()
 
     user_permissions = current_user.permissions
-    
+
     if employee:
         return render_template('editEmployee.html', employee=employee,
-                           user_permissions=user_permissions)
+                               user_permissions=user_permissions)
     else:
         return "User not found", 404
+
 
 @app.route('/update_user', methods=['POST'])
 @login_required
@@ -1356,38 +1456,53 @@ def update_user():
 
         if user:
             if password:
-                print(f"Updating password for user {username}")  # Debug statement
-                user.set_password(password) 
+                # Debug statement
+                print(f"Updating password for user {username}")
+                user.set_password(password)
             # Update the user record
             # user.password = password
             user.email = email
             user.name = name
             user.telephoneNo = telephoneNo
             user.level = level
-            
+
             # Handle permissions
-            permissions = Permissions.query.filter_by(username=username).first()
+            permissions = Permissions.query.filter_by(
+                username=username).first()
             if not permissions:
                 permissions = Permissions(username=username)
 
-            permissions.Create_Visitor = 1 if request.form.get('Create_Visitor') else 0
-            permissions.Edit_Visitor = 1 if request.form.get('Edit_Visitor') else 0
-            permissions.Approve_Visitor = 1 if request.form.get('Approve_Visitor') else 0
+            permissions.Create_Visitor = 1 if request.form.get(
+                'Create_Visitor') else 0
+            permissions.Edit_Visitor = 1 if request.form.get(
+                'Edit_Visitor') else 0
+            permissions.Approve_Visitor = 1 if request.form.get(
+                'Approve_Visitor') else 0
             permissions.In_Visitor = 1 if request.form.get('In_Visitor') else 0
-            permissions.Out_Visitor = 1 if request.form.get('Out_Visitor') else 0
-            permissions.Create_Gate_Pass = 1 if request.form.get('Create_Gate_Pass') else 0
-            permissions.Edit_Gate_Pass = 1 if request.form.get('Edit_Gate_Pass') else 0
-            permissions.Approve_Gate_Pass = 1 if request.form.get('Approve_Gate_Pass') else 0
-            permissions.Confirmed_Gate_Pass = 1 if request.form.get('Confirmed_Gate_Pass') else 0
-            permissions.In_Gate_Pass = 1 if request.form.get('In_Gate_Pass') else 0
-            permissions.Out_Gate_Pass = 1 if request.form.get('Out_Gate_Pass') else 0
-            permissions.Create_User = 1 if request.form.get('Create_User') else 0
-            permissions.Delete_User = 1 if request.form.get('Delete_User') else 0
+            permissions.Out_Visitor = 1 if request.form.get(
+                'Out_Visitor') else 0
+            permissions.Create_Gate_Pass = 1 if request.form.get(
+                'Create_Gate_Pass') else 0
+            permissions.Edit_Gate_Pass = 1 if request.form.get(
+                'Edit_Gate_Pass') else 0
+            permissions.Approve_Gate_Pass = 1 if request.form.get(
+                'Approve_Gate_Pass') else 0
+            permissions.Confirmed_Gate_Pass = 1 if request.form.get(
+                'Confirmed_Gate_Pass') else 0
+            permissions.In_Gate_Pass = 1 if request.form.get(
+                'In_Gate_Pass') else 0
+            permissions.Out_Gate_Pass = 1 if request.form.get(
+                'Out_Gate_Pass') else 0
+            permissions.Create_User = 1 if request.form.get(
+                'Create_User') else 0
+            permissions.Delete_User = 1 if request.form.get(
+                'Delete_User') else 0
             permissions.Edit_User = 1 if request.form.get('Edit_User') else 0
-            permissions.Create_Reports = 1 if request.form.get('Create_Reports') else 0
+            permissions.Create_Reports = 1 if request.form.get(
+                'Create_Reports') else 0
             permissions.hod = 1 if request.form.get('hod') else 0
             permissions.outerUser = 1 if request.form.get('outerUser') else 0
-            
+
             # Add or update permissions entry
             db.session.add(permissions)
             db.session.commit()
@@ -1408,15 +1523,16 @@ def get_user_by_username(username):
     permissions = Permissions.query.filter_by(username=username).first()
 
     user_permissions = current_user.permissions
-    
+
     if user:
         # Initialize the form and set the initial data based on the current permissions
         form2 = PermissionsForm(obj=permissions)
         return render_template('editUser.html', user=user, form2=form2,
-                           user_permissions=user_permissions)
+                               user_permissions=user_permissions)
     else:
         return "User not found", 404
-    
+
+
 @app.route('/export_excel/user', methods=['POST'])
 @login_required
 @permission_required('Create_Reports')
@@ -1429,7 +1545,8 @@ def export_excel_user():
     ws = wb.active
 
     # Define headers to be included in the worksheet
-    headers = ['Index', 'username', 'email', 'name', 'telephoneNo', 'level']  # Include 'Index'
+    headers = ['Index', 'username', 'email', 'name',
+               'telephoneNo', 'level']  # Include 'Index'
     ws.append(headers)
 
     # Write data to the worksheet with an index
@@ -1437,7 +1554,8 @@ def export_excel_user():
         ws.append([index] + [getattr(row, field) for field in headers[1:]])
 
     # Create a table
-    table = Table(displayName="UserData", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+    table = Table(displayName="UserData",
+                  ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
     style = TableStyleInfo(
         name="TableStyleMedium9", showFirstColumn=False,
         showLastColumn=False, showRowStripes=True, showColumnStripes=True)
@@ -1469,6 +1587,7 @@ def export_excel_user():
         as_attachment=True,
         download_name='users.xlsx'
     )
+
 
 @app.route('/export_excel/visitor', methods=['POST'])
 @login_required
@@ -1507,19 +1626,21 @@ def export_excel_visitor():
     # Write data to the worksheet
     for row in data:
         ws.append([
-            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime('%Y-%m-%d %H:%M:%S')
+            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime(
+                '%Y-%m-%d %H:%M:%S')
             for field in headers
         ])
 
     # Create a table range
-    table = Table(displayName="VisitorTable", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+    table = Table(displayName="VisitorTable",
+                  ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
 
     # Add a TableStyleInfo to the table
     style = TableStyleInfo(
         name="TableStyleMedium9", showFirstColumn=False,
         showLastColumn=False, showRowStripes=True, showColumnStripes=True
     )
-    
+
     table.tableStyleInfo = style
 
     # Add the table to the worksheet
@@ -1550,6 +1671,7 @@ def export_excel_visitor():
         as_attachment=True,
         download_name='visitor_records.xlsx'
     )
+
 
 @app.route('/export_excel/employee_gate_pass', methods=['POST'])
 @login_required
@@ -1588,19 +1710,21 @@ def export_excel_employee_gate_pass():
     # Write data to the worksheet
     for row in data:
         ws.append([
-            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime('%Y-%m-%d %H:%M:%S')
+            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime(
+                '%Y-%m-%d %H:%M:%S')
             for field in headers
         ])
 
     # Create a table range
-    table = Table(displayName="EmployeeGatePassTable", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+    table = Table(displayName="EmployeeGatePassTable",
+                  ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
 
     # Add a TableStyleInfo to the table
     style = TableStyleInfo(
         name="TableStyleMedium9", showFirstColumn=False,
         showLastColumn=False, showRowStripes=True, showColumnStripes=True
     )
-    
+
     table.tableStyleInfo = style
 
     # Add the table to the worksheet
@@ -1668,19 +1792,21 @@ def export_excel_gate_pass_list():
     # Write data to the worksheet
     for row in data:
         ws.append([
-            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime('%Y-%m-%d %H:%M:%S')
+            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime(
+                '%Y-%m-%d %H:%M:%S')
             for field in headers
         ])
 
     # Create a table range
-    table = Table(displayName="EmployeeGatePassTable", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+    table = Table(displayName="EmployeeGatePassTable",
+                  ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
 
     # Add a TableStyleInfo to the table
     style = TableStyleInfo(
         name="TableStyleMedium9", showFirstColumn=False,
         showLastColumn=False, showRowStripes=True, showColumnStripes=True
     )
-    
+
     table.tableStyleInfo = style
 
     # Add the table to the worksheet
@@ -1713,6 +1839,8 @@ def export_excel_gate_pass_list():
     )
 
 # New function for filtering driver gate passes by driverNo and date range
+
+
 @app.route('/export_excel/driver_gate_pass', methods=['POST'])
 @login_required
 @permission_required('Create_Reports')
@@ -1735,8 +1863,8 @@ def export_excel_driver_gate_pass():
     ws.title = f"Driver {driver_no} Gate Pass"
 
     headers = [
-        'id', 'driverGatePassId', 'driverNo', 'driverName', 'driverCompany', 'driverDepartingTime', 'driverDepartingDate', 
-        'driverArrivalTime', 'driverVehicleNo', 'driverDepartingReason', 'driverDepartingDestinationRemark', 
+        'id', 'driverGatePassId', 'driverNo', 'driverName', 'driverCompany', 'driverDepartingTime', 'driverDepartingDate',
+        'driverArrivalTime', 'driverVehicleNo', 'driverDepartingReason', 'driverDepartingDestinationRemark',
         'driverFormStatus', 'driverOutMark', 'driverInMark', 'committedDate', 'driverGatePassRequester'
     ]
 
@@ -1744,17 +1872,21 @@ def export_excel_driver_gate_pass():
 
     for row in data:
         ws.append([
-            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime('%Y-%m-%d %H:%M:%S')
+            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime(
+                '%Y-%m-%d %H:%M:%S')
             for field in headers
         ])
 
-    table = Table(displayName="DriverGatePassTable", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
-    style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False, showLastColumn=False, showRowStripes=True, showColumnStripes=True)
+    table = Table(displayName="DriverGatePassTable",
+                  ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+    style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
+                           showLastColumn=False, showRowStripes=True, showColumnStripes=True)
     table.tableStyleInfo = style
     ws.add_table(table)
 
     for column in ws.columns:
-        max_length = max((len(str(cell.value)) for cell in column if cell.value), default=10)
+        max_length = max((len(str(cell.value))
+                         for cell in column if cell.value), default=10)
         ws.column_dimensions[column[0].column_letter].width = max_length + 2
 
     excel_data = BytesIO()
@@ -1762,6 +1894,7 @@ def export_excel_driver_gate_pass():
     excel_data.seek(0)
 
     return send_file(excel_data, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', as_attachment=True, download_name=f'driver_gate_pass_{driver_no}.xlsx')
+
 
 @app.route('/export_excel/driver_gate_pass_list', methods=['POST'])
 @login_required
@@ -1788,8 +1921,8 @@ def export_excel_driver_gate_pass_list():
 
     # Define headers for the worksheet
     headers = [
-        'id', 'driverGatePassId', 'driverNo', 'driverName', 'driverCompany', 'driverDepartingTime', 'driverDepartingDate', 
-        'driverArrivalTime', 'driverVehicleNo', 'driverDepartingReason', 'driverDepartingDestinationRemark', 
+        'id', 'driverGatePassId', 'driverNo', 'driverName', 'driverCompany', 'driverDepartingTime', 'driverDepartingDate',
+        'driverArrivalTime', 'driverVehicleNo', 'driverDepartingReason', 'driverDepartingDestinationRemark',
         'driverFormStatus', 'driverOutMark', 'driverInMark', 'committedDate', 'driverGatePassRequester'
     ]
 
@@ -1799,12 +1932,14 @@ def export_excel_driver_gate_pass_list():
     # Write data to the worksheet
     for row in data:
         ws.append([
-            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime('%Y-%m-%d %H:%M:%S')
+            getattr(row, field) if field != 'committedDate' else row.committedDate.strftime(
+                '%Y-%m-%d %H:%M:%S')
             for field in headers
         ])
 
     # Create a table range
-    table = Table(displayName="DriverGatePassTable", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+    table = Table(displayName="DriverGatePassTable",
+                  ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
 
     # Add a TableStyleInfo to the table
     style = TableStyleInfo(
@@ -1842,6 +1977,7 @@ def export_excel_driver_gate_pass_list():
         download_name='driver_gate_pass_records.xlsx'
     )
 
+
 @app.route('/export_excel/driver_attendance', methods=['POST'])
 @login_required
 @permission_required('Create_Reports')
@@ -1870,13 +2006,16 @@ def export_excel_driver_attendance():
             row.id, row.employeeNo, row.date, row.inTime, row.outTime, row.status
         ])
 
-    table = Table(displayName="DriverAttendanceTable", ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
-    style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False, showLastColumn=False, showRowStripes=True, showColumnStripes=True)
+    table = Table(displayName="DriverAttendanceTable",
+                  ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+    style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
+                           showLastColumn=False, showRowStripes=True, showColumnStripes=True)
     table.tableStyleInfo = style
     ws.add_table(table)
 
     for column in ws.columns:
-        max_length = max((len(str(cell.value)) for cell in column if cell.value), default=10)
+        max_length = max((len(str(cell.value))
+                         for cell in column if cell.value), default=10)
         ws.column_dimensions[column[0].column_letter].width = max_length + 2
 
     excel_data = BytesIO()
@@ -1890,25 +2029,32 @@ def export_excel_driver_attendance():
         download_name='driver_attendance.xlsx'
     )
 
+
 @app.route('/upload', methods=['GET', 'POST'])
 def upload():
     form = ImageUploadForm()
 
     if form.validate_on_submit():
-        user = User.query.filter_by(username='username_of_logged_in_user').first()  # Replace with actual username
+        # Replace with actual username
+        user = User.query.filter_by(
+            username='username_of_logged_in_user').first()
         if user:
             image = form.image.data
             filename = secure_filename(image.filename)
-            image.save(os.path.join(app.root_path, 'static', 'uploads', filename))
+            image.save(os.path.join(app.root_path,
+                       'static', 'uploads', filename))
             user.image = filename
             db.session.commit()
-            return redirect(url_for('profile'))  # Redirect to user's profile page
+            # Redirect to user's profile page
+            return redirect(url_for('profile'))
 
     return render_template('error.html', form=form)
 
+
 @app.route('/profile')
 def profile():
-    user = User.query.filter_by(username='username_of_logged_in_user').first()  # Replace with actual username
+    # Replace with actual username
+    user = User.query.filter_by(username='username_of_logged_in_user').first()
     return render_template('profile.html', user=user)
 
 
@@ -1916,15 +2062,15 @@ def profile():
 @login_required
 @permission_required('Create_Gate_Pass')
 def gate_pass():
-    
+
     user_permissions = current_user.permissions
-    
+
     pageTitle = 'New Gate Pass'
-    
+
     employee_list = Employee.query.filter().all()
-    
+
     gate_pass_code = generate_gatePassId()
-    
+
     if request.method == 'POST':
         print("Form submitted")
         employee_no = request.form.get('employeeNo', '')
@@ -1934,19 +2080,21 @@ def gate_pass():
         employee_departing_date = request.form.get('employeeDepartingDate', '')
         employee_arrival_time = request.form.get('employeeArrivalTime', '')
         employee_vehicle_no = request.form.get('employeeVehicleNo', '')
-        employee_departing_reason = request.form.get('employeeDepartingReason', '')
-        employee_departing_remark = request.form.get('employeeDepartingRemark', '')
+        employee_departing_reason = request.form.get(
+            'employeeDepartingReason', '')
+        employee_departing_remark = request.form.get(
+            'employeeDepartingRemark', '')
         employee_officer = request.form.get('employeeOfficer', '')
         employee_confirmed_by = request.form.get('employeeConfirmedBy', '')
         employee_status = 'Pending'
         gatePassRequester = current_user.username
         gatePassId = gate_pass_code
         print(gatePassId)
-        
+
         if not employee_no:
-            return render_template('newGatePass.html', 
+            return render_template('newGatePass.html',
                                    error_message='You must enter a Employee ID')
-        
+
         gatepass = GatePass(
             employeeNo=employee_no,
             employeeName=employee_name,
@@ -1980,6 +2128,7 @@ def gate_pass():
                            user_permissions=user_permissions,
                            pageTitle=pageTitle)
 
+
 def generate_gatePassId():
     # Get the current date in YYYYMMDD format
     today_gate_pass = datetime.now().strftime('%Y%m%d')
@@ -2003,14 +2152,15 @@ def generate_gatePassId():
     gate_pass_code = f'{today_gate_pass}{gate_pass_counter}'
     return gate_pass_code
 
+
 @app.route('/drivergatepass', methods=['GET', 'POST'])
 @login_required
 @permission_required('Create_Gate_Pass')
 def driver_gate_pass():
-    
+
     user_permissions = current_user.permissions
     pageTitle = 'New Driver Gate Pass'
-    
+
     today = datetime.utcnow().date()
     todaySimple = datetime.utcnow().strftime("%Y%m%d")
 
@@ -2024,7 +2174,8 @@ def driver_gate_pass():
             gate_pass_alias.driverNo,
             func.max(gate_pass_alias.id).label("latest_gate_pass_id")
         )
-        .filter(gate_pass_alias.driverGatePassId.like(f"D{todaySimple}%"))  # Gate pass must be from today
+        # Gate pass must be from today
+        .filter(gate_pass_alias.driverGatePassId.like(f"D{todaySimple}%"))
         .group_by(gate_pass_alias.driverNo)
         .subquery()
     )
@@ -2047,7 +2198,8 @@ def driver_gate_pass():
             attendance_alias.date == today,
             db.or_(
                 latest_gate_pass_subquery.c.latest_gate_pass_id == None,  # No gate pass today
-                gate_pass_alias.driverFormStatus == "In"  # If they have a gate pass, status must be "In"
+                # If they have a gate pass, status must be "In"
+                gate_pass_alias.driverFormStatus == "In"
             )
         )
         .all()
@@ -2056,7 +2208,7 @@ def driver_gate_pass():
     print(driver_list)
 
     driver_gate_pass_code = generate_driverGatePassId()
-    
+
     if request.method == 'POST':
         print("Form submitted")
         driver_no = request.form.get('driverNo', '')
@@ -2067,16 +2219,17 @@ def driver_gate_pass():
         driver_arrival_time = request.form.get('driverArrivalTime', '')
         driver_vehicle_no = request.form.get('driverVehicleNo', '')
         driver_departing_reason = request.form.get('driverDepartingReason', '')
-        driver_departing_destination_remark = request.form.get('driverDepartingDestinationRemark', '') 
+        driver_departing_destination_remark = request.form.get(
+            'driverDepartingDestinationRemark', '')
         driver_status = 'Requested'
         driverGatePassRequester = current_user.username
         driverGatePassId = driver_gate_pass_code
         print(driverGatePassId)
-        
+
         if not driver_no:
-            return render_template('newDriverGatePass.html', 
+            return render_template('newDriverGatePass.html',
                                    error_message='You must enter an driver ID')
-        
+
         driver_gate_pass = DriverGatePass(  # Updated model reference
             driverNo=driver_no,
             driverName=driver_name,
@@ -2107,6 +2260,7 @@ def driver_gate_pass():
                            user_permissions=user_permissions,
                            pageTitle=pageTitle)
 
+
 def generate_driverGatePassId():
     # Get the current date in YYYYMMDD format
     today_driver_gate_pass = datetime.now().strftime('%Y%m%d')
@@ -2120,8 +2274,10 @@ def generate_driverGatePassId():
 
     if latest_driverGate_pass:
         # Extract and increment the counter part of the gate pass ID
-        current_driver_gate_pass_counter = int(latest_driverGate_pass.driverGatePassId[-4:])
-        driver_gate_pass_counter = str(current_driver_gate_pass_counter + 1).zfill(4)
+        current_driver_gate_pass_counter = int(
+            latest_driverGate_pass.driverGatePassId[-4:])
+        driver_gate_pass_counter = str(
+            current_driver_gate_pass_counter + 1).zfill(4)
     else:
         # If no gate pass is found for the current date, start the counter at '0001'
         driver_gate_pass_counter = '0001'
@@ -2130,80 +2286,86 @@ def generate_driverGatePassId():
     driver_gate_pass_code = f'D{today_driver_gate_pass}{driver_gate_pass_counter}'
     return driver_gate_pass_code
 
+
 @app.route('/out_drivergatepass', methods=['POST'])
 @login_required
 @permission_required('Out_Gate_Pass')
 def out_drivergatepass():
     driverGatePassId = request.form.get('driverGatePassId')
     driverFormStatus = request.form.get('driverFormStatus')
-    driverGatePassForm = DriverGatePass.query.filter_by(driverGatePassId=driverGatePassId).first()
+    driverGatePassForm = DriverGatePass.query.filter_by(
+        driverGatePassId=driverGatePassId).first()
 
     pageTitle = 'Out Driver Gate Pass'
-    
+
     user_permissions = current_user.permissions
-    
+
     if driverGatePassForm:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
         print(clicked_button_value)
         status = driverFormStatus
-            
+
         if clicked_button_value == 'Out':
             driverGatePassForm.driverFormStatus = 'Out'
             driverGatePassForm.driverOutMark = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
-            
+
         return render_template('requestedDriverGatePass.html', driverGatePassForm=driverGatePassForm, status=status,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
-        
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
+
     else:
         return jsonify({'error': 'Employee not found'}), 404
-    
+
+
 @app.route('/in_drivergatepass', methods=['POST'])
 @login_required
 @permission_required('In_Gate_Pass')
 def in_drivergatepass():
     driverGatePassId = request.form.get('driverGatePassId')
     driverFormStatus = request.form.get('driverFormStatus')
-    driverGatePassForm = DriverGatePass.query.filter_by(driverGatePassId=driverGatePassId).first()
+    driverGatePassForm = DriverGatePass.query.filter_by(
+        driverGatePassId=driverGatePassId).first()
 
     pageTitle = 'In Driver Gate Pass'
-    
+
     user_permissions = current_user.permissions
-    
+
     if driverGatePassForm:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
         print(clicked_button_value)
         status = driverFormStatus
-            
+
         if clicked_button_value == 'In':
             driverGatePassForm.driverFormStatus = 'In'
             driverGatePassForm.driverInMark = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
-            
+
         return render_template('outDriverGatePass.html', driverGatePassForm=driverGatePassForm, status=status,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
-        
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
+
     else:
         return jsonify({'error': 'Employee not found'}), 404
-     
+
+
 @app.route('/edit_drivergatepass', methods=['POST'])
 @login_required
 @permission_required('Edit_Gate_Pass')
 def edit_drivergatepass():
     driverGatePassId = request.form.get('driverGatePassId')
-    driverGatePassForm = DriverGatePass.query.filter_by(driverGatePassId=driverGatePassId).first()
+    driverGatePassForm = DriverGatePass.query.filter_by(
+        driverGatePassId=driverGatePassId).first()
     print(driverGatePassForm)
 
     pageTitle = 'Edit Driver Gate Pass Request'
-    
+
     user_permissions = current_user.permissions
-    
+
     if driverGatePassForm:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -2211,24 +2373,32 @@ def edit_drivergatepass():
 
         # Your logic based on the clicked button value
         if clicked_button_value == 'Save':
-            driverGatePassForm.driverCompany = request.form.get('driverCompany')
-            driverGatePassForm.driverDepartingTime = request.form.get('driverDepartingTime')
-            driverGatePassForm.driverDepartingDate = request.form.get('driverDepartingDate')
-            driverGatePassForm.driverArrivalTime = request.form.get('driverArrivalTime')
-            driverGatePassForm.driverVehicleNo = request.form.get('driverVehicleNo')
-            driverGatePassForm.driverDepartingReason = request.form.get('driverDepartingReason')
-            driverGatePassForm.driverDepartingDestinationRemark = request.form.get('driverDepartingDestinationRemark')
+            driverGatePassForm.driverCompany = request.form.get(
+                'driverCompany')
+            driverGatePassForm.driverDepartingTime = request.form.get(
+                'driverDepartingTime')
+            driverGatePassForm.driverDepartingDate = request.form.get(
+                'driverDepartingDate')
+            driverGatePassForm.driverArrivalTime = request.form.get(
+                'driverArrivalTime')
+            driverGatePassForm.driverVehicleNo = request.form.get(
+                'driverVehicleNo')
+            driverGatePassForm.driverDepartingReason = request.form.get(
+                'driverDepartingReason')
+            driverGatePassForm.driverDepartingDestinationRemark = request.form.get(
+                'driverDepartingDestinationRemark')
 
             db.session.commit()
             return redirect(url_for('dashboard'))
-        
+
         return render_template('editDriverGatePass.html', driverGatePassForm=driverGatePassForm,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
 
     else:
         return jsonify({'error': 'Employee not found', 'driverGatePassId': driverGatePassForm}), 404
- 
+
+
 @app.route('/approve_gatepass', methods=['POST'])
 @login_required
 @permission_required('Approve_Gate_Pass')
@@ -2238,9 +2408,9 @@ def approve_gatepass():
     gatePassForm = GatePass.query.filter_by(gatePassId=gatePassId).first()
 
     pageTitle = 'Approve Gate Pass'
-    
+
     user_permissions = current_user.permissions
-    
+
     if gatePassForm:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -2249,27 +2419,28 @@ def approve_gatepass():
 
         # Your logic based on the clicked button value
         if clicked_button_value == 'Approve':
-            
+
             pageTitle = 'Approved Gate Pass Forms'
-    
+
             gatePassForm.employeeFormStatus = 'Approved'
             gatePassForm.employeeOfficer = current_user.username
 
             db.session.commit()
             return redirect(url_for('dashboard'))
-            
+
         elif clicked_button_value == 'Reject':
             gatePassForm.employeeFormStatus = 'Approve Rejected'
             gatePassForm.employeeOfficer = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
-           
+
         return render_template('pendingGatePass.html', gatePassForm=gatePassForm, status=status,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
-        
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
+
     else:
         return jsonify({'error': 'Employee not found'}), 404
+
 
 @app.route('/confirm_gatepass', methods=['POST'])
 @login_required
@@ -2280,9 +2451,9 @@ def confirm_gatepass():
     gatePassForm = GatePass.query.filter_by(gatePassId=gatePassId).first()
 
     pageTitle = 'Confirm Gate Pass'
-    
+
     user_permissions = current_user.permissions
-    
+
     if gatePassForm:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -2294,19 +2465,20 @@ def confirm_gatepass():
             gatePassForm.employeeConfirmedBy = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
-            
+
         elif clicked_button_value == 'Reject-confirm':
             gatePassForm.employeeFormStatus = 'Confirm Rejected'
             gatePassForm.employeeConfirmedBy = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
-            
+
         return render_template('approvedGatePass.html', gatePassForm=gatePassForm, status=status,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
-        
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
+
     else:
         return jsonify({'error': 'Employee not found'}), 404
+
 
 @app.route('/out_gatepass', methods=['POST'])
 @login_required
@@ -2317,28 +2489,29 @@ def out_gatepass():
     gatePassForm = GatePass.query.filter_by(gatePassId=gatePassId).first()
 
     pageTitle = 'Out Gate Pass'
-    
+
     user_permissions = current_user.permissions
-    
+
     if gatePassForm:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
         print(clicked_button_value)
         status = employeeFormStatus
-            
+
         if clicked_button_value == 'Out':
             gatePassForm.employeeFormStatus = 'Out'
             gatePassForm.employeeOutMark = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
-            
+
         return render_template('confirmedGatePass.html', gatePassForm=gatePassForm, status=status,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
-        
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
+
     else:
         return jsonify({'error': 'Employee not found'}), 404
-    
+
+
 @app.route('/in_gatepass', methods=['POST'])
 @login_required
 @permission_required('In_Gate_Pass')
@@ -2348,28 +2521,29 @@ def in_gatepass():
     gatePassForm = GatePass.query.filter_by(gatePassId=gatePassId).first()
 
     pageTitle = 'In Gate Pass'
-    
+
     user_permissions = current_user.permissions
-    
+
     if gatePassForm:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
         print(clicked_button_value)
         status = employeeFormStatus
-            
+
         if clicked_button_value == 'In':
             gatePassForm.employeeFormStatus = 'In'
             gatePassForm.employeeInMark = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
-            
+
         return render_template('outGatePass.html', gatePassForm=gatePassForm, status=status,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
-        
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
+
     else:
         return jsonify({'error': 'Employee not found'}), 404
-    
+
+
 @app.route('/edit_gatepass', methods=['POST'])
 @login_required
 @permission_required('Edit_Gate_Pass')
@@ -2379,9 +2553,9 @@ def edit_gatepass():
     print(gatePassForm)
 
     pageTitle = 'Edit Gate Pass Request'
-    
+
     user_permissions = current_user.permissions
-    
+
     if gatePassForm:
         # Access the value of the clicked button from the form data
         clicked_button_value = request.form.get('changeStatus')
@@ -2390,22 +2564,29 @@ def edit_gatepass():
         # Your logic based on the clicked button value
         if clicked_button_value == 'Save':
             gatePassForm.employeeCompany = request.form.get('employeeCompany')
-            gatePassForm.employeeDepartingTime = request.form.get('employeeDepartingTime')
-            gatePassForm.employeeDepartingDate = request.form.get('employeeDepartingDate')
-            gatePassForm.employeeArrivalTime = request.form.get('employeeArrivalTime')
-            gatePassForm.employeeVehicleNo = request.form.get('employeeVehicleNo')
-            gatePassForm.employeeDepartingReason = request.form.get('employeeDepartingReason')
-            gatePassForm.employeeDepartingRemark = request.form.get('employeeDepartingRemark')
+            gatePassForm.employeeDepartingTime = request.form.get(
+                'employeeDepartingTime')
+            gatePassForm.employeeDepartingDate = request.form.get(
+                'employeeDepartingDate')
+            gatePassForm.employeeArrivalTime = request.form.get(
+                'employeeArrivalTime')
+            gatePassForm.employeeVehicleNo = request.form.get(
+                'employeeVehicleNo')
+            gatePassForm.employeeDepartingReason = request.form.get(
+                'employeeDepartingReason')
+            gatePassForm.employeeDepartingRemark = request.form.get(
+                'employeeDepartingRemark')
 
             db.session.commit()
             return redirect(url_for('dashboard'))
-        
+
         return render_template('editGatePass.html', gatePassForm=gatePassForm,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
 
     else:
         return jsonify({'error': 'Employee not found', 'gatePassId': gatePassForm}), 404
+
 
 @app.route('/gate_pass_form', methods=['GET', 'POST'])
 @login_required
@@ -2421,14 +2602,14 @@ def gate_pass_form():
     gate_pass = GatePass.query.filter_by(gatePassId=gatePassId).first()
 
     pageTitle = 'Gate Pass Form'
-    
+
     user_permissions = current_user.permissions
-    
+
     if visitor:
         return render_template('gatePassForm.html', gate_pass=gate_pass,
-                           user_permissions=user_permissions,
-                           pageTitle=pageTitle)
-    
+                               user_permissions=user_permissions,
+                               pageTitle=pageTitle)
+
     else:
         return jsonify({'error': 'Gate Pass Form not found', 'gatePassId': gatePassId}), 404
 
@@ -2437,18 +2618,20 @@ def gate_pass_form():
 @login_required
 @permission_required('Out_Gate_Pass')
 def mark_attendance():
-    
+
     pageTitle = "Mark Driver Attendance"
-    
+
     user_permissions = current_user.permissions
 
     today = date.today()
-    driver_list = DriverAttendance.query.filter(DriverAttendance.date == today, DriverAttendance.status == "Not Present").all()
-    
-    employee_list = Employee.query.filter(Employee.employeeDesignation == 'Driver').all()
-    
+    driver_list = DriverAttendance.query.filter(
+        DriverAttendance.date == today, DriverAttendance.status == "Not Present").all()
+
+    employee_list = Employee.query.filter(
+        Employee.employeeDesignation == 'Driver').all()
+
     present_attendance = DriverAttendance.query.filter(
-        DriverAttendance.date == today, 
+        DriverAttendance.date == today,
         DriverAttendance.status == "Present"
     ).all()
 
@@ -2457,12 +2640,15 @@ def mark_attendance():
     for attendance in present_attendance:
         print(f"[DEBUG] Raw inTime from DB: {attendance.inTime}")  # add this!
 
-        employee = Employee.query.filter_by(employeeNo=attendance.employeeNo).first()
+        employee = Employee.query.filter_by(
+            employeeNo=attendance.employeeNo).first()
 
         try:
-            parsed_time = datetime.strptime(attendance.inTime, "%Y-%m-%d %H:%M:%S")
+            parsed_time = datetime.strptime(
+                attendance.inTime, "%Y-%m-%d %H:%M:%S")
         except Exception as e:
-            print(f"[DEBUG] Failed to parse inTime for {attendance.employeeNo}: {e}")
+            print(
+                f"[DEBUG] Failed to parse inTime for {attendance.employeeNo}: {e}")
             parsed_time = None
 
         present_list.append({
@@ -2478,14 +2664,16 @@ def mark_attendance():
         today = date.today()
 
         # Find driver in Employee table
-        driver = Employee.query.filter_by(employeeNo=driver_id, employeeDesignation="Driver").first()
+        driver = Employee.query.filter_by(
+            employeeNo=driver_id, employeeDesignation="Driver").first()
 
         if not driver:
             flash("Invalid Driver ID!", "danger")
             return redirect(url_for("mark_attendance"))
 
         # Get today's attendance record
-        attendance = DriverAttendance.query.filter_by(employeeNo=driver_id, date=today, status="Not Present").first()
+        attendance = DriverAttendance.query.filter_by(
+            employeeNo=driver_id, date=today, status="Not Present").first()
 
         if attendance:
             now = datetime.now()
@@ -2505,32 +2693,38 @@ def mark_attendance():
 @login_required
 @permission_required('Out_Gate_Pass')
 def mark_attendance_out():
-    
+
     pageTitle = "Mark Driver Attendance Off"
-    
+
     user_permissions = current_user.permissions
 
     today = date.today()
-    driver_list = DriverAttendance.query.filter(DriverAttendance.date == today, DriverAttendance.status == "Present").all()
-    
-    employee_list = Employee.query.filter(Employee.employeeDesignation == 'Driver').all()
-    
+    driver_list = DriverAttendance.query.filter(
+        DriverAttendance.date == today, DriverAttendance.status == "Present").all()
+
+    employee_list = Employee.query.filter(
+        Employee.employeeDesignation == 'Driver').all()
+
     depart_attendance = DriverAttendance.query.filter(
-        DriverAttendance.date == today, 
+        DriverAttendance.date == today,
         DriverAttendance.status == "Departed"
     ).all()
 
     departed_list = []
 
     for attendance in depart_attendance:
-        print(f"[DEBUG] Raw outTime from DB: {attendance.outTime}")  # add this!
+        # add this!
+        print(f"[DEBUG] Raw outTime from DB: {attendance.outTime}")
 
-        employee = Employee.query.filter_by(employeeNo=attendance.employeeNo).first()
+        employee = Employee.query.filter_by(
+            employeeNo=attendance.employeeNo).first()
 
         try:
-            parsed_time = datetime.strptime(attendance.outTime, "%Y-%m-%d %H:%M:%S")
+            parsed_time = datetime.strptime(
+                attendance.outTime, "%Y-%m-%d %H:%M:%S")
         except Exception as e:
-            print(f"[DEBUG] Failed to parse outTime for {attendance.employeeNo}: {e}")
+            print(
+                f"[DEBUG] Failed to parse outTime for {attendance.employeeNo}: {e}")
             parsed_time = None
 
         departed_list.append({
@@ -2546,14 +2740,16 @@ def mark_attendance_out():
         today = date.today()
 
         # Find driver in Employee table
-        driver = Employee.query.filter_by(employeeNo=driver_id, employeeDesignation="Driver").first()
+        driver = Employee.query.filter_by(
+            employeeNo=driver_id, employeeDesignation="Driver").first()
 
         if not driver:
             flash("Invalid Driver ID!", "danger")
             return redirect(url_for("mark_attendance_out"))
 
         # Get today's attendance record
-        attendance = DriverAttendance.query.filter_by(employeeNo=driver_id, date=today, status="Present").first()
+        attendance = DriverAttendance.query.filter_by(
+            employeeNo=driver_id, date=today, status="Present").first()
 
         if attendance:
             now = datetime.now()
@@ -2568,15 +2764,15 @@ def mark_attendance_out():
 
     return render_template("markAttendanceOut.html", driver_list=driver_list, pageTitle=pageTitle, user_permissions=user_permissions, employee_list=employee_list, departed_list=departed_list)
 
+
 @app.route('/help')
 @login_required
 def help():
     pageTitle = 'Help'
-    
-    user_permissions = current_user.permissions
-    
-    return render_template('help.html', user_permissions=user_permissions, pageTitle=pageTitle)
 
+    user_permissions = current_user.permissions
+
+    return render_template('help.html', user_permissions=user_permissions, pageTitle=pageTitle)
 
 
 @app.errorhandler(404)
@@ -2587,7 +2783,6 @@ def page_not_found(e):
     else:
         # Redirect to login for non-authenticated users
         return redirect(url_for('login'))
-
 
 
 if __name__ == "__main__":
