@@ -1870,8 +1870,8 @@ textarea#history {
     padding: 0 20px 0 0;
 }
 
-.gate-pass-detail-block .gate-pass-input-container:nth-child(2) {
-    padding: 0 0 0 20px;
+.gate-pass-detail-block .gate-pass-input-container:nth-child(2), .time-period.gate-pass-detail-block .gate-pass-input-container:nth-child(2) {
+    padding: 0 0 0 20px !important;
 }
 
 .gate-pass-detail-block.departing-reason .gate-pass-input-container,
