@@ -103,7 +103,7 @@
                 <img src="{{ url_for('serve_uploaded_image', filename=visitor.profilePhoto) }}" alt="Visitor Photo">
                 {% endif %}
                 <button type="submit" style="display: flex; align-items: center; justify-content: space-between;">
-                    <span class="visitorsListDetail">{{ visitor.visitorNo }}</span>
+                    <span class="visitorsListDetail monospaced">{{ visitor.visitorNo }}</span>
                     {% if visitor.companyName %}
                     <span class="visitorsListDetail">{{ visitor.companyName }}</span>
                     {% else %}

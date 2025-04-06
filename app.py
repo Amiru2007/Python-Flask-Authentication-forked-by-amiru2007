@@ -430,10 +430,10 @@ class EmployeeForm(FlaskForm):
         InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Name with initials"})
 
     employeeDesignation = StringField(validators=[
-        InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Destination"})
+        Length(min=0, max=80)], render_kw={"placeholder": "Destination"})
 
     employeeTelephone = StringField(validators=[
-        InputRequired(), Length(min=8, max=80)], render_kw={"placeholder": "Phone Number"})
+        Length(min=8, max=80)], render_kw={"placeholder": "Phone Number"})
 
     submit = SubmitField('Create')
 
@@ -1240,7 +1240,13 @@ def all_users():
         search_query = request.form.get('search_query')
         if search_query:
             users_pagination = User.query.filter(
-                User.username.contains(search_query),
+                or_(
+                    User.username.contains(search_query),
+                    User.email.contains(search_query),
+                    User.name.contains(search_query),
+                    User.telephoneNo.contains(search_query),
+                    User.level.contains(search_query)
+                ),
                 User.status == (status == 'active'),
                 User.id != current_user.id
             ).paginate(page=page, per_page=rows_per_page)
@@ -1353,13 +1359,23 @@ def all_employees():
     if search_query:
         if status == 'active':
             employee_pagination = Employee.query.filter(
-                Employee.nameWithInitials.contains(search_query),
+                or_(
+                    Employee.nameWithInitials.contains(search_query),
+                    Employee.employeeNo.contains(search_query),
+                    Employee.employeeDesignation.contains(search_query),
+                    Employee.employeeTelephone.contains(search_query)
+                ),
                 Employee.status == True,
                 Employee.id != current_user.id
             ).paginate(page=page, per_page=rows_per_page)
         else:
             employee_pagination = Employee.query.filter(
-                Employee.nameWithInitials.contains(search_query),
+                or_(
+                    Employee.nameWithInitials.contains(search_query),
+                    Employee.employeeNo.contains(search_query),
+                    Employee.employeeDesignation.contains(search_query),
+                    Employee.employeeTelephone.contains(search_query)
+                ),
                 Employee.status == False,
                 Employee.id != current_user.id
             ).paginate(page=page, per_page=rows_per_page)
@@ -1402,8 +1418,8 @@ def update_employee():
     if request.method == 'POST':
         employeeNo = request.form.get('employeeNo')
         nameWithInitials = request.form.get('nameWithInitials')
-        employeeDesignation = request.form.get('employeeDesignation')
-        employeeTelephone = request.form.get('employeeTelephone')
+        employeeDesignation = request.form.get('employeeDesignation', '')
+        employeeTelephone = request.form.get('employeeTelephone', '')
 
         employee = Employee.query.filter_by(employeeNo=employeeNo).first()
 

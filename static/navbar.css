@@ -40,6 +40,10 @@
     flex-direction: column;
 }
 
+.visitorPage.margin-bugged .main-content {
+    margin-top: -21px;
+}
+
 .dropdown-menu i {
     display: flex;
     align-items: center;

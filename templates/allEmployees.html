@@ -88,8 +88,16 @@
                                 </td>
                                 <td class="monospaced">{{ employee.employeeNo }}</td>
                                 <td>{{ employee.nameWithInitials }}</td>
-                                <td>{{ employee.employeeDesignation }}</td>
-                                <td>{{ employee.employeeTelephone }}</td>
+                                <td>
+                                    {% if employee.employeeDesignation != '" None "' %}
+                                        {{ employee.employeeDesignation }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ employee.employeeTelephone }}
+                                </td>
                                 <td>{{ 'Active' if employee.status else 'Inactive' }}</td>
                             </tr>
                             {% endfor %}
