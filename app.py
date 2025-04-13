@@ -2214,7 +2214,6 @@ def driver_gate_pass():
             attendance_alias.date == today,
             db.or_(
                 latest_gate_pass_subquery.c.latest_gate_pass_id == None,  # No gate pass today
-                # If they have a gate pass, status must be "In"
                 gate_pass_alias.driverFormStatus == "In"
             )
         )
@@ -2313,8 +2312,9 @@ def out_drivergatepass():
         driverGatePassId=driverGatePassId).first()
 
     pageTitle = 'Out Driver Gate Pass'
-
     user_permissions = current_user.permissions
+
+    nowTime = datetime.now().replace(microsecond=0)
 
     if driverGatePassForm:
         # Access the value of the clicked button from the form data
@@ -2324,6 +2324,7 @@ def out_drivergatepass():
 
         if clicked_button_value == 'Out':
             driverGatePassForm.driverFormStatus = 'Out'
+            driverGatePassForm.driverDepartingTime = nowTime
             driverGatePassForm.driverOutMark = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
@@ -2346,8 +2347,9 @@ def in_drivergatepass():
         driverGatePassId=driverGatePassId).first()
 
     pageTitle = 'In Driver Gate Pass'
-
     user_permissions = current_user.permissions
+
+    nowTime = datetime.now().replace(microsecond=0)
 
     if driverGatePassForm:
         # Access the value of the clicked button from the form data
@@ -2357,6 +2359,7 @@ def in_drivergatepass():
 
         if clicked_button_value == 'In':
             driverGatePassForm.driverFormStatus = 'In'
+            driverGatePassForm.driverArrivalTime = nowTime
             driverGatePassForm.driverInMark = current_user.username
             db.session.commit()
             return redirect(url_for('dashboard'))
