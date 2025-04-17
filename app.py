@@ -186,10 +186,24 @@ class DriverGatePass(db.Model):
     driverFormStatus = db.Column(db.String(20), nullable=False)
     driverOutMark = db.Column(db.String(80))
     driverInMark = db.Column(db.String(80))
+    driverOutMeter = db.Column(db.Integer)
+    driverInMeter = db.Column(db.Integer)
     committedDate = db.Column(
         db.DateTime, default=datetime.utcnow, nullable=True)
     driverGatePassRequester = db.Column(db.String(80), nullable=False)
 
+class DriverVehicle(db.Model):
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    vehicleNo = db.Column(db.String, nullable=False)
+    driverGatePassId = db.Column(db.String, nullable=True)
+    date = db.Column(db.String, nullable=True)
+    departTime = db.Column(db.String, nullable=True)
+    arriveTime = db.Column(db.String, nullable=True)
+    outMeter = db.Column(db.Integer, nullable=True)
+    inMeter = db.Column(db.Integer, nullable=True)
+
+    def __repr__(self):
+        return f"<DriverVehicle id={self.id}, vehicleNo={self.vehicleNo}>"
 
 class DriverAttendance(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
@@ -1911,7 +1925,6 @@ def export_excel_driver_gate_pass():
 
     return send_file(excel_data, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', as_attachment=True, download_name=f'driver_gate_pass_{driver_no}.xlsx')
 
-
 @app.route('/export_excel/driver_gate_pass_list', methods=['POST'])
 @login_required
 @permission_required('Create_Reports')
@@ -1939,7 +1952,7 @@ def export_excel_driver_gate_pass_list():
     headers = [
         'id', 'driverGatePassId', 'driverNo', 'driverName', 'driverCompany', 'driverDepartingTime', 'driverDepartingDate',
         'driverArrivalTime', 'driverVehicleNo', 'driverDepartingReason', 'driverDepartingDestinationRemark',
-        'driverFormStatus', 'driverOutMark', 'driverInMark', 'committedDate', 'driverGatePassRequester'
+        'driverFormStatus', 'driverOutMark', 'driverInMark', 'driverOutMeter', 'driverInMeter', 'committedDate', 'driverGatePassRequester'
     ]
 
     # Write headers to the worksheet
@@ -2043,6 +2056,121 @@ def export_excel_driver_attendance():
         mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         as_attachment=True,
         download_name='driver_attendance.xlsx'
+    )
+
+@app.route('/export_excel/driver_vehicle_list', methods=['POST'])
+@login_required
+@permission_required('Create_Reports')
+def export_excel_driver_vehicle_list():
+    start_date = request.form.get('startDate')
+    end_date = request.form.get('endDate')
+
+    start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
+    end_datetime = datetime.strptime(end_date, '%Y-%m-%d')
+
+    # Fetch vehicle records within the date range
+    data = DriverVehicle.query.filter(
+        db.func.date(DriverVehicle.date) >= start_datetime.date(),
+        db.func.date(DriverVehicle.date) <= end_datetime.date()
+    ).all()
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Driver Vehicle Records"
+
+    headers = ['ID', 'Vehicle No', 'Gate Pass ID', 'Date',
+               'Depart Time', 'Arrive Time', 'Out Meter', 'In Meter']
+    ws.append(headers)
+
+    for row in data:
+        ws.append([
+            row.id, row.vehicleNo, row.driverGatePassId, row.date,
+            row.departTime, row.arriveTime, row.outMeter, row.inMeter
+        ])
+
+    table = Table(displayName="DriverVehicleTable",
+                  ref=f"A1:{chr(ord('A') + len(headers) - 1)}{len(data) + 1}")
+    style = TableStyleInfo(name="TableStyleMedium9", showFirstColumn=False,
+                           showLastColumn=False, showRowStripes=True, showColumnStripes=True)
+    table.tableStyleInfo = style
+    ws.add_table(table)
+
+    for column in ws.columns:
+        max_length = max((len(str(cell.value)) for cell in column if cell.value), default=10)
+        ws.column_dimensions[column[0].column_letter].width = max_length + 2
+
+    excel_data = BytesIO()
+    wb.save(excel_data)
+    excel_data.seek(0)
+
+    return send_file(
+        excel_data,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name='driver_vehicle.xlsx'
+    )
+
+@app.route('/export_excel/driver_vehicle_report', methods=['POST'])
+@login_required
+@permission_required('Create_Reports')
+def export_excel_driver_vehicle_report():
+    vehicle_no = request.form.get('reportVehicleNo')
+    start_date = request.form.get('startDate')
+    end_date = request.form.get('endDate')
+
+    start_datetime = datetime.strptime(start_date, '%Y-%m-%d')
+    end_datetime = datetime.strptime(end_date, '%Y-%m-%d')
+
+    data = DriverVehicle.query.filter(
+        DriverVehicle.vehicleNo == vehicle_no,
+        db.func.date(DriverVehicle.date) >= start_datetime.date(),
+        db.func.date(DriverVehicle.date) <= end_datetime.date()
+    ).all()
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = f"Vehicle {vehicle_no} Report"
+
+    headers = [
+        'id', 'vehicleNo', 'driverGatePassId', 'date',
+        'departTime', 'arriveTime', 'outMeter', 'inMeter'
+    ]
+    ws.append(headers)
+
+    for row in data:
+        ws.append([
+            getattr(row, field, '') or ''  # handles None values safely
+            for field in headers
+        ])
+
+    if data:
+        last_col = openpyxl.utils.get_column_letter(len(headers))
+        table = Table(displayName="DriverVehicleTable",
+                      ref=f"A1:{last_col}{len(data) + 1}")
+        style = TableStyleInfo(
+            name="TableStyleMedium9",
+            showFirstColumn=False,
+            showLastColumn=False,
+            showRowStripes=True,
+            showColumnStripes=True
+        )
+        table.tableStyleInfo = style
+        ws.add_table(table)
+
+    # Adjust column widths
+    for column in ws.columns:
+        max_length = max((len(str(cell.value or '')) for cell in column), default=10)
+        ws.column_dimensions[column[0].column_letter].width = max_length + 2
+
+    excel_data = BytesIO()
+    wb.save(excel_data)
+    excel_data.seek(0)
+
+    return send_file(
+        excel_data,
+        mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        as_attachment=True,
+        download_name=f'driver_vehicle_report_{vehicle_no}.xlsx'
     )
 
 
@@ -2178,7 +2306,7 @@ def driver_gate_pass():
     pageTitle = 'New Driver Gate Pass'
 
     today = datetime.utcnow().date()
-    todaySimple = datetime.utcnow().strftime("%Y%m%d")
+    todaySimple = datetime.utcnow().strftime("%Y-%m-%d")
 
     employee_alias = aliased(Employee)
     attendance_alias = aliased(DriverAttendance)
@@ -2308,8 +2436,11 @@ def generate_driverGatePassId():
 def out_drivergatepass():
     driverGatePassId = request.form.get('driverGatePassId')
     driverFormStatus = request.form.get('driverFormStatus')
+    driverOutMeter = request.form.get('driverOutMeter', '')
     driverGatePassForm = DriverGatePass.query.filter_by(
         driverGatePassId=driverGatePassId).first()
+    
+    todaySimple = datetime.utcnow().strftime("%Y-%m-%d")
 
     pageTitle = 'Out Driver Gate Pass'
     user_permissions = current_user.permissions
@@ -2326,8 +2457,35 @@ def out_drivergatepass():
             driverGatePassForm.driverFormStatus = 'Out'
             driverGatePassForm.driverDepartingTime = nowTime
             driverGatePassForm.driverOutMark = current_user.username
+            driverGatePassForm.driverOutMeter = driverOutMeter
+
             db.session.commit()
-            return redirect(url_for('dashboard'))
+
+            vehicle_no = request.form.get('driverVehicleNo', '')
+            driver_gate_pass_id = driverGatePassId
+            date = todaySimple
+            depart_time = nowTime
+            out_meter = driverOutMeter
+
+            if not vehicle_no:
+                return render_template('requestedDriverGatePass.html', error_message='You must enter a vehicle number')
+
+            driver_vehicle = DriverVehicle(
+                vehicleNo=vehicle_no,
+                driverGatePassId=driver_gate_pass_id,
+                date=date,
+                departTime=depart_time,
+                outMeter=out_meter
+            )
+
+            try:
+                db.session.add(driver_vehicle)
+                db.session.commit()
+                return redirect(url_for('dashboard'))
+            except Exception as e:
+                db.session.rollback()
+                return f"Error committing to database: {e}"
+            
 
         return render_template('requestedDriverGatePass.html', driverGatePassForm=driverGatePassForm, status=status,
                                user_permissions=user_permissions,
@@ -2343,7 +2501,10 @@ def out_drivergatepass():
 def in_drivergatepass():
     driverGatePassId = request.form.get('driverGatePassId')
     driverFormStatus = request.form.get('driverFormStatus')
+    driverInMeter = request.form.get('driverInMeter', '')
     driverGatePassForm = DriverGatePass.query.filter_by(
+        driverGatePassId=driverGatePassId).first()
+    driverVehicleForm = DriverVehicle.query.filter_by(
         driverGatePassId=driverGatePassId).first()
 
     pageTitle = 'In Driver Gate Pass'
@@ -2361,6 +2522,11 @@ def in_drivergatepass():
             driverGatePassForm.driverFormStatus = 'In'
             driverGatePassForm.driverArrivalTime = nowTime
             driverGatePassForm.driverInMark = current_user.username
+            driverGatePassForm.driverInMeter = driverInMeter
+
+            driverVehicleForm.arriveTime = nowTime
+            driverVehicleForm.inMeter = driverInMeter
+
             db.session.commit()
             return redirect(url_for('dashboard'))
 

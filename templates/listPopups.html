@@ -494,6 +494,16 @@
             <h5>Driver Attendance</h5>
             <button type="button">Create</button>
         </div>
+        <div class="excelExportBtns" onclick="togglePopup('driverVehicleReportButtons')">
+            <span><i class="ph ph-traffic-cone"></i></span>
+            <h5>Vehicle Report</h5>
+            <button type="button">Create</button>
+        </div>
+        <div class="excelExportBtns" onclick="togglePopup('driverVehicleListReportButtons')">
+            <span><i class="ph ph-traffic-cone"></i></span>
+            <h5>Vehicle List Report</h5>
+            <button type="button">Create</button>
+        </div>
     </div>
 </div>
 
@@ -638,7 +648,54 @@
     </form>
 </div>
 
+<div class="popup" id="driverVehicleListReportButtons">
+    <div class="popupHeader" style="position: relative; width: 100%;">
+        <h3>Set Duration for Vehicle</h3>
+        <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
+    </div>
+    <form action="/export_excel/driver_vehicle_list" method="POST" class="excelExportVisitorBtns">
+        <div class="startDate excelTimeDuration">
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" name="startDate" class="monospaced">
+        </div>
+        <div class="endDate excelTimeDuration">
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" name="endDate" class="monospaced">
+        </div>
+        <div class="exportAndBack">
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')">
+                <i class="ph ph-arrow-left"></i>
+            </button>
+            <input type="submit" class="exportVisitorExcel" id="exportDriverAttendanceExcel" value="Export">
+        </div>
+    </form>
+</div>
 
+<div class="popup" id="driverVehicleReportButtons">
+    <div class="popupHeader" style="position: relative; width: 100%;">
+        <h3>Set Duration for Driver</h3>
+        <button onclick="closeCurrentPopup()"><i class="ph ph-x"></i></button>
+    </div>
+    <form action="/export_excel/driver_vehicle_report" method="POST" class="excelExportVisitorBtns">
+        <div class="driverNoForReport excelTimeDuration">
+            <label for="reportVehicleNo">Vehicle Number</label>
+            <input type="text" id="reportVehicleNo" name="reportVehicleNo" class="monospaced">
+        </div>
+        <div class="startDate excelTimeDuration">
+            <label for="startDate">Start Date</label>
+            <input type="date" id="startDate" name="startDate" class="monospaced">
+        </div>
+        <div class="endDate excelTimeDuration">
+            <label for="endDate">End Date</label>
+            <input type="date" id="endDate" name="endDate" class="monospaced">
+        </div>
+        <div class="exportAndBack">
+            <button type="button" class="exportVisitorExcel" onclick="togglePopup('reportButtons')"><i
+                    class="ph ph-arrow-left"></i></button>
+            <input type="submit" class="exportVisitorExcel" id="exportDriverGatePassExcel" value="Export">
+        </div>
+    </form>
+</div>
 
 <div id="profileMenu" class="popup">
     <ul class="additionalLinks">

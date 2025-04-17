@@ -140,15 +140,30 @@
                     </div>
                 </div>
                 <div class="control-buttons-container">
-                    <div class="employee-status gate-pass-input-container">
-                        <label for="driver-status">Status</label>
-                        <input
-                            type="text"
-                            id="driverStatus"
-                            name="driver-status"
-                            title="Status"
-                            value="{{ driverGatePassForm.driverFormStatus }}"
-                            readonly />
+                    <div class="driver-pass-footer-container">
+                        <div class="employee-status gate-pass-input-container">
+                            <label for="driver-status">Status</label>
+                            <input
+                                type="text"
+                                id="driverStatus"
+                                name="driver-status"
+                                title="Status"
+                                value="{{ driverGatePassForm.driverFormStatus }}"
+                                readonly />
+                        </div>
+                        <div
+                            class="employee-out-meter gate-pass-input-container">
+                            <label for="driverOutMeter">Out Meter</label>
+                            <input
+                                type="number"
+                                id="driverOutMeter"
+                                name="driverOutMeter"
+                                class="monospaced"
+                                title="kms on vehicle meter when leave"
+                                placeholder="0"
+                                required />
+                            <span class="suffix">km</span>
+                        </div>
                     </div>
                     <div class="button-container">
                         <input

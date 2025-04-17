@@ -1862,14 +1862,58 @@ textarea#history {
     align-items: center;
     justify-content: center;
 }
+
+.driver-pass-footer-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: calc(50% - 20px);
+    padding: 0 20px 0 0;
+}
+
+.employee-out-meter {
+    position: relative;
+}
+
+.employee-out-meter #driverOutMeter::placeholder {
+    font-family: var(--monospace) !important;
+}
+
+.employee-out-meter .suffix {
+    position: absolute;
+    right: 0;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 0 6px 0 5px;
+    border-left: 1px solid var(--border);
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+.control-buttons-container input[type=number] {
+  -moz-appearance: textfield;
+  appearance: textfield;
+}
+
 .control-buttons-container .gate-pass-input-container {
     padding: 0 !important;
+}
+
+.control-buttons-container .gate-pass-input-container:nth-child(1) {
+    padding: 0 20px 0 0 !important;
 }
 
 .gate-pass-detail-block .gate-pass-input-container:nth-child(1) {
     padding: 0 20px 0 0;
 }
 
+.control-buttons-container .gate-pass-input-container:nth-child(2),
 .gate-pass-detail-block .gate-pass-input-container:nth-child(2), .time-period.gate-pass-detail-block .gate-pass-input-container:nth-child(2) {
     padding: 0 0 0 20px !important;
 }
