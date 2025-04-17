@@ -91,6 +91,15 @@
     margin-right: 30px;
 }
 
+.dashboard-charts:has(#monthMeters) .charts {
+    justify-content: flex-start;
+}
+
+.dashboard-charts:has(#monthMeters) .charts .data-chart:nth-child(1) {
+    margin-right: 0 !important;
+    width: calc(50% - 60px);
+}
+
 h5.chart-header {
     margin: 10px 0;
     color: var(--textdued);

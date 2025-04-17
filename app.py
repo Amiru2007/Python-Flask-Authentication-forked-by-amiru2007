@@ -774,6 +774,36 @@ def dashboard():
         str).tolist()
     values_gatepass_30_days = chart_data_gatepass_30_days['count'].tolist()
 
+    # --- Vehicle Meters Management ---
+
+    vehicle_data = DriverVehicle.query.filter(
+        DriverVehicle.date >= start_date,
+        DriverVehicle.date <= today
+    ).all()
+
+    vehicle_df = pd.DataFrame([{
+        'vehicleNo': d.vehicleNo,
+        'date': d.date,
+        'outMeter': d.outMeter,
+        'inMeter': d.inMeter
+    } for d in vehicle_data])
+
+    vehicle_df['date'] = pd.to_datetime(vehicle_df['date'])
+
+    total_distances = []
+
+    for vehicle_no, group in vehicle_df.groupby('vehicleNo'):
+        group_sorted = group.sort_values('date')
+        first = group_sorted.iloc[0]
+        last = group_sorted.iloc[-1]
+        
+        if pd.notnull(first.outMeter) and pd.notnull(last.inMeter):
+            distance = last.inMeter - first.outMeter
+            total_distances.append((vehicle_no, distance))
+
+    labels_vehicle_meters = [str(v[0]) for v in total_distances]  # ensure strings
+    values_vehicle_meters = [int(v[1]) for v in total_distances]  # convert int64 to int
+
     # --- Gate Pass Management Counts ---
 
     out_count = GatePass.query.filter(
@@ -829,7 +859,7 @@ def dashboard():
     attendance_alias = aliased(DriverAttendance)
     gate_pass_alias = aliased(DriverGatePass)
 
-# Subquery to get the latest gate pass ID for each driver today
+    # Subquery to get the latest gate pass ID for each driver today
     latest_gate_pass_subquery = (
         db.session.query(
             gate_pass_alias.driverNo,
@@ -880,6 +910,8 @@ def dashboard():
         values_gatepass=values_gatepass,
         labels_gatepass_30_days=labels_gatepass_30_days,
         values_gatepass_30_days=values_gatepass_30_days,
+        labels_vehicle_meters=labels_vehicle_meters,
+        values_vehicle_meters=values_vehicle_meters,
         user_permissions=user_permissions,
         pageTitle=pageTitle,
         today=today,

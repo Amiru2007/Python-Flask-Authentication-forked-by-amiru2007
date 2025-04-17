@@ -92,6 +92,14 @@
                 </div>
             </div>
             <div class="dashboard-charts">
+                <h4 class="chart-catogary">Vehicle Meters</h4>
+                <div class="charts">
+                    <div class="data-chart one-month">
+                        <canvas id="monthMeters"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="dashboard-charts">
                 <h4 class="chart-catogary">Driver Manage</h4>
                 <div class="split-dashboard">
                     <div class="charts-status">
@@ -331,6 +339,54 @@
                             title: {
                                 display: true,
                                 text: 'Exit Permits'
+                            },
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    // Ensure y-axis ticks are integers (no decimals)
+                                    return Number.isInteger(value) ? value : '';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            var vehicleLabels = {{ labels_vehicle_meters | tojson }};
+            var vehicleValues = {{ values_vehicle_meters | tojson }};
+
+            var ctxVehicle = document.getElementById('monthMeters').getContext('2d');
+            var chartVehicle = new Chart(ctxVehicle, {
+                type: 'bar',
+                data: {
+                    labels: vehicleLabels,
+                    datasets: [{
+                        label: 'Distance Travelled (km) in Last 30 Days',
+                        data: vehicleValues,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderRadius: 3,
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Vehicle Number'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Distance (km)'
+                            },
+                            ticks: {
+                                callback: function(value) {
+                                    return Number.isInteger(value) ? value : '';
+                                }
                             }
                         }
                     }
